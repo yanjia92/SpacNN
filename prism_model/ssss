@@ -1,0 +1,16 @@
+dtmc
+
+global timer_turn : bool init true;
+
+module timer
+	day : [1..10] init 1;
+	[] timer_turn=true&day<10 -> (day'=day+1)&(timer_turn'=false);
+endmodule
+
+formula p = day/10;
+
+module mod
+	status: [0..1] init 1;
+	[] status=1&timer_turn=false -> p : (status'=0)&(timer_turn'=true) + 
+		(1- p) : (status'=1)&(timer_turn'=true);
+endmodule
