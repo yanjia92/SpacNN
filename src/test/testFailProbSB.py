@@ -2,7 +2,7 @@ from module.Module import *
 from util.MathUtils import *
 from util.util import *
 
-YEAR = 2
+YEAR = 5
 
 # timer module of the system
 timer = Module('timer_module')
@@ -46,7 +46,7 @@ sb.addConstant(screenthick)
 # the dose of one year: dose = K_SB * thickness
 sb.addConstant(Constant('SB_K', 0.0039))
 sb.addConstant(Constant('SB_B', 12))
-sb.addConstant(Constant('SB_P_THRESHOLD', 0.7))
+sb.addConstant(Constant('SB_P_THRESHOLD', 0.832))
 sb.addConstant(Constant('SB_A_MU', 0.1754))
 sb.addConstant(Constant('SB_A_SIGMA', 0.02319029 * 21))
 
@@ -115,7 +115,7 @@ def test():
         std_x = (x - sb.getConstant("SB_A_MU").getValue())/sb.getConstant("SB_A_SIGMA").getValue()
         p = 1 - pcf(std_x)
         ps.append(p)
-    print str(ps[-3:])
+    print str(ps[-5:])
 
 if __name__ == '__main__':
     test()
