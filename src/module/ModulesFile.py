@@ -174,7 +174,6 @@ class ModulesFile(object):
             biasingExitRate = None
             probs = []
             for comm in enabledCommands:
-                i = id(self.localVars['day'])
                 if hasattr(comm.prob, '__call__'):
                     probs.append(comm.prob()/exitRate)
                 else:

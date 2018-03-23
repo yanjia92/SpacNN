@@ -2,9 +2,11 @@ from module.Module import *
 from util.MathUtils import *
 from util.util import *
 
+YEAR = 2
+
 # timer module of the system
 timer = Module('timer_module')
-timer.addConstant(Constant('TIME_LIMIT', 1 * 365))  # 1 years
+timer.addConstant(Constant('TIME_LIMIT', YEAR * 365))  # 2 years
 day = Variable(
     'day',
     1,
@@ -107,14 +109,13 @@ sb.addCommand(comm_normal)
 def test():
     sb.setConstant(Constant('SCREEN_THICKNESS', 1))
     ps = []
-    for v in [Variable('day', i) for i in interval(1, 365, 1)]:
+    for v in [Variable('day', i) for i in interval(1, 365*YEAR, 1)]:
         dose = v.getValue()/365.0 * sb.getConstant("SB_K").getValue() * sb.getConstant("SCREEN_THICKNESS").getValue()
         x = (1- sb.getConstant("SB_P_THRESHOLD").getValue())/ (log(1 + sb.getConstant("SB_B").getValue() * dose))
         std_x = (x - sb.getConstant("SB_A_MU").getValue())/sb.getConstant("SB_A_SIGMA").getValue()
-        # print std_x
         p = 1 - pcf(std_x)
         ps.append(p)
-    print str(ps)
+    print str(ps[-3:])
 
 if __name__ == '__main__':
     test()

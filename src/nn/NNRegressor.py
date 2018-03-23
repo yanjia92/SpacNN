@@ -112,7 +112,7 @@ class BPNeuralNetwork:
             for o in range(self.output_n):
                 change = output_deltas[o] * self.hidden_cells[h]
                 self.output_weights[h][o] += learn * change + \
-                    correct * self.output_correction[h][o]  # ？？？？？？？？？？
+                    correct * self.output_correction[h][o]
                 self.output_correction[h][o] = change
 
         # update input weights

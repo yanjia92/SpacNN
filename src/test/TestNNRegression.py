@@ -73,11 +73,11 @@ def testSPS():
     # logger.info("mc begin")
     #
     wrapper.setconstants([test_cases])
-    mcresult = wrapper.modelcheck()
-    mc_labels = map(lambda tuple: tuple[1], mcresult)
+    # mcresult = wrapper.modelcheck()
+    # mc_labels = map(lambda tuple: tuple[1], mcresult)
 
     plt.plot(testx, [i[0] for i in test_labels], label='predict')
-    plt.plot(map(lambda const: const.getValue(), test_cases), mc_labels, label='mc')
+    # plt.plot(map(lambda const: const.getValue(), test_cases), mc_labels, label='mc')
     plt.show()
 
 def main():

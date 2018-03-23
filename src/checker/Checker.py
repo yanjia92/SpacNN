@@ -206,11 +206,14 @@ class Checker(threading.Thread):
         # logging.info('path verified result: %s' % str(result))
         return result
 
-    # path: list of Step instance
-    # ltlRoot: current ltl symbol's index in ltl
-    # ltl: the LTL formula to be evaluated against the path
-    # return: set of Step instance whose corresponding State satisfy the ltl formula
-    # if no state satisfy ltl, return empty set()
+
+    '''
+    path: list of Step instance
+    ltlRoot: current ltl symbol's index in ltl
+    ltl: the LTL formula to be evaluated against the path
+    return: set of Step instance whose corresponding State satisfy the ltl formula
+    if no state satisfy ltl, return empty set()
+    '''
     def _rverify(self, path, ltlRoot, ltl=None):
         if ltl is None:
             ltl = self.ltl
@@ -296,7 +299,7 @@ class Checker(threading.Thread):
         lstates = filter(lambda s: s.stateId >= 1, lstates)
         stateIds = [step.stateId for step in path]
         for s in lstates:
-            result.add(path[bisect.bisect(stateIds, s.stateId) - 2])
+            result.add(path[bisect.bisect_left(stateIds, s.stateId)])
         return result
 
     def _checkAP(self, path, ap):
@@ -336,11 +339,6 @@ class Checker(threading.Thread):
         postex = 0.0
         for i in range(sz):
             satisfied, path = s.getRandomPath(self.decided_prefixes)
-            # print "path:"
-            # print "path:"
-            # for p in path:
-            #  print p
-            # n += 1
             n += 1
             if s.verify([p.ap for p in path], s.ltl, s.pts):
                 x += 1
@@ -348,10 +346,6 @@ class Checker(threading.Thread):
             confidence = s.con(s.a, s.b, n, x, postex, s.p)
 
             if confidence >= s.c:
-
-                # event = self.FinishEventClass(output=str(int(n))+' samples are verified.')
-                # wx.PostEvent(self.frame, event)
-
                 if postex > s.p:
                     if s.op == '>':
                         return True

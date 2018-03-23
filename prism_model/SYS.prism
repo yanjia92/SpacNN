@@ -8,17 +8,18 @@ global bdr_fail_date: [-1..182] init -1;
 
 // system constants and formulae
 // ================
+const int YEAR = 2;
 const double thickness;     // 屏蔽层厚度: 1-100
 const double k1 = 200.5;   // 电离损伤剂量与厚度成反比关系，即d1 = k1/thickness
 const double k2 = 0.0039; // 位移损伤剂量与厚度成正比关系，即d = k2 * thickness
 const double e = 2.71828182; // math.e
 // const int year;
-formula IEL = k1 / thickness;      // S3R，BCR, BDR三个部件一年内受到的电离能损剂量之和
-formula NIEL = k2 * thickness;     // 太阳能电池一年内所受的非电离能损之和
+formula IEL_YEAR= k1 / thickness;      // S3R，BCR, BDR三个部件一年内受到的电离能损剂量之和
+formula NIEL_YEAR = k2 * thickness;     // 太阳能电池一年内所受的非电离能损之和
 
 module Time
-    day : [1..183] init 1; // 1 years
-    [] t_turn=true&day<184 -> (day'=min(day+1, 183))&(t_turn'=false);
+    day : [1..YEAR*365] init 0; // 1 years
+    [] t_turn=true&day<=YEAR*365 -> (day'=min(day+1, YEAR*365))&(t_turn'=false);
 endmodule
 
 // 太阳能电池模块
@@ -28,11 +29,8 @@ const double pmax_threshold = 0.7; // 太阳能电池要求的最低功率
 const double sb_a_mu = 0.1754;        // a的期望值
 const double sb_a_sigma = 0.02319029; // a的标准差
 const double sb_b = 12;               // pmax公式中的另一个参数
-const double sb_k = 0.8;              // 分流器损坏后，太阳能电池的输出功率的降低值
-// formula power_decr = s3r_status < 1 ? sb_k : 1;
-formula power_decr = 1;
-formula sb_dose = (day / 365.0) * NIEL; // 太阳能电池当前所受的非电离能损剂量
-formula sb_cdf_x = (power_decr - pmax_threshold) / (power_decr * log(1 + sb_dose * sb_b, e)); // a > cdf_x
+formula sb_dose = (day / 365.0) * NIEL_YEAR; // 太阳能电池当前所受的非电离能损剂量
+formula sb_cdf_x = (1 - pmax_threshold) / (log(1 + sb_dose * sb_b, e)); // a > cdf_x
 formula sb_std_cdf_x = (sb_cdf_x - sb_a_mu) / sb_a_sigma;              // 对应到标准正态分布后的x
 // Compute CDF of standard normal distribution
 // taken from https://www.johndcook.com/blog/cpp_phi/
@@ -48,7 +46,6 @@ formula sb_std_cdf_x_2 = sb_sign * sb_std_cdf_x / pow(2.0, 0.5);
 formula sb_t = 1.0/(1.0 + p * sb_std_cdf_x_2);
 formula sb_y = 1.0 - (((((a5*sb_t + a4)*sb_t) + a3)*sb_t + a2)*sb_t + a1)*sb_t*pow(e, -sb_std_cdf_x_2 * sb_std_cdf_x_2);
 formula sb_fail_prob = 1 - 0.5 * (1.0 + sb_sign * sb_y);  // 根据solar battery所受非电离能损剂量计算出的失效概率
-// formula sb_fail_rate = sb_fail_prob / (1 - sb_fail_prob);
 module SolarBattery
     sb_status: [0..1] init 1; // 太阳能电池所处的状态：1：正常；0：失效
     [] sb_status=1&t_turn=false ->  sb_fail_prob:(sb_status'=0)&(t_turn'=true)+(1.0-sb_fail_prob):(sb_status'=1)&(t_turn'=true);
@@ -96,11 +93,11 @@ const double delta_temp_up = 1.21; // 当蓄电池处于过放状态时，每天
 const double cb_temp_base = 1.012;
 const double cb_temp_a = 1.64; // 当电池处于过充状态时，温度的增加值是过充时间的一个指数函数: temp = cb_temp_a * cb_temp_base**day
 
-module ChargeBattery
-    cb_status: [0..2] init 2; // 2: 正常工作；1: 过充电状态；0: 过放电状态
-    [] cb_status=2&bcr_status=0&bdr_status=1&mod(day, 365)<182&t_turn=false -> (cb_status'=1)&(t_turn'=true);
-    [] cb_status=2&bcr_status=1&bdr_status=0&mod(day, 365)>=182&t_turn=false -> (cb_status'=0)&(t_turn'=true);
-endmodule
+//module ChargeBattery
+  //  cb_status: [0..2] init 2; // 2: 正常工作；1: 过充电状态；0: 过放电状态
+    //[] cb_status=2&bcr_status=0&bdr_status=1&mod(day, 365)<182&t_turn=false -> (cb_status'=1)&(t_turn'=true);
+    //[] cb_status=2&bcr_status=1&bdr_status=0&mod(day, 365)>=182&t_turn=false -> (cb_status'=0)&(t_turn'=true);
+//endmodule
 
 // rewards structures
 rewards "time"
@@ -111,6 +108,8 @@ rewards "cb_temperature"
     [] bdr_status=0 & mod(day - bdr_fail_date, 365) >= 182: delta_temp_up;
     [] bcr_status=0 & mod(day - bcr_fail_date, 365) < 182 : cb_temp_a * log(cb_temp_base, e) * pow(cb_temp_base, (day - bcr_fail_date));
 endrewards
+
+label "failure" = sb_status=0 | s3r_status=3;
 
 
 
