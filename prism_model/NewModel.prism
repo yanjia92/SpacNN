@@ -8,8 +8,8 @@ global t_turn : bool init true; // global variable: 表示当前Time模块是否
 // ================
 const int YEAR = 5;
 const double SCREEN_THICKNESS;     // 屏蔽层厚度: 1-100
-const double S3R_K = 200.5 / 3.0;   // 电离损伤剂量与厚度成反比关系，即d1 = S3R_K/SCREEN_THICKNESS
-const double SB_K = 0.0039; // 位移损伤剂量与厚度成正比关系，即d = SB_K * SCREEN_THICKNESS
+const double S3R_K =66.8333333333;
+const double SB_K =0.0039;
 const double e = 2.71828182; // math.e
 // const int year;
 formula IEL_YEAR= S3R_K / SCREEN_THICKNESS;      // S3R一年内受到的电离能损剂量之和
@@ -23,10 +23,10 @@ endmodule
 // 太阳能电池模块
 // Solar battery constants, formulae
 // =================================
-const double SB_P_THRESHOLD = 0.78; // 太阳能电池要求的最低功率
-const double SB_A_MU = 0.1754;        // a的期望值
-const double SB_A_SIGMA = 0.02319029 * 21; // a的标准差
-const double SB_B = 1.8;               // pmax公式中的另一个参数
+const double SB_P_THRESHOLD =0.819;
+const double SB_A_MU =0.1754;
+const double SB_A_SIGMA =0.48699609;
+const double SB_B =1.8;
 formula sb_dose = (day / 365.0) * NIEL_YEAR; // 太阳能电池当前所受的非电离能损剂量
 formula sb_cdf_x = (1 - SB_P_THRESHOLD) / (log(1 + sb_dose * SB_B, e)); // a > cdf_x
 formula sb_std_cdf_x = (sb_cdf_x - SB_A_MU) / SB_A_SIGMA;              // 对应到标准正态分布后的x
@@ -53,10 +53,10 @@ endmodule
 // S3R constants, variables, formulae
 // ==================================
 // constants
-const double S3R_DELTAV_THRESHOLD = 580;                 // 阈值电压漂移阈值——阈值电压漂移大于此值即认为失效
-const double S3R_B = 0.01731;                     // 阈值电压漂移公式中的参数b
-const double S3R_A_MU = 570.8 * 13;               // a的期望
-const double S3R_A_SIGMA = 6.7471 * 120;          // a的标准差
+const int S3R_DELTAV_THRESHOLD =10.0;
+const double S3R_B =0.0007467;
+const double S3R_A_MU =7420.4;
+const double S3R_A_SIGMA =1484.362;
 formula s3r_cur_dose = (day / 365.0) * IEL_YEAR; // S3R当前所受的电离能损总剂量
 formula s3r_cdf_x = S3R_DELTAV_THRESHOLD / (S3R_B * pow(e, S3R_B * s3r_cur_dose));
 formula s3r_std_cdf_x = (s3r_cdf_x - S3R_A_MU) / S3R_A_SIGMA;

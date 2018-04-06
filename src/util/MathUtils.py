@@ -14,7 +14,7 @@ def randomExpo(lamda, t=None, forcing=True):
         return math.log(1-rnd)/(-1*lamda)
 
 
-# 计算标准正态分布的概率分布函数
+# 计算标准正态分布的累积分布函数
 def pcf(x):
     a1 = 0.254829592
     a2 = -0.284496736

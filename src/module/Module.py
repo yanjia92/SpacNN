@@ -72,6 +72,8 @@ class Module(object):
         return None
 
 
+
+
 class CommandKind:
     FAILURE, REPAIR, NONE = range(3)
 

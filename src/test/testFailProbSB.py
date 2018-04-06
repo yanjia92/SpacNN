@@ -3,9 +3,11 @@ from util.MathUtils import *
 from util.util import *
 import logging
 import sys
+from config.SPSConfig import SPSConfig
 logger = logging.getLogger("test fail prob sb.py")
 logger.addHandler(logging.StreamHandler(sys.stdout))
 logger.setLevel(logging.DEBUG)
+import matplotlib.pyplot as plt
 
 YEAR = 5
 
@@ -42,6 +44,8 @@ inc_day = Command(
     1.0)
 timer.addCommand(inc_day)
 
+config = SPSConfig()
+
 # solar battery module of the system
 sb = Module("solar battery module")
 
@@ -49,11 +53,11 @@ sb = Module("solar battery module")
 screenthick = Constant('SCREEN_THICKNESS', None)
 sb.addConstant(screenthick)
 # the dose of one year: dose = K_SB * thickness
-sb.addConstant(Constant('SB_K', 0.0039))
-sb.addConstant(Constant('SB_B', 12))
-sb.addConstant(Constant('SB_P_THRESHOLD', 0.78))
-sb.addConstant(Constant('SB_A_MU', 0.1754))
-sb.addConstant(Constant('SB_A_SIGMA', 0.02319029 * 21))
+sb.addConstant(config.getParam("SB_K"))
+sb.addConstant(config.getParam("SB_B"))
+sb.addConstant(config.getParam("SB_P_THRESHOLD"))
+sb.addConstant(config.getParam("SB_A_MU"))
+sb.addConstant(config.getParam("SB_A_SIGMA"))
 
 # variables
 sb_status = Variable('sb_status', 1, range(2), int,
@@ -115,13 +119,25 @@ def test():
     for t in range(1, 11):
         sb.setConstant(Constant('SCREEN_THICKNESS', t))
         ps = []
+        doses = []
+        std_xs = []
         for v in [Variable('day', i) for i in interval(1, 365*YEAR, 1)]:
             dose = v.getValue()/365.0 * sb.getConstant("SB_K").getValue() * sb.getConstant("SCREEN_THICKNESS").getValue()
+            doses.append(dose)
             x = (1- sb.getConstant("SB_P_THRESHOLD").getValue())/ (log(1 + sb.getConstant("SB_B").getValue() * dose))
             std_x = (x - sb.getConstant("SB_A_MU").getValue())/sb.getConstant("SB_A_SIGMA").getValue()
             p = 1 - pcf(std_x)
             ps.append(p)
-        logger.debug("t=%d, %s", t, str(ps[-5:]))
+            std_xs.append(std_x)
+        # if t == 10:
+        #     # when thickness = 10
+        #     logger.info("max dose=%f, max prob=%f", doses[-1], ps[-1])
+        #     plt.plot(doses, ps, "k")
+        #     plt.xlabel("dose")
+        #     plt.ylabel("failure probability")
+        #     plt.show()
+        print ps[-1], std_xs[-1]
+
 
 if __name__ == '__main__':
     test()

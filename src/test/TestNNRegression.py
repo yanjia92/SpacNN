@@ -39,10 +39,10 @@ def testrunexpe():
 
     # 对多组参数进行模型验证
     mcresult = executemodelchecking([test_cases])
-    mc_labels = map(lambda tuple: tuple[1], mcresult)
+    # mc_labels = map(lambda tuple: tuple[1], mcresult)
 
     plt.plot(map(lambda const: const.getValue(), test_cases), test_labels, label='predict')
-    plt.plot(map(lambda const: const.getValue(), test_cases), mc_labels, label='mc')
+    # plt.plot(map(lambda const: const.getValue(), test_cases), mc_labels, label='mc')
     plt.show()
 
 def testSPS():
