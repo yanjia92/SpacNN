@@ -1,4 +1,4 @@
-/src/test/*
-/data/*
-/result/*
+src/test/*
+data/*
+result/*
 *.pyc
