@@ -1,0 +1,7 @@
+dtmc
+
+const int const1 = 1;
+
+module timer
+
+endmodule

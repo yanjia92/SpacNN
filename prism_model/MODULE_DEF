@@ -1,0 +1,4 @@
+module mod_name
+    var_name : [const_min..const_max] init [init_val];
+    [] boolean_cond -> [prob] : [update];
+endmodule

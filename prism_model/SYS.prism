@@ -4,7 +4,7 @@ dtmc
 
 global t_turn : bool init true; // global variable: 表示当前Time模块是否可运行
 
-// system constants and formulae
+// system constants and formulaedt
 // ================
 const int YEAR = 5;
 const double SCREEN_THICKNESS;     // 屏蔽层厚度: 1-100

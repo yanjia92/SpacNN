@@ -36,7 +36,7 @@ class ModulesFile(object):
 
     def __init__(
             self,
-            modeltype,
+            modeltype=ModelType.DTMC,
             failureCondition=None,
             stopCondition=None,
             initCondition=None,

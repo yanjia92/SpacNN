@@ -1,0 +1,10 @@
+// describe the prism language needed to be parsed
+dtmc // model type
+
+const type name = value;
+const type name; // unspecified
+
+module
+    var : [b..e] init init_val;
+    [] condition -> (prob : update);
+endmodule
