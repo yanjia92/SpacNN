@@ -1,0 +1,192 @@
+Created by PLY version 3.11 (http://www.dabeaz.com/ply)
+
+Unused terminals:
+
+    LOG
+    GTEQ
+    GLOBAL
+    MODELTYPE
+    LABEL
+    EXP
+    MUL
+    DIV
+    TRUE
+    MINUS
+    NEQ
+    LB
+    POW
+    MIN
+    LT
+    INIT
+    COMMA
+    LP
+    COLON
+    GT
+    ENDMODULE
+    MODULE
+    ADD
+    STDCDF
+    RP
+    EQ
+    AND
+    RB
+    FALSE
+    MAX
+    LTEQ
+    QUOTE
+    OR
+
+Grammar
+
+Rule 0     S' -> statement
+Rule 1     statement -> model_type_statement
+Rule 2     statement -> const_value_statement
+Rule 3     model_type_statement -> DTMC
+Rule 4     model_type_statement -> CTMC
+Rule 5     const_value_statement -> CONST TYPE NAME ASSIGN NUM SEMICOLON
+
+Terminals, with rules where they appear
+
+ADD                  : 
+AND                  : 
+ASSIGN               : 5
+COLON                : 
+COMMA                : 
+CONST                : 5
+CTMC                 : 4
+DIV                  : 
+DTMC                 : 3
+ENDMODULE            : 
+EQ                   : 
+EXP                  : 
+FALSE                : 
+GLOBAL               : 
+GT                   : 
+GTEQ                 : 
+INIT                 : 
+LABEL                : 
+LB                   : 
+LOG                  : 
+LP                   : 
+LT                   : 
+LTEQ                 : 
+MAX                  : 
+MIN                  : 
+MINUS                : 
+MODELTYPE            : 
+MODULE               : 
+MUL                  : 
+NAME                 : 5
+NEQ                  : 
+NUM                  : 5
+OR                   : 
+POW                  : 
+QUOTE                : 
+RB                   : 
+RP                   : 
+SEMICOLON            : 5
+STDCDF               : 
+TRUE                 : 
+TYPE                 : 5
+error                : 
+
+Nonterminals, with rules where they appear
+
+const_value_statement : 2
+model_type_statement : 1
+statement            : 0
+
+Parsing method: LALR
+
+state 0
+
+    (0) S' -> . statement
+    (1) statement -> . model_type_statement
+    (2) statement -> . const_value_statement
+    (3) model_type_statement -> . DTMC
+    (4) model_type_statement -> . CTMC
+    (5) const_value_statement -> . CONST TYPE NAME ASSIGN NUM SEMICOLON
+
+    DTMC            shift and go to state 3
+    CTMC            shift and go to state 4
+    CONST           shift and go to state 2
+
+    const_value_statement          shift and go to state 1
+    model_type_statement           shift and go to state 6
+    statement                      shift and go to state 5
+
+state 1
+
+    (2) statement -> const_value_statement .
+
+    $end            reduce using rule 2 (statement -> const_value_statement .)
+
+
+state 2
+
+    (5) const_value_statement -> CONST . TYPE NAME ASSIGN NUM SEMICOLON
+
+    TYPE            shift and go to state 7
+
+
+state 3
+
+    (3) model_type_statement -> DTMC .
+
+    $end            reduce using rule 3 (model_type_statement -> DTMC .)
+
+
+state 4
+
+    (4) model_type_statement -> CTMC .
+
+    $end            reduce using rule 4 (model_type_statement -> CTMC .)
+
+
+state 5
+
+    (0) S' -> statement .
+
+
+
+state 6
+
+    (1) statement -> model_type_statement .
+
+    $end            reduce using rule 1 (statement -> model_type_statement .)
+
+
+state 7
+
+    (5) const_value_statement -> CONST TYPE . NAME ASSIGN NUM SEMICOLON
+
+    NAME            shift and go to state 8
+
+
+state 8
+
+    (5) const_value_statement -> CONST TYPE NAME . ASSIGN NUM SEMICOLON
+
+    ASSIGN          shift and go to state 9
+
+
+state 9
+
+    (5) const_value_statement -> CONST TYPE NAME ASSIGN . NUM SEMICOLON
+
+    NUM             shift and go to state 10
+
+
+state 10
+
+    (5) const_value_statement -> CONST TYPE NAME ASSIGN NUM . SEMICOLON
+
+    SEMICOLON       shift and go to state 11
+
+
+state 11
+
+    (5) const_value_statement -> CONST TYPE NAME ASSIGN NUM SEMICOLON .
+
+    $end            reduce using rule 5 (const_value_statement -> CONST TYPE NAME ASSIGN NUM SEMICOLON .)
+

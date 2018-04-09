@@ -6,9 +6,9 @@ class MyLexer(object):
         'ctmc': 'CTMC',
         'const': 'CONST',
         'global': 'GLOBAL',
-        'int': 'INT',
-        'double': 'DOUBLE',
-        'bool': 'BOOL',
+        'int' : 'TYPE',
+        'double' : 'TYPE',
+        'bool' : 'TYPE',
         'label': 'LABEL',
         'module': 'MODULE',
         'endmodule': 'ENDMODULE',
@@ -26,6 +26,7 @@ class MyLexer(object):
     tokens = [
                  'NAME',
                  'NUM',
+                 'TYPE',
                  'MODELTYPE',
                  'OR', 'AND',
                  'EQ', 'NEQ', 'GTEQ', 'LTEQ', 'GT', 'LT',
@@ -53,6 +54,7 @@ class MyLexer(object):
     t_ignore = ' \t'
     t_NUM = r"[\+\-]?\d+\.?\d*"
     t_MODELTYPE = r"dtmc | ctmc"
+    t_TYPE = 'int | double | bool'
     t_OR = r"\|"
     t_AND = r"&"
     t_EQ = r"=="
