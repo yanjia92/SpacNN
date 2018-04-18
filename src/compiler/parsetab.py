@@ -6,9 +6,9 @@ _tabversion = '3.10'
 
 _lr_method = 'LALR'
 
-_lr_signature = 'ADD AND ASSIGN COLON COMMA CONST CTMC DIV DTMC ENDMODULE EQ EXP FALSE GLOBAL GT GTEQ INIT LABEL LB LOG LP LT LTEQ MAX MIN MINUS MODELTYPE MODULE MUL NAME NEQ NUM OR POW QUOTE RB RP SEMICOLON STDCDF TRUE TYPE TYPE TYPE TYPEstatement : model_type_statement\n                     | const_value_statementmodel_type_statement : DTMC\n                      | CTMCconst_value_statement : CONST TYPE NAME ASSIGN NUM SEMICOLON'
+_lr_signature = 'ADD AND ASSIGN BOOL COLON COMMA CONST CTMC DIV DOUBLE DTMC ENDMODULE EQ EXP FALSE FORMULA GE GLOBAL GT INIT INT LABEL LB LE LOG LP LT MAX MIN MINUS MODELTYPE MODULE MUL NAME NEQ NOT NUM OR POW QUOTE RB RP SEMICOLON STDCDF THEN TRUE TYPEstatement : model_type_statement\n                     | const_value_statement\n                     | module_def_begin_statement\n                     | module_def_end_statement\n                     | module_var_def_statement\n                     | module_command_statement\n                     | formula_statementmodel_type_statement : DTMC\n                      | CTMCmodule_def_begin_statement : MODULE NAMEmodule_def_end_statement : ENDMODULEconst_value_statement : CONST INT NAME ASSIGN NUM SEMICOLON\n                                 | CONST DOUBLE NAME ASSIGN NUM SEMICOLON\n                                 | CONST BOOL NAME ASSIGN NUM SEMICOLONconst_value_statement : CONST INT NAME SEMICOLON\n                             | CONST DOUBLE NAME SEMICOLON\n                             | CONST BOOL NAME SEMICOLONmodule_var_def_statement : NAME COLON LB expr COMMA expr RB INIT NUM SEMICOLONmodule_command_statement : LB RB boolean_expression THEN updates SEMICOLONupdates : updates ADD prob_updateupdates : prob_updateprob_update : expr COLON actionsactions : assignment AND assignmentactions : assignmentassignment : NAME ASSIGN exprassignment : LP NAME ASSIGN expr RPexpr : expr ADD term\n                | expr MINUS termexpr : NAME LP expr RPexpr : term\n                | boolean_expressionterm : term MUL factor\n                | term DIV factorterm : factorfactor : NUMfactor : NAME LP expr RPfactor : NAMEboolean_expression : boolean_expression AND boolean_expression_unit\n                              | boolean_expression OR boolean_expression_unit\n                              | boolean_expression_unitboolean_expression_unit : NAME GT NUM\n                                   | NAME LT NUM\n                                   | NAME GE NUM\n                                   | NAME LE NUM\n                                   | NAME EQ NUM\n                                   | NAME NEQ NUMboolean_expression_unit : NAME GT expr\n                                   | NAME LT expr\n                                   | NAME GE expr\n                                   | NAME LE expr\n                                   | NAME EQ expr\n                                   | NAME NEQ exprformula_statement : FORMULA NAME ASSIGN expr SEMICOLON'
     
-_lr_action_items = {'CONST':([0,],[2,]),'NAME':([7,],[8,]),'SEMICOLON':([10,],[11,]),'DTMC':([0,],[3,]),'CTMC':([0,],[4,]),'NUM':([9,],[10,]),'TYPE':([2,],[7,]),'ASSIGN':([8,],[9,]),'$end':([1,3,4,5,6,11,],[-2,-3,-4,0,-1,-5,]),}
+_lr_action_items = {'THEN':([29,30,38,39,40,41,42,63,64,65,66,67,68,69,70,71,72,73,74,75,79,84,85,86,88,89,95,107,],[51,-40,-35,-34,-30,-37,-31,-50,-35,-47,-35,-49,-35,-48,-35,-51,-35,-52,-35,-38,-39,-37,-32,-33,-28,-27,-29,-36,]),'CONST':([0,],[1,]),'DTMC':([0,],[2,]),'CTMC':([0,],[3,]),'MUL':([38,39,40,41,64,66,68,70,72,74,84,85,86,88,89,95,107,],[-35,-34,57,-37,-35,-35,-35,-35,-35,-35,-37,-32,-33,57,57,-36,-36,]),'FORMULA':([0,],[5,]),'DIV':([38,39,40,41,64,66,68,70,72,74,84,85,86,88,89,95,107,],[-35,-34,58,-37,-35,-35,-35,-35,-35,-35,-37,-32,-33,58,58,-36,-36,]),'MINUS':([30,38,39,40,41,42,43,53,63,64,65,66,67,68,69,70,71,72,73,74,75,78,79,84,85,86,87,88,89,93,95,102,107,108,112,],[-40,-35,-34,-30,-37,-31,61,61,61,-35,61,-35,61,-35,61,-35,61,-35,61,-35,-38,61,-39,-37,-32,-33,61,-28,-27,61,-29,61,-36,61,61,]),'NEQ':([28,41,],[49,49,]),'LE':([28,41,],[44,44,]),'LB':([0,23,],[7,31,]),'SEMICOLON':([24,25,26,30,38,39,40,41,42,43,54,55,56,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,79,84,85,86,88,89,95,96,98,100,107,108,110,111,114,],[32,34,36,-40,-35,-34,-30,-37,-31,60,81,82,83,-50,-35,-47,-35,-49,-35,-48,-35,-51,-35,-52,-35,-38,-21,90,-39,-37,-32,-33,-28,-27,-29,-20,-22,-24,-36,-25,-23,113,-26,]),'INIT':([101,],[106,]),'LT':([28,41,],[47,47,]),'NUM':([27,31,33,35,37,44,45,46,47,48,49,51,57,58,59,61,62,80,91,94,103,106,109,],[38,38,54,55,56,64,66,68,70,72,74,38,38,38,38,38,38,38,38,38,38,111,38,]),'COLON':([15,30,38,39,40,41,42,63,64,65,66,67,68,69,70,71,72,73,74,75,78,79,84,85,86,88,89,95,107,],[23,-40,-35,-34,-30,-37,-31,-50,-35,-47,-35,-49,-35,-48,-35,-51,-35,-52,-35,-38,92,-39,-37,-32,-33,-28,-27,-29,-36,]),'RB':([7,30,38,39,40,41,42,63,64,65,66,67,68,69,70,71,72,73,74,75,79,84,85,86,88,89,93,95,107,],[21,-40,-35,-34,-30,-37,-31,-50,-35,-47,-35,-49,-35,-48,-35,-51,-35,-52,-35,-38,-39,-37,-32,-33,-28,-27,101,-29,-36,]),'COMMA':([30,38,39,40,41,42,53,63,64,65,66,67,68,69,70,71,72,73,74,75,79,84,85,86,88,89,95,107,],[-40,-35,-34,-30,-37,-31,80,-50,-35,-47,-35,-49,-35,-48,-35,-51,-35,-52,-35,-38,-39,-37,-32,-33,-28,-27,-29,-36,]),'ASSIGN':([20,24,25,26,97,104,],[27,33,35,37,103,109,]),'$end':([2,3,4,6,8,9,10,11,13,14,16,22,32,34,36,60,81,82,83,90,113,],[-8,-9,-6,-4,0,-3,-11,-5,-2,-1,-7,-10,-15,-16,-17,-53,-12,-13,-14,-19,-18,]),'GT':([28,41,],[45,45,]),'ENDMODULE':([0,],[10,]),'MODULE':([0,],[12,]),'GE':([28,41,],[46,46,]),'RP':([30,38,39,40,41,42,63,64,65,66,67,68,69,70,71,72,73,74,75,79,84,85,86,87,88,89,95,102,107,112,],[-40,-35,-34,-30,-37,-31,-50,-35,-47,-35,-49,-35,-48,-35,-51,-35,-52,-35,-38,-39,-37,-32,-33,95,-28,-27,-29,107,-36,114,]),'EQ':([28,41,],[48,48,]),'AND':([29,30,38,39,40,41,42,63,64,65,66,67,68,69,70,71,72,73,74,75,79,84,85,86,88,89,95,100,107,108,114,],[50,-40,-35,-34,-30,-37,50,-50,-35,-47,-35,-49,-35,-48,-35,-51,-35,-52,-35,-38,-39,-37,-32,-33,-28,-27,-29,105,-36,-25,-26,]),'NAME':([0,5,12,17,18,19,21,27,31,44,45,46,47,48,49,50,51,52,57,58,59,61,62,80,91,92,94,99,103,105,109,],[15,20,22,24,25,26,28,41,41,41,41,41,41,41,41,28,41,28,84,84,41,84,84,41,41,97,41,104,41,97,41,]),'LP':([41,84,92,105,],[59,94,99,99,]),'INT':([1,],[17,]),'DOUBLE':([1,],[18,]),'ADD':([30,38,39,40,41,42,43,53,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,84,85,86,87,88,89,93,95,96,98,100,102,107,108,110,112,114,],[-40,-35,-34,-30,-37,-31,62,62,62,-35,62,-35,62,-35,62,-35,62,-35,62,-35,-38,-21,91,62,-39,-37,-32,-33,62,-28,-27,62,-29,-20,-22,-24,62,-36,62,-23,62,-26,]),'BOOL':([1,],[19,]),'OR':([29,30,38,39,40,41,42,63,64,65,66,67,68,69,70,71,72,73,74,75,79,84,85,86,88,89,95,107,],[52,-40,-35,-34,-30,-37,52,-50,-35,-47,-35,-49,-35,-48,-35,-51,-35,-52,-35,-38,-39,-37,-32,-33,-28,-27,-29,-36,]),}
 
 _lr_action = {}
 for _k, _v in _lr_action_items.items():
@@ -17,7 +17,7 @@ for _k, _v in _lr_action_items.items():
       _lr_action[_x][_k] = _y
 del _lr_action_items
 
-_lr_goto_items = {'const_value_statement':([0,],[1,]),'model_type_statement':([0,],[6,]),'statement':([0,],[5,]),}
+_lr_goto_items = {'const_value_statement':([0,],[13,]),'module_def_end_statement':([0,],[6,]),'term':([27,31,44,45,46,47,48,49,51,59,61,62,80,91,94,103,109,],[40,40,40,40,40,40,40,40,40,40,88,89,40,40,40,40,40,]),'model_type_statement':([0,],[14,]),'boolean_expression':([21,27,31,44,45,46,47,48,49,51,59,80,91,94,103,109,],[29,42,42,42,42,42,42,42,42,42,42,42,42,42,42,42,]),'module_command_statement':([0,],[4,]),'factor':([27,31,44,45,46,47,48,49,51,57,58,59,61,62,80,91,94,103,109,],[39,39,39,39,39,39,39,39,39,85,86,39,39,39,39,39,39,39,39,]),'module_var_def_statement':([0,],[11,]),'boolean_expression_unit':([21,27,31,44,45,46,47,48,49,50,51,52,59,80,91,94,103,109,],[30,30,30,30,30,30,30,30,30,75,30,79,30,30,30,30,30,30,]),'assignment':([92,105,],[100,110,]),'prob_update':([51,91,],[76,96,]),'updates':([51,],[77,]),'statement':([0,],[8,]),'expr':([27,31,44,45,46,47,48,49,51,59,80,91,94,103,109,],[43,53,63,65,67,69,71,73,78,87,93,78,102,108,112,]),'actions':([92,],[98,]),'formula_statement':([0,],[16,]),'module_def_begin_statement':([0,],[9,]),}
 
 _lr_goto = {}
 for _k, _v in _lr_goto_items.items():
@@ -27,9 +27,57 @@ for _k, _v in _lr_goto_items.items():
 del _lr_goto_items
 _lr_productions = [
   ("S' -> statement","S'",1,None,None,None),
-  ('statement -> model_type_statement','statement',1,'p_statement','PRISMParser.py',9),
-  ('statement -> const_value_statement','statement',1,'p_statement','PRISMParser.py',10),
-  ('model_type_statement -> DTMC','model_type_statement',1,'p_model_type','PRISMParser.py',13),
-  ('model_type_statement -> CTMC','model_type_statement',1,'p_model_type','PRISMParser.py',14),
-  ('const_value_statement -> CONST TYPE NAME ASSIGN NUM SEMICOLON','const_value_statement',6,'p_const_expression','PRISMParser.py',24),
+  ('statement -> model_type_statement','statement',1,'p_statement','PRISMParser.py',84),
+  ('statement -> const_value_statement','statement',1,'p_statement','PRISMParser.py',85),
+  ('statement -> module_def_begin_statement','statement',1,'p_statement','PRISMParser.py',86),
+  ('statement -> module_def_end_statement','statement',1,'p_statement','PRISMParser.py',87),
+  ('statement -> module_var_def_statement','statement',1,'p_statement','PRISMParser.py',88),
+  ('statement -> module_command_statement','statement',1,'p_statement','PRISMParser.py',89),
+  ('statement -> formula_statement','statement',1,'p_statement','PRISMParser.py',90),
+  ('model_type_statement -> DTMC','model_type_statement',1,'p_model_type','PRISMParser.py',94),
+  ('model_type_statement -> CTMC','model_type_statement',1,'p_model_type','PRISMParser.py',95),
+  ('module_def_begin_statement -> MODULE NAME','module_def_begin_statement',2,'p_module_def_begin_statement','PRISMParser.py',102),
+  ('module_def_end_statement -> ENDMODULE','module_def_end_statement',1,'p_module_def_end_statement','PRISMParser.py',107),
+  ('const_value_statement -> CONST INT NAME ASSIGN NUM SEMICOLON','const_value_statement',6,'p_const_expression','PRISMParser.py',113),
+  ('const_value_statement -> CONST DOUBLE NAME ASSIGN NUM SEMICOLON','const_value_statement',6,'p_const_expression','PRISMParser.py',114),
+  ('const_value_statement -> CONST BOOL NAME ASSIGN NUM SEMICOLON','const_value_statement',6,'p_const_expression','PRISMParser.py',115),
+  ('const_value_statement -> CONST INT NAME SEMICOLON','const_value_statement',4,'p_const_expression1','PRISMParser.py',124),
+  ('const_value_statement -> CONST DOUBLE NAME SEMICOLON','const_value_statement',4,'p_const_expression1','PRISMParser.py',125),
+  ('const_value_statement -> CONST BOOL NAME SEMICOLON','const_value_statement',4,'p_const_expression1','PRISMParser.py',126),
+  ('module_var_def_statement -> NAME COLON LB expr COMMA expr RB INIT NUM SEMICOLON','module_var_def_statement',10,'p_module_var_def_statement','PRISMParser.py',133),
+  ('module_command_statement -> LB RB boolean_expression THEN updates SEMICOLON','module_command_statement',6,'p_module_command_statement','PRISMParser.py',146),
+  ('updates -> updates ADD prob_update','updates',3,'p_updates','PRISMParser.py',150),
+  ('updates -> prob_update','updates',1,'p_updates2','PRISMParser.py',154),
+  ('prob_update -> expr COLON actions','prob_update',3,'p_update','PRISMParser.py',158),
+  ('actions -> assignment AND assignment','actions',3,'p_actions','PRISMParser.py',167),
+  ('actions -> assignment','actions',1,'p_actions2','PRISMParser.py',178),
+  ('assignment -> NAME ASSIGN expr','assignment',3,'p_assignment','PRISMParser.py',182),
+  ('assignment -> LP NAME ASSIGN expr RP','assignment',5,'p_assignment1','PRISMParser.py',195),
+  ('expr -> expr ADD term','expr',3,'p_expr','PRISMParser.py',208),
+  ('expr -> expr MINUS term','expr',3,'p_expr','PRISMParser.py',209),
+  ('expr -> NAME LP expr RP','expr',4,'p_expr1','PRISMParser.py',219),
+  ('expr -> term','expr',1,'p_expr2','PRISMParser.py',232),
+  ('expr -> boolean_expression','expr',1,'p_expr2','PRISMParser.py',233),
+  ('term -> term MUL factor','term',3,'p_term','PRISMParser.py',237),
+  ('term -> term DIV factor','term',3,'p_term','PRISMParser.py',238),
+  ('term -> factor','term',1,'p_term1','PRISMParser.py',248),
+  ('factor -> NUM','factor',1,'p_factor','PRISMParser.py',252),
+  ('factor -> NAME LP expr RP','factor',4,'p_factor1','PRISMParser.py',258),
+  ('factor -> NAME','factor',1,'p_factor2','PRISMParser.py',266),
+  ('boolean_expression -> boolean_expression AND boolean_expression_unit','boolean_expression',3,'p_boolean_expression','PRISMParser.py',282),
+  ('boolean_expression -> boolean_expression OR boolean_expression_unit','boolean_expression',3,'p_boolean_expression','PRISMParser.py',283),
+  ('boolean_expression -> boolean_expression_unit','boolean_expression',1,'p_boolean_expression','PRISMParser.py',284),
+  ('boolean_expression_unit -> NAME GT NUM','boolean_expression_unit',3,'p_boolean_expression_unit','PRISMParser.py',299),
+  ('boolean_expression_unit -> NAME LT NUM','boolean_expression_unit',3,'p_boolean_expression_unit','PRISMParser.py',300),
+  ('boolean_expression_unit -> NAME GE NUM','boolean_expression_unit',3,'p_boolean_expression_unit','PRISMParser.py',301),
+  ('boolean_expression_unit -> NAME LE NUM','boolean_expression_unit',3,'p_boolean_expression_unit','PRISMParser.py',302),
+  ('boolean_expression_unit -> NAME EQ NUM','boolean_expression_unit',3,'p_boolean_expression_unit','PRISMParser.py',303),
+  ('boolean_expression_unit -> NAME NEQ NUM','boolean_expression_unit',3,'p_boolean_expression_unit','PRISMParser.py',304),
+  ('boolean_expression_unit -> NAME GT expr','boolean_expression_unit',3,'p_boolean_expression_unit1','PRISMParser.py',325),
+  ('boolean_expression_unit -> NAME LT expr','boolean_expression_unit',3,'p_boolean_expression_unit1','PRISMParser.py',326),
+  ('boolean_expression_unit -> NAME GE expr','boolean_expression_unit',3,'p_boolean_expression_unit1','PRISMParser.py',327),
+  ('boolean_expression_unit -> NAME LE expr','boolean_expression_unit',3,'p_boolean_expression_unit1','PRISMParser.py',328),
+  ('boolean_expression_unit -> NAME EQ expr','boolean_expression_unit',3,'p_boolean_expression_unit1','PRISMParser.py',329),
+  ('boolean_expression_unit -> NAME NEQ expr','boolean_expression_unit',3,'p_boolean_expression_unit1','PRISMParser.py',330),
+  ('formula_statement -> FORMULA NAME ASSIGN expr SEMICOLON','formula_statement',5,'p_formula','PRISMParser.py',351),
 ]

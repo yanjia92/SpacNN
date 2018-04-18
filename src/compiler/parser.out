@@ -3,98 +3,147 @@ Created by PLY version 3.11 (http://www.dabeaz.com/ply)
 Unused terminals:
 
     LOG
-    GTEQ
+    MIN
     GLOBAL
     MODELTYPE
     LABEL
+    QUOTE
     EXP
-    MUL
-    DIV
     TRUE
-    MINUS
-    NEQ
-    LB
     POW
-    MIN
-    LT
-    INIT
-    COMMA
-    LP
-    COLON
-    GT
-    ENDMODULE
-    MODULE
-    ADD
     STDCDF
-    RP
-    EQ
-    AND
-    RB
     FALSE
     MAX
-    LTEQ
-    QUOTE
-    OR
+    NOT
+    TYPE
 
 Grammar
 
 Rule 0     S' -> statement
 Rule 1     statement -> model_type_statement
 Rule 2     statement -> const_value_statement
-Rule 3     model_type_statement -> DTMC
-Rule 4     model_type_statement -> CTMC
-Rule 5     const_value_statement -> CONST TYPE NAME ASSIGN NUM SEMICOLON
+Rule 3     statement -> module_def_begin_statement
+Rule 4     statement -> module_def_end_statement
+Rule 5     statement -> module_var_def_statement
+Rule 6     statement -> module_command_statement
+Rule 7     statement -> formula_statement
+Rule 8     model_type_statement -> DTMC
+Rule 9     model_type_statement -> CTMC
+Rule 10    module_def_begin_statement -> MODULE NAME
+Rule 11    module_def_end_statement -> ENDMODULE
+Rule 12    const_value_statement -> CONST INT NAME ASSIGN NUM SEMICOLON
+Rule 13    const_value_statement -> CONST DOUBLE NAME ASSIGN NUM SEMICOLON
+Rule 14    const_value_statement -> CONST BOOL NAME ASSIGN NUM SEMICOLON
+Rule 15    const_value_statement -> CONST INT NAME SEMICOLON
+Rule 16    const_value_statement -> CONST DOUBLE NAME SEMICOLON
+Rule 17    const_value_statement -> CONST BOOL NAME SEMICOLON
+Rule 18    module_var_def_statement -> NAME COLON LB expr COMMA expr RB INIT NUM SEMICOLON
+Rule 19    module_command_statement -> LB RB boolean_expression THEN updates SEMICOLON
+Rule 20    updates -> updates ADD prob_update
+Rule 21    updates -> prob_update
+Rule 22    prob_update -> expr COLON actions
+Rule 23    actions -> assignment AND assignment
+Rule 24    actions -> assignment
+Rule 25    assignment -> NAME ASSIGN expr
+Rule 26    assignment -> LP NAME ASSIGN expr RP
+Rule 27    expr -> expr ADD term
+Rule 28    expr -> expr MINUS term
+Rule 29    expr -> NAME LP expr RP
+Rule 30    expr -> term
+Rule 31    expr -> boolean_expression
+Rule 32    term -> term MUL factor
+Rule 33    term -> term DIV factor
+Rule 34    term -> factor
+Rule 35    factor -> NUM
+Rule 36    factor -> NAME LP expr RP
+Rule 37    factor -> NAME
+Rule 38    boolean_expression -> boolean_expression AND boolean_expression_unit
+Rule 39    boolean_expression -> boolean_expression OR boolean_expression_unit
+Rule 40    boolean_expression -> boolean_expression_unit
+Rule 41    boolean_expression_unit -> NAME GT NUM
+Rule 42    boolean_expression_unit -> NAME LT NUM
+Rule 43    boolean_expression_unit -> NAME GE NUM
+Rule 44    boolean_expression_unit -> NAME LE NUM
+Rule 45    boolean_expression_unit -> NAME EQ NUM
+Rule 46    boolean_expression_unit -> NAME NEQ NUM
+Rule 47    boolean_expression_unit -> NAME GT expr
+Rule 48    boolean_expression_unit -> NAME LT expr
+Rule 49    boolean_expression_unit -> NAME GE expr
+Rule 50    boolean_expression_unit -> NAME LE expr
+Rule 51    boolean_expression_unit -> NAME EQ expr
+Rule 52    boolean_expression_unit -> NAME NEQ expr
+Rule 53    formula_statement -> FORMULA NAME ASSIGN expr SEMICOLON
 
 Terminals, with rules where they appear
 
-ADD                  : 
-AND                  : 
-ASSIGN               : 5
-COLON                : 
-COMMA                : 
-CONST                : 5
-CTMC                 : 4
-DIV                  : 
-DTMC                 : 3
-ENDMODULE            : 
-EQ                   : 
+ADD                  : 20 27
+AND                  : 23 38
+ASSIGN               : 12 13 14 25 26 53
+BOOL                 : 14 17
+COLON                : 18 22
+COMMA                : 18
+CONST                : 12 13 14 15 16 17
+CTMC                 : 9
+DIV                  : 33
+DOUBLE               : 13 16
+DTMC                 : 8
+ENDMODULE            : 11
+EQ                   : 45 51
 EXP                  : 
 FALSE                : 
+FORMULA              : 53
+GE                   : 43 49
 GLOBAL               : 
-GT                   : 
-GTEQ                 : 
-INIT                 : 
+GT                   : 41 47
+INIT                 : 18
+INT                  : 12 15
 LABEL                : 
-LB                   : 
+LB                   : 18 19
+LE                   : 44 50
 LOG                  : 
-LP                   : 
-LT                   : 
-LTEQ                 : 
+LP                   : 26 29 36
+LT                   : 42 48
 MAX                  : 
 MIN                  : 
-MINUS                : 
+MINUS                : 28
 MODELTYPE            : 
-MODULE               : 
-MUL                  : 
-NAME                 : 5
-NEQ                  : 
-NUM                  : 5
-OR                   : 
+MODULE               : 10
+MUL                  : 32
+NAME                 : 10 12 13 14 15 16 17 18 25 26 29 36 37 41 42 43 44 45 46 47 48 49 50 51 52 53
+NEQ                  : 46 52
+NOT                  : 
+NUM                  : 12 13 14 18 35 41 42 43 44 45 46
+OR                   : 39
 POW                  : 
 QUOTE                : 
-RB                   : 
-RP                   : 
-SEMICOLON            : 5
+RB                   : 18 19
+RP                   : 26 29 36
+SEMICOLON            : 12 13 14 15 16 17 18 19 53
 STDCDF               : 
+THEN                 : 19
 TRUE                 : 
-TYPE                 : 5
+TYPE                 : 
 error                : 
 
 Nonterminals, with rules where they appear
 
+actions              : 22
+assignment           : 23 23 24
+boolean_expression   : 19 31 38 39
+boolean_expression_unit : 38 39 40
 const_value_statement : 2
+expr                 : 18 18 22 25 26 27 28 29 36 47 48 49 50 51 52 53
+factor               : 32 33 34
+formula_statement    : 7
 model_type_statement : 1
+module_command_statement : 6
+module_def_begin_statement : 3
+module_def_end_statement : 4
+module_var_def_statement : 5
+prob_update          : 20 21
 statement            : 0
+term                 : 27 28 30 32 33
+updates              : 19 20
 
 Parsing method: LALR
 
@@ -103,90 +152,2043 @@ state 0
     (0) S' -> . statement
     (1) statement -> . model_type_statement
     (2) statement -> . const_value_statement
-    (3) model_type_statement -> . DTMC
-    (4) model_type_statement -> . CTMC
-    (5) const_value_statement -> . CONST TYPE NAME ASSIGN NUM SEMICOLON
+    (3) statement -> . module_def_begin_statement
+    (4) statement -> . module_def_end_statement
+    (5) statement -> . module_var_def_statement
+    (6) statement -> . module_command_statement
+    (7) statement -> . formula_statement
+    (8) model_type_statement -> . DTMC
+    (9) model_type_statement -> . CTMC
+    (12) const_value_statement -> . CONST INT NAME ASSIGN NUM SEMICOLON
+    (13) const_value_statement -> . CONST DOUBLE NAME ASSIGN NUM SEMICOLON
+    (14) const_value_statement -> . CONST BOOL NAME ASSIGN NUM SEMICOLON
+    (15) const_value_statement -> . CONST INT NAME SEMICOLON
+    (16) const_value_statement -> . CONST DOUBLE NAME SEMICOLON
+    (17) const_value_statement -> . CONST BOOL NAME SEMICOLON
+    (10) module_def_begin_statement -> . MODULE NAME
+    (11) module_def_end_statement -> . ENDMODULE
+    (18) module_var_def_statement -> . NAME COLON LB expr COMMA expr RB INIT NUM SEMICOLON
+    (19) module_command_statement -> . LB RB boolean_expression THEN updates SEMICOLON
+    (53) formula_statement -> . FORMULA NAME ASSIGN expr SEMICOLON
 
-    DTMC            shift and go to state 3
-    CTMC            shift and go to state 4
-    CONST           shift and go to state 2
+    DTMC            shift and go to state 2
+    CTMC            shift and go to state 3
+    CONST           shift and go to state 1
+    MODULE          shift and go to state 12
+    ENDMODULE       shift and go to state 10
+    NAME            shift and go to state 15
+    LB              shift and go to state 7
+    FORMULA         shift and go to state 5
 
-    const_value_statement          shift and go to state 1
-    model_type_statement           shift and go to state 6
-    statement                      shift and go to state 5
+    const_value_statement          shift and go to state 13
+    module_def_end_statement       shift and go to state 6
+    model_type_statement           shift and go to state 14
+    module_command_statement       shift and go to state 4
+    module_var_def_statement       shift and go to state 11
+    statement                      shift and go to state 8
+    formula_statement              shift and go to state 16
+    module_def_begin_statement     shift and go to state 9
 
 state 1
+
+    (12) const_value_statement -> CONST . INT NAME ASSIGN NUM SEMICOLON
+    (13) const_value_statement -> CONST . DOUBLE NAME ASSIGN NUM SEMICOLON
+    (14) const_value_statement -> CONST . BOOL NAME ASSIGN NUM SEMICOLON
+    (15) const_value_statement -> CONST . INT NAME SEMICOLON
+    (16) const_value_statement -> CONST . DOUBLE NAME SEMICOLON
+    (17) const_value_statement -> CONST . BOOL NAME SEMICOLON
+
+    INT             shift and go to state 17
+    DOUBLE          shift and go to state 18
+    BOOL            shift and go to state 19
+
+
+state 2
+
+    (8) model_type_statement -> DTMC .
+
+    $end            reduce using rule 8 (model_type_statement -> DTMC .)
+
+
+state 3
+
+    (9) model_type_statement -> CTMC .
+
+    $end            reduce using rule 9 (model_type_statement -> CTMC .)
+
+
+state 4
+
+    (6) statement -> module_command_statement .
+
+    $end            reduce using rule 6 (statement -> module_command_statement .)
+
+
+state 5
+
+    (53) formula_statement -> FORMULA . NAME ASSIGN expr SEMICOLON
+
+    NAME            shift and go to state 20
+
+
+state 6
+
+    (4) statement -> module_def_end_statement .
+
+    $end            reduce using rule 4 (statement -> module_def_end_statement .)
+
+
+state 7
+
+    (19) module_command_statement -> LB . RB boolean_expression THEN updates SEMICOLON
+
+    RB              shift and go to state 21
+
+
+state 8
+
+    (0) S' -> statement .
+
+
+
+state 9
+
+    (3) statement -> module_def_begin_statement .
+
+    $end            reduce using rule 3 (statement -> module_def_begin_statement .)
+
+
+state 10
+
+    (11) module_def_end_statement -> ENDMODULE .
+
+    $end            reduce using rule 11 (module_def_end_statement -> ENDMODULE .)
+
+
+state 11
+
+    (5) statement -> module_var_def_statement .
+
+    $end            reduce using rule 5 (statement -> module_var_def_statement .)
+
+
+state 12
+
+    (10) module_def_begin_statement -> MODULE . NAME
+
+    NAME            shift and go to state 22
+
+
+state 13
 
     (2) statement -> const_value_statement .
 
     $end            reduce using rule 2 (statement -> const_value_statement .)
 
 
-state 2
-
-    (5) const_value_statement -> CONST . TYPE NAME ASSIGN NUM SEMICOLON
-
-    TYPE            shift and go to state 7
-
-
-state 3
-
-    (3) model_type_statement -> DTMC .
-
-    $end            reduce using rule 3 (model_type_statement -> DTMC .)
-
-
-state 4
-
-    (4) model_type_statement -> CTMC .
-
-    $end            reduce using rule 4 (model_type_statement -> CTMC .)
-
-
-state 5
-
-    (0) S' -> statement .
-
-
-
-state 6
+state 14
 
     (1) statement -> model_type_statement .
 
     $end            reduce using rule 1 (statement -> model_type_statement .)
 
 
-state 7
+state 15
 
-    (5) const_value_statement -> CONST TYPE . NAME ASSIGN NUM SEMICOLON
+    (18) module_var_def_statement -> NAME . COLON LB expr COMMA expr RB INIT NUM SEMICOLON
 
-    NAME            shift and go to state 8
-
-
-state 8
-
-    (5) const_value_statement -> CONST TYPE NAME . ASSIGN NUM SEMICOLON
-
-    ASSIGN          shift and go to state 9
+    COLON           shift and go to state 23
 
 
-state 9
+state 16
 
-    (5) const_value_statement -> CONST TYPE NAME ASSIGN . NUM SEMICOLON
+    (7) statement -> formula_statement .
 
-    NUM             shift and go to state 10
-
-
-state 10
-
-    (5) const_value_statement -> CONST TYPE NAME ASSIGN NUM . SEMICOLON
-
-    SEMICOLON       shift and go to state 11
+    $end            reduce using rule 7 (statement -> formula_statement .)
 
 
-state 11
+state 17
 
-    (5) const_value_statement -> CONST TYPE NAME ASSIGN NUM SEMICOLON .
+    (12) const_value_statement -> CONST INT . NAME ASSIGN NUM SEMICOLON
+    (15) const_value_statement -> CONST INT . NAME SEMICOLON
 
-    $end            reduce using rule 5 (const_value_statement -> CONST TYPE NAME ASSIGN NUM SEMICOLON .)
+    NAME            shift and go to state 24
 
+
+state 18
+
+    (13) const_value_statement -> CONST DOUBLE . NAME ASSIGN NUM SEMICOLON
+    (16) const_value_statement -> CONST DOUBLE . NAME SEMICOLON
+
+    NAME            shift and go to state 25
+
+
+state 19
+
+    (14) const_value_statement -> CONST BOOL . NAME ASSIGN NUM SEMICOLON
+    (17) const_value_statement -> CONST BOOL . NAME SEMICOLON
+
+    NAME            shift and go to state 26
+
+
+state 20
+
+    (53) formula_statement -> FORMULA NAME . ASSIGN expr SEMICOLON
+
+    ASSIGN          shift and go to state 27
+
+
+state 21
+
+    (19) module_command_statement -> LB RB . boolean_expression THEN updates SEMICOLON
+    (38) boolean_expression -> . boolean_expression AND boolean_expression_unit
+    (39) boolean_expression -> . boolean_expression OR boolean_expression_unit
+    (40) boolean_expression -> . boolean_expression_unit
+    (41) boolean_expression_unit -> . NAME GT NUM
+    (42) boolean_expression_unit -> . NAME LT NUM
+    (43) boolean_expression_unit -> . NAME GE NUM
+    (44) boolean_expression_unit -> . NAME LE NUM
+    (45) boolean_expression_unit -> . NAME EQ NUM
+    (46) boolean_expression_unit -> . NAME NEQ NUM
+    (47) boolean_expression_unit -> . NAME GT expr
+    (48) boolean_expression_unit -> . NAME LT expr
+    (49) boolean_expression_unit -> . NAME GE expr
+    (50) boolean_expression_unit -> . NAME LE expr
+    (51) boolean_expression_unit -> . NAME EQ expr
+    (52) boolean_expression_unit -> . NAME NEQ expr
+
+    NAME            shift and go to state 28
+
+    boolean_expression_unit        shift and go to state 30
+    boolean_expression             shift and go to state 29
+
+state 22
+
+    (10) module_def_begin_statement -> MODULE NAME .
+
+    $end            reduce using rule 10 (module_def_begin_statement -> MODULE NAME .)
+
+
+state 23
+
+    (18) module_var_def_statement -> NAME COLON . LB expr COMMA expr RB INIT NUM SEMICOLON
+
+    LB              shift and go to state 31
+
+
+state 24
+
+    (12) const_value_statement -> CONST INT NAME . ASSIGN NUM SEMICOLON
+    (15) const_value_statement -> CONST INT NAME . SEMICOLON
+
+    ASSIGN          shift and go to state 33
+    SEMICOLON       shift and go to state 32
+
+
+state 25
+
+    (13) const_value_statement -> CONST DOUBLE NAME . ASSIGN NUM SEMICOLON
+    (16) const_value_statement -> CONST DOUBLE NAME . SEMICOLON
+
+    ASSIGN          shift and go to state 35
+    SEMICOLON       shift and go to state 34
+
+
+state 26
+
+    (14) const_value_statement -> CONST BOOL NAME . ASSIGN NUM SEMICOLON
+    (17) const_value_statement -> CONST BOOL NAME . SEMICOLON
+
+    ASSIGN          shift and go to state 37
+    SEMICOLON       shift and go to state 36
+
+
+state 27
+
+    (53) formula_statement -> FORMULA NAME ASSIGN . expr SEMICOLON
+    (27) expr -> . expr ADD term
+    (28) expr -> . expr MINUS term
+    (29) expr -> . NAME LP expr RP
+    (30) expr -> . term
+    (31) expr -> . boolean_expression
+    (32) term -> . term MUL factor
+    (33) term -> . term DIV factor
+    (34) term -> . factor
+    (38) boolean_expression -> . boolean_expression AND boolean_expression_unit
+    (39) boolean_expression -> . boolean_expression OR boolean_expression_unit
+    (40) boolean_expression -> . boolean_expression_unit
+    (35) factor -> . NUM
+    (36) factor -> . NAME LP expr RP
+    (37) factor -> . NAME
+    (41) boolean_expression_unit -> . NAME GT NUM
+    (42) boolean_expression_unit -> . NAME LT NUM
+    (43) boolean_expression_unit -> . NAME GE NUM
+    (44) boolean_expression_unit -> . NAME LE NUM
+    (45) boolean_expression_unit -> . NAME EQ NUM
+    (46) boolean_expression_unit -> . NAME NEQ NUM
+    (47) boolean_expression_unit -> . NAME GT expr
+    (48) boolean_expression_unit -> . NAME LT expr
+    (49) boolean_expression_unit -> . NAME GE expr
+    (50) boolean_expression_unit -> . NAME LE expr
+    (51) boolean_expression_unit -> . NAME EQ expr
+    (52) boolean_expression_unit -> . NAME NEQ expr
+
+    NAME            shift and go to state 41
+    NUM             shift and go to state 38
+
+    expr                           shift and go to state 43
+    term                           shift and go to state 40
+    factor                         shift and go to state 39
+    boolean_expression_unit        shift and go to state 30
+    boolean_expression             shift and go to state 42
+
+state 28
+
+    (41) boolean_expression_unit -> NAME . GT NUM
+    (42) boolean_expression_unit -> NAME . LT NUM
+    (43) boolean_expression_unit -> NAME . GE NUM
+    (44) boolean_expression_unit -> NAME . LE NUM
+    (45) boolean_expression_unit -> NAME . EQ NUM
+    (46) boolean_expression_unit -> NAME . NEQ NUM
+    (47) boolean_expression_unit -> NAME . GT expr
+    (48) boolean_expression_unit -> NAME . LT expr
+    (49) boolean_expression_unit -> NAME . GE expr
+    (50) boolean_expression_unit -> NAME . LE expr
+    (51) boolean_expression_unit -> NAME . EQ expr
+    (52) boolean_expression_unit -> NAME . NEQ expr
+
+    GT              shift and go to state 45
+    LT              shift and go to state 47
+    GE              shift and go to state 46
+    LE              shift and go to state 44
+    EQ              shift and go to state 48
+    NEQ             shift and go to state 49
+
+
+state 29
+
+    (19) module_command_statement -> LB RB boolean_expression . THEN updates SEMICOLON
+    (38) boolean_expression -> boolean_expression . AND boolean_expression_unit
+    (39) boolean_expression -> boolean_expression . OR boolean_expression_unit
+
+    THEN            shift and go to state 51
+    AND             shift and go to state 50
+    OR              shift and go to state 52
+
+
+state 30
+
+    (40) boolean_expression -> boolean_expression_unit .
+
+    ADD             reduce using rule 40 (boolean_expression -> boolean_expression_unit .)
+    MINUS           reduce using rule 40 (boolean_expression -> boolean_expression_unit .)
+    THEN            reduce using rule 40 (boolean_expression -> boolean_expression_unit .)
+    AND             reduce using rule 40 (boolean_expression -> boolean_expression_unit .)
+    OR              reduce using rule 40 (boolean_expression -> boolean_expression_unit .)
+    SEMICOLON       reduce using rule 40 (boolean_expression -> boolean_expression_unit .)
+    COMMA           reduce using rule 40 (boolean_expression -> boolean_expression_unit .)
+    COLON           reduce using rule 40 (boolean_expression -> boolean_expression_unit .)
+    RP              reduce using rule 40 (boolean_expression -> boolean_expression_unit .)
+    RB              reduce using rule 40 (boolean_expression -> boolean_expression_unit .)
+
+
+state 31
+
+    (18) module_var_def_statement -> NAME COLON LB . expr COMMA expr RB INIT NUM SEMICOLON
+    (27) expr -> . expr ADD term
+    (28) expr -> . expr MINUS term
+    (29) expr -> . NAME LP expr RP
+    (30) expr -> . term
+    (31) expr -> . boolean_expression
+    (32) term -> . term MUL factor
+    (33) term -> . term DIV factor
+    (34) term -> . factor
+    (38) boolean_expression -> . boolean_expression AND boolean_expression_unit
+    (39) boolean_expression -> . boolean_expression OR boolean_expression_unit
+    (40) boolean_expression -> . boolean_expression_unit
+    (35) factor -> . NUM
+    (36) factor -> . NAME LP expr RP
+    (37) factor -> . NAME
+    (41) boolean_expression_unit -> . NAME GT NUM
+    (42) boolean_expression_unit -> . NAME LT NUM
+    (43) boolean_expression_unit -> . NAME GE NUM
+    (44) boolean_expression_unit -> . NAME LE NUM
+    (45) boolean_expression_unit -> . NAME EQ NUM
+    (46) boolean_expression_unit -> . NAME NEQ NUM
+    (47) boolean_expression_unit -> . NAME GT expr
+    (48) boolean_expression_unit -> . NAME LT expr
+    (49) boolean_expression_unit -> . NAME GE expr
+    (50) boolean_expression_unit -> . NAME LE expr
+    (51) boolean_expression_unit -> . NAME EQ expr
+    (52) boolean_expression_unit -> . NAME NEQ expr
+
+    NAME            shift and go to state 41
+    NUM             shift and go to state 38
+
+    expr                           shift and go to state 53
+    term                           shift and go to state 40
+    factor                         shift and go to state 39
+    boolean_expression_unit        shift and go to state 30
+    boolean_expression             shift and go to state 42
+
+state 32
+
+    (15) const_value_statement -> CONST INT NAME SEMICOLON .
+
+    $end            reduce using rule 15 (const_value_statement -> CONST INT NAME SEMICOLON .)
+
+
+state 33
+
+    (12) const_value_statement -> CONST INT NAME ASSIGN . NUM SEMICOLON
+
+    NUM             shift and go to state 54
+
+
+state 34
+
+    (16) const_value_statement -> CONST DOUBLE NAME SEMICOLON .
+
+    $end            reduce using rule 16 (const_value_statement -> CONST DOUBLE NAME SEMICOLON .)
+
+
+state 35
+
+    (13) const_value_statement -> CONST DOUBLE NAME ASSIGN . NUM SEMICOLON
+
+    NUM             shift and go to state 55
+
+
+state 36
+
+    (17) const_value_statement -> CONST BOOL NAME SEMICOLON .
+
+    $end            reduce using rule 17 (const_value_statement -> CONST BOOL NAME SEMICOLON .)
+
+
+state 37
+
+    (14) const_value_statement -> CONST BOOL NAME ASSIGN . NUM SEMICOLON
+
+    NUM             shift and go to state 56
+
+
+state 38
+
+    (35) factor -> NUM .
+
+    MUL             reduce using rule 35 (factor -> NUM .)
+    DIV             reduce using rule 35 (factor -> NUM .)
+    SEMICOLON       reduce using rule 35 (factor -> NUM .)
+    ADD             reduce using rule 35 (factor -> NUM .)
+    MINUS           reduce using rule 35 (factor -> NUM .)
+    COLON           reduce using rule 35 (factor -> NUM .)
+    RP              reduce using rule 35 (factor -> NUM .)
+    AND             reduce using rule 35 (factor -> NUM .)
+    COMMA           reduce using rule 35 (factor -> NUM .)
+    THEN            reduce using rule 35 (factor -> NUM .)
+    OR              reduce using rule 35 (factor -> NUM .)
+    RB              reduce using rule 35 (factor -> NUM .)
+
+
+state 39
+
+    (34) term -> factor .
+
+    MUL             reduce using rule 34 (term -> factor .)
+    DIV             reduce using rule 34 (term -> factor .)
+    ADD             reduce using rule 34 (term -> factor .)
+    MINUS           reduce using rule 34 (term -> factor .)
+    THEN            reduce using rule 34 (term -> factor .)
+    AND             reduce using rule 34 (term -> factor .)
+    OR              reduce using rule 34 (term -> factor .)
+    SEMICOLON       reduce using rule 34 (term -> factor .)
+    COMMA           reduce using rule 34 (term -> factor .)
+    COLON           reduce using rule 34 (term -> factor .)
+    RP              reduce using rule 34 (term -> factor .)
+    RB              reduce using rule 34 (term -> factor .)
+
+
+state 40
+
+    (30) expr -> term .
+    (32) term -> term . MUL factor
+    (33) term -> term . DIV factor
+
+    RP              reduce using rule 30 (expr -> term .)
+    ADD             reduce using rule 30 (expr -> term .)
+    MINUS           reduce using rule 30 (expr -> term .)
+    THEN            reduce using rule 30 (expr -> term .)
+    AND             reduce using rule 30 (expr -> term .)
+    OR              reduce using rule 30 (expr -> term .)
+    SEMICOLON       reduce using rule 30 (expr -> term .)
+    COMMA           reduce using rule 30 (expr -> term .)
+    COLON           reduce using rule 30 (expr -> term .)
+    RB              reduce using rule 30 (expr -> term .)
+    MUL             shift and go to state 57
+    DIV             shift and go to state 58
+
+
+state 41
+
+    (29) expr -> NAME . LP expr RP
+    (36) factor -> NAME . LP expr RP
+    (37) factor -> NAME .
+    (41) boolean_expression_unit -> NAME . GT NUM
+    (42) boolean_expression_unit -> NAME . LT NUM
+    (43) boolean_expression_unit -> NAME . GE NUM
+    (44) boolean_expression_unit -> NAME . LE NUM
+    (45) boolean_expression_unit -> NAME . EQ NUM
+    (46) boolean_expression_unit -> NAME . NEQ NUM
+    (47) boolean_expression_unit -> NAME . GT expr
+    (48) boolean_expression_unit -> NAME . LT expr
+    (49) boolean_expression_unit -> NAME . GE expr
+    (50) boolean_expression_unit -> NAME . LE expr
+    (51) boolean_expression_unit -> NAME . EQ expr
+    (52) boolean_expression_unit -> NAME . NEQ expr
+
+    LP              shift and go to state 59
+    MUL             reduce using rule 37 (factor -> NAME .)
+    DIV             reduce using rule 37 (factor -> NAME .)
+    SEMICOLON       reduce using rule 37 (factor -> NAME .)
+    ADD             reduce using rule 37 (factor -> NAME .)
+    MINUS           reduce using rule 37 (factor -> NAME .)
+    COLON           reduce using rule 37 (factor -> NAME .)
+    THEN            reduce using rule 37 (factor -> NAME .)
+    AND             reduce using rule 37 (factor -> NAME .)
+    OR              reduce using rule 37 (factor -> NAME .)
+    COMMA           reduce using rule 37 (factor -> NAME .)
+    RP              reduce using rule 37 (factor -> NAME .)
+    RB              reduce using rule 37 (factor -> NAME .)
+    GT              shift and go to state 45
+    LT              shift and go to state 47
+    GE              shift and go to state 46
+    LE              shift and go to state 44
+    EQ              shift and go to state 48
+    NEQ             shift and go to state 49
+
+
+state 42
+
+    (31) expr -> boolean_expression .
+    (38) boolean_expression -> boolean_expression . AND boolean_expression_unit
+    (39) boolean_expression -> boolean_expression . OR boolean_expression_unit
+
+  ! shift/reduce conflict for AND resolved as shift
+  ! shift/reduce conflict for OR resolved as shift
+    RP              reduce using rule 31 (expr -> boolean_expression .)
+    ADD             reduce using rule 31 (expr -> boolean_expression .)
+    MINUS           reduce using rule 31 (expr -> boolean_expression .)
+    THEN            reduce using rule 31 (expr -> boolean_expression .)
+    SEMICOLON       reduce using rule 31 (expr -> boolean_expression .)
+    COMMA           reduce using rule 31 (expr -> boolean_expression .)
+    COLON           reduce using rule 31 (expr -> boolean_expression .)
+    RB              reduce using rule 31 (expr -> boolean_expression .)
+    AND             shift and go to state 50
+    OR              shift and go to state 52
+
+  ! AND             [ reduce using rule 31 (expr -> boolean_expression .) ]
+  ! OR              [ reduce using rule 31 (expr -> boolean_expression .) ]
+
+
+state 43
+
+    (53) formula_statement -> FORMULA NAME ASSIGN expr . SEMICOLON
+    (27) expr -> expr . ADD term
+    (28) expr -> expr . MINUS term
+
+    SEMICOLON       shift and go to state 60
+    ADD             shift and go to state 62
+    MINUS           shift and go to state 61
+
+
+state 44
+
+    (44) boolean_expression_unit -> NAME LE . NUM
+    (50) boolean_expression_unit -> NAME LE . expr
+    (27) expr -> . expr ADD term
+    (28) expr -> . expr MINUS term
+    (29) expr -> . NAME LP expr RP
+    (30) expr -> . term
+    (31) expr -> . boolean_expression
+    (32) term -> . term MUL factor
+    (33) term -> . term DIV factor
+    (34) term -> . factor
+    (38) boolean_expression -> . boolean_expression AND boolean_expression_unit
+    (39) boolean_expression -> . boolean_expression OR boolean_expression_unit
+    (40) boolean_expression -> . boolean_expression_unit
+    (35) factor -> . NUM
+    (36) factor -> . NAME LP expr RP
+    (37) factor -> . NAME
+    (41) boolean_expression_unit -> . NAME GT NUM
+    (42) boolean_expression_unit -> . NAME LT NUM
+    (43) boolean_expression_unit -> . NAME GE NUM
+    (44) boolean_expression_unit -> . NAME LE NUM
+    (45) boolean_expression_unit -> . NAME EQ NUM
+    (46) boolean_expression_unit -> . NAME NEQ NUM
+    (47) boolean_expression_unit -> . NAME GT expr
+    (48) boolean_expression_unit -> . NAME LT expr
+    (49) boolean_expression_unit -> . NAME GE expr
+    (50) boolean_expression_unit -> . NAME LE expr
+    (51) boolean_expression_unit -> . NAME EQ expr
+    (52) boolean_expression_unit -> . NAME NEQ expr
+
+    NUM             shift and go to state 64
+    NAME            shift and go to state 41
+
+    expr                           shift and go to state 63
+    term                           shift and go to state 40
+    factor                         shift and go to state 39
+    boolean_expression_unit        shift and go to state 30
+    boolean_expression             shift and go to state 42
+
+state 45
+
+    (41) boolean_expression_unit -> NAME GT . NUM
+    (47) boolean_expression_unit -> NAME GT . expr
+    (27) expr -> . expr ADD term
+    (28) expr -> . expr MINUS term
+    (29) expr -> . NAME LP expr RP
+    (30) expr -> . term
+    (31) expr -> . boolean_expression
+    (32) term -> . term MUL factor
+    (33) term -> . term DIV factor
+    (34) term -> . factor
+    (38) boolean_expression -> . boolean_expression AND boolean_expression_unit
+    (39) boolean_expression -> . boolean_expression OR boolean_expression_unit
+    (40) boolean_expression -> . boolean_expression_unit
+    (35) factor -> . NUM
+    (36) factor -> . NAME LP expr RP
+    (37) factor -> . NAME
+    (41) boolean_expression_unit -> . NAME GT NUM
+    (42) boolean_expression_unit -> . NAME LT NUM
+    (43) boolean_expression_unit -> . NAME GE NUM
+    (44) boolean_expression_unit -> . NAME LE NUM
+    (45) boolean_expression_unit -> . NAME EQ NUM
+    (46) boolean_expression_unit -> . NAME NEQ NUM
+    (47) boolean_expression_unit -> . NAME GT expr
+    (48) boolean_expression_unit -> . NAME LT expr
+    (49) boolean_expression_unit -> . NAME GE expr
+    (50) boolean_expression_unit -> . NAME LE expr
+    (51) boolean_expression_unit -> . NAME EQ expr
+    (52) boolean_expression_unit -> . NAME NEQ expr
+
+    NUM             shift and go to state 66
+    NAME            shift and go to state 41
+
+    expr                           shift and go to state 65
+    term                           shift and go to state 40
+    factor                         shift and go to state 39
+    boolean_expression_unit        shift and go to state 30
+    boolean_expression             shift and go to state 42
+
+state 46
+
+    (43) boolean_expression_unit -> NAME GE . NUM
+    (49) boolean_expression_unit -> NAME GE . expr
+    (27) expr -> . expr ADD term
+    (28) expr -> . expr MINUS term
+    (29) expr -> . NAME LP expr RP
+    (30) expr -> . term
+    (31) expr -> . boolean_expression
+    (32) term -> . term MUL factor
+    (33) term -> . term DIV factor
+    (34) term -> . factor
+    (38) boolean_expression -> . boolean_expression AND boolean_expression_unit
+    (39) boolean_expression -> . boolean_expression OR boolean_expression_unit
+    (40) boolean_expression -> . boolean_expression_unit
+    (35) factor -> . NUM
+    (36) factor -> . NAME LP expr RP
+    (37) factor -> . NAME
+    (41) boolean_expression_unit -> . NAME GT NUM
+    (42) boolean_expression_unit -> . NAME LT NUM
+    (43) boolean_expression_unit -> . NAME GE NUM
+    (44) boolean_expression_unit -> . NAME LE NUM
+    (45) boolean_expression_unit -> . NAME EQ NUM
+    (46) boolean_expression_unit -> . NAME NEQ NUM
+    (47) boolean_expression_unit -> . NAME GT expr
+    (48) boolean_expression_unit -> . NAME LT expr
+    (49) boolean_expression_unit -> . NAME GE expr
+    (50) boolean_expression_unit -> . NAME LE expr
+    (51) boolean_expression_unit -> . NAME EQ expr
+    (52) boolean_expression_unit -> . NAME NEQ expr
+
+    NUM             shift and go to state 68
+    NAME            shift and go to state 41
+
+    expr                           shift and go to state 67
+    term                           shift and go to state 40
+    factor                         shift and go to state 39
+    boolean_expression_unit        shift and go to state 30
+    boolean_expression             shift and go to state 42
+
+state 47
+
+    (42) boolean_expression_unit -> NAME LT . NUM
+    (48) boolean_expression_unit -> NAME LT . expr
+    (27) expr -> . expr ADD term
+    (28) expr -> . expr MINUS term
+    (29) expr -> . NAME LP expr RP
+    (30) expr -> . term
+    (31) expr -> . boolean_expression
+    (32) term -> . term MUL factor
+    (33) term -> . term DIV factor
+    (34) term -> . factor
+    (38) boolean_expression -> . boolean_expression AND boolean_expression_unit
+    (39) boolean_expression -> . boolean_expression OR boolean_expression_unit
+    (40) boolean_expression -> . boolean_expression_unit
+    (35) factor -> . NUM
+    (36) factor -> . NAME LP expr RP
+    (37) factor -> . NAME
+    (41) boolean_expression_unit -> . NAME GT NUM
+    (42) boolean_expression_unit -> . NAME LT NUM
+    (43) boolean_expression_unit -> . NAME GE NUM
+    (44) boolean_expression_unit -> . NAME LE NUM
+    (45) boolean_expression_unit -> . NAME EQ NUM
+    (46) boolean_expression_unit -> . NAME NEQ NUM
+    (47) boolean_expression_unit -> . NAME GT expr
+    (48) boolean_expression_unit -> . NAME LT expr
+    (49) boolean_expression_unit -> . NAME GE expr
+    (50) boolean_expression_unit -> . NAME LE expr
+    (51) boolean_expression_unit -> . NAME EQ expr
+    (52) boolean_expression_unit -> . NAME NEQ expr
+
+    NUM             shift and go to state 70
+    NAME            shift and go to state 41
+
+    expr                           shift and go to state 69
+    term                           shift and go to state 40
+    factor                         shift and go to state 39
+    boolean_expression_unit        shift and go to state 30
+    boolean_expression             shift and go to state 42
+
+state 48
+
+    (45) boolean_expression_unit -> NAME EQ . NUM
+    (51) boolean_expression_unit -> NAME EQ . expr
+    (27) expr -> . expr ADD term
+    (28) expr -> . expr MINUS term
+    (29) expr -> . NAME LP expr RP
+    (30) expr -> . term
+    (31) expr -> . boolean_expression
+    (32) term -> . term MUL factor
+    (33) term -> . term DIV factor
+    (34) term -> . factor
+    (38) boolean_expression -> . boolean_expression AND boolean_expression_unit
+    (39) boolean_expression -> . boolean_expression OR boolean_expression_unit
+    (40) boolean_expression -> . boolean_expression_unit
+    (35) factor -> . NUM
+    (36) factor -> . NAME LP expr RP
+    (37) factor -> . NAME
+    (41) boolean_expression_unit -> . NAME GT NUM
+    (42) boolean_expression_unit -> . NAME LT NUM
+    (43) boolean_expression_unit -> . NAME GE NUM
+    (44) boolean_expression_unit -> . NAME LE NUM
+    (45) boolean_expression_unit -> . NAME EQ NUM
+    (46) boolean_expression_unit -> . NAME NEQ NUM
+    (47) boolean_expression_unit -> . NAME GT expr
+    (48) boolean_expression_unit -> . NAME LT expr
+    (49) boolean_expression_unit -> . NAME GE expr
+    (50) boolean_expression_unit -> . NAME LE expr
+    (51) boolean_expression_unit -> . NAME EQ expr
+    (52) boolean_expression_unit -> . NAME NEQ expr
+
+    NUM             shift and go to state 72
+    NAME            shift and go to state 41
+
+    expr                           shift and go to state 71
+    term                           shift and go to state 40
+    factor                         shift and go to state 39
+    boolean_expression_unit        shift and go to state 30
+    boolean_expression             shift and go to state 42
+
+state 49
+
+    (46) boolean_expression_unit -> NAME NEQ . NUM
+    (52) boolean_expression_unit -> NAME NEQ . expr
+    (27) expr -> . expr ADD term
+    (28) expr -> . expr MINUS term
+    (29) expr -> . NAME LP expr RP
+    (30) expr -> . term
+    (31) expr -> . boolean_expression
+    (32) term -> . term MUL factor
+    (33) term -> . term DIV factor
+    (34) term -> . factor
+    (38) boolean_expression -> . boolean_expression AND boolean_expression_unit
+    (39) boolean_expression -> . boolean_expression OR boolean_expression_unit
+    (40) boolean_expression -> . boolean_expression_unit
+    (35) factor -> . NUM
+    (36) factor -> . NAME LP expr RP
+    (37) factor -> . NAME
+    (41) boolean_expression_unit -> . NAME GT NUM
+    (42) boolean_expression_unit -> . NAME LT NUM
+    (43) boolean_expression_unit -> . NAME GE NUM
+    (44) boolean_expression_unit -> . NAME LE NUM
+    (45) boolean_expression_unit -> . NAME EQ NUM
+    (46) boolean_expression_unit -> . NAME NEQ NUM
+    (47) boolean_expression_unit -> . NAME GT expr
+    (48) boolean_expression_unit -> . NAME LT expr
+    (49) boolean_expression_unit -> . NAME GE expr
+    (50) boolean_expression_unit -> . NAME LE expr
+    (51) boolean_expression_unit -> . NAME EQ expr
+    (52) boolean_expression_unit -> . NAME NEQ expr
+
+    NUM             shift and go to state 74
+    NAME            shift and go to state 41
+
+    expr                           shift and go to state 73
+    term                           shift and go to state 40
+    factor                         shift and go to state 39
+    boolean_expression_unit        shift and go to state 30
+    boolean_expression             shift and go to state 42
+
+state 50
+
+    (38) boolean_expression -> boolean_expression AND . boolean_expression_unit
+    (41) boolean_expression_unit -> . NAME GT NUM
+    (42) boolean_expression_unit -> . NAME LT NUM
+    (43) boolean_expression_unit -> . NAME GE NUM
+    (44) boolean_expression_unit -> . NAME LE NUM
+    (45) boolean_expression_unit -> . NAME EQ NUM
+    (46) boolean_expression_unit -> . NAME NEQ NUM
+    (47) boolean_expression_unit -> . NAME GT expr
+    (48) boolean_expression_unit -> . NAME LT expr
+    (49) boolean_expression_unit -> . NAME GE expr
+    (50) boolean_expression_unit -> . NAME LE expr
+    (51) boolean_expression_unit -> . NAME EQ expr
+    (52) boolean_expression_unit -> . NAME NEQ expr
+
+    NAME            shift and go to state 28
+
+    boolean_expression_unit        shift and go to state 75
+
+state 51
+
+    (19) module_command_statement -> LB RB boolean_expression THEN . updates SEMICOLON
+    (20) updates -> . updates ADD prob_update
+    (21) updates -> . prob_update
+    (22) prob_update -> . expr COLON actions
+    (27) expr -> . expr ADD term
+    (28) expr -> . expr MINUS term
+    (29) expr -> . NAME LP expr RP
+    (30) expr -> . term
+    (31) expr -> . boolean_expression
+    (32) term -> . term MUL factor
+    (33) term -> . term DIV factor
+    (34) term -> . factor
+    (38) boolean_expression -> . boolean_expression AND boolean_expression_unit
+    (39) boolean_expression -> . boolean_expression OR boolean_expression_unit
+    (40) boolean_expression -> . boolean_expression_unit
+    (35) factor -> . NUM
+    (36) factor -> . NAME LP expr RP
+    (37) factor -> . NAME
+    (41) boolean_expression_unit -> . NAME GT NUM
+    (42) boolean_expression_unit -> . NAME LT NUM
+    (43) boolean_expression_unit -> . NAME GE NUM
+    (44) boolean_expression_unit -> . NAME LE NUM
+    (45) boolean_expression_unit -> . NAME EQ NUM
+    (46) boolean_expression_unit -> . NAME NEQ NUM
+    (47) boolean_expression_unit -> . NAME GT expr
+    (48) boolean_expression_unit -> . NAME LT expr
+    (49) boolean_expression_unit -> . NAME GE expr
+    (50) boolean_expression_unit -> . NAME LE expr
+    (51) boolean_expression_unit -> . NAME EQ expr
+    (52) boolean_expression_unit -> . NAME NEQ expr
+
+    NAME            shift and go to state 41
+    NUM             shift and go to state 38
+
+    term                           shift and go to state 40
+    boolean_expression             shift and go to state 42
+    expr                           shift and go to state 78
+    boolean_expression_unit        shift and go to state 30
+    prob_update                    shift and go to state 76
+    updates                        shift and go to state 77
+    factor                         shift and go to state 39
+
+state 52
+
+    (39) boolean_expression -> boolean_expression OR . boolean_expression_unit
+    (41) boolean_expression_unit -> . NAME GT NUM
+    (42) boolean_expression_unit -> . NAME LT NUM
+    (43) boolean_expression_unit -> . NAME GE NUM
+    (44) boolean_expression_unit -> . NAME LE NUM
+    (45) boolean_expression_unit -> . NAME EQ NUM
+    (46) boolean_expression_unit -> . NAME NEQ NUM
+    (47) boolean_expression_unit -> . NAME GT expr
+    (48) boolean_expression_unit -> . NAME LT expr
+    (49) boolean_expression_unit -> . NAME GE expr
+    (50) boolean_expression_unit -> . NAME LE expr
+    (51) boolean_expression_unit -> . NAME EQ expr
+    (52) boolean_expression_unit -> . NAME NEQ expr
+
+    NAME            shift and go to state 28
+
+    boolean_expression_unit        shift and go to state 79
+
+state 53
+
+    (18) module_var_def_statement -> NAME COLON LB expr . COMMA expr RB INIT NUM SEMICOLON
+    (27) expr -> expr . ADD term
+    (28) expr -> expr . MINUS term
+
+    COMMA           shift and go to state 80
+    ADD             shift and go to state 62
+    MINUS           shift and go to state 61
+
+
+state 54
+
+    (12) const_value_statement -> CONST INT NAME ASSIGN NUM . SEMICOLON
+
+    SEMICOLON       shift and go to state 81
+
+
+state 55
+
+    (13) const_value_statement -> CONST DOUBLE NAME ASSIGN NUM . SEMICOLON
+
+    SEMICOLON       shift and go to state 82
+
+
+state 56
+
+    (14) const_value_statement -> CONST BOOL NAME ASSIGN NUM . SEMICOLON
+
+    SEMICOLON       shift and go to state 83
+
+
+state 57
+
+    (32) term -> term MUL . factor
+    (35) factor -> . NUM
+    (36) factor -> . NAME LP expr RP
+    (37) factor -> . NAME
+
+    NUM             shift and go to state 38
+    NAME            shift and go to state 84
+
+    factor                         shift and go to state 85
+
+state 58
+
+    (33) term -> term DIV . factor
+    (35) factor -> . NUM
+    (36) factor -> . NAME LP expr RP
+    (37) factor -> . NAME
+
+    NUM             shift and go to state 38
+    NAME            shift and go to state 84
+
+    factor                         shift and go to state 86
+
+state 59
+
+    (29) expr -> NAME LP . expr RP
+    (36) factor -> NAME LP . expr RP
+    (27) expr -> . expr ADD term
+    (28) expr -> . expr MINUS term
+    (29) expr -> . NAME LP expr RP
+    (30) expr -> . term
+    (31) expr -> . boolean_expression
+    (32) term -> . term MUL factor
+    (33) term -> . term DIV factor
+    (34) term -> . factor
+    (38) boolean_expression -> . boolean_expression AND boolean_expression_unit
+    (39) boolean_expression -> . boolean_expression OR boolean_expression_unit
+    (40) boolean_expression -> . boolean_expression_unit
+    (35) factor -> . NUM
+    (36) factor -> . NAME LP expr RP
+    (37) factor -> . NAME
+    (41) boolean_expression_unit -> . NAME GT NUM
+    (42) boolean_expression_unit -> . NAME LT NUM
+    (43) boolean_expression_unit -> . NAME GE NUM
+    (44) boolean_expression_unit -> . NAME LE NUM
+    (45) boolean_expression_unit -> . NAME EQ NUM
+    (46) boolean_expression_unit -> . NAME NEQ NUM
+    (47) boolean_expression_unit -> . NAME GT expr
+    (48) boolean_expression_unit -> . NAME LT expr
+    (49) boolean_expression_unit -> . NAME GE expr
+    (50) boolean_expression_unit -> . NAME LE expr
+    (51) boolean_expression_unit -> . NAME EQ expr
+    (52) boolean_expression_unit -> . NAME NEQ expr
+
+    NAME            shift and go to state 41
+    NUM             shift and go to state 38
+
+    expr                           shift and go to state 87
+    term                           shift and go to state 40
+    factor                         shift and go to state 39
+    boolean_expression_unit        shift and go to state 30
+    boolean_expression             shift and go to state 42
+
+state 60
+
+    (53) formula_statement -> FORMULA NAME ASSIGN expr SEMICOLON .
+
+    $end            reduce using rule 53 (formula_statement -> FORMULA NAME ASSIGN expr SEMICOLON .)
+
+
+state 61
+
+    (28) expr -> expr MINUS . term
+    (32) term -> . term MUL factor
+    (33) term -> . term DIV factor
+    (34) term -> . factor
+    (35) factor -> . NUM
+    (36) factor -> . NAME LP expr RP
+    (37) factor -> . NAME
+
+    NUM             shift and go to state 38
+    NAME            shift and go to state 84
+
+    term                           shift and go to state 88
+    factor                         shift and go to state 39
+
+state 62
+
+    (27) expr -> expr ADD . term
+    (32) term -> . term MUL factor
+    (33) term -> . term DIV factor
+    (34) term -> . factor
+    (35) factor -> . NUM
+    (36) factor -> . NAME LP expr RP
+    (37) factor -> . NAME
+
+    NUM             shift and go to state 38
+    NAME            shift and go to state 84
+
+    term                           shift and go to state 89
+    factor                         shift and go to state 39
+
+state 63
+
+    (50) boolean_expression_unit -> NAME LE expr .
+    (27) expr -> expr . ADD term
+    (28) expr -> expr . MINUS term
+
+  ! shift/reduce conflict for ADD resolved as shift
+  ! shift/reduce conflict for MINUS resolved as shift
+    AND             reduce using rule 50 (boolean_expression_unit -> NAME LE expr .)
+    OR              reduce using rule 50 (boolean_expression_unit -> NAME LE expr .)
+    SEMICOLON       reduce using rule 50 (boolean_expression_unit -> NAME LE expr .)
+    RP              reduce using rule 50 (boolean_expression_unit -> NAME LE expr .)
+    THEN            reduce using rule 50 (boolean_expression_unit -> NAME LE expr .)
+    COMMA           reduce using rule 50 (boolean_expression_unit -> NAME LE expr .)
+    COLON           reduce using rule 50 (boolean_expression_unit -> NAME LE expr .)
+    RB              reduce using rule 50 (boolean_expression_unit -> NAME LE expr .)
+    ADD             shift and go to state 62
+    MINUS           shift and go to state 61
+
+  ! ADD             [ reduce using rule 50 (boolean_expression_unit -> NAME LE expr .) ]
+  ! MINUS           [ reduce using rule 50 (boolean_expression_unit -> NAME LE expr .) ]
+
+
+state 64
+
+    (44) boolean_expression_unit -> NAME LE NUM .
+    (35) factor -> NUM .
+
+  ! reduce/reduce conflict for ADD resolved using rule 35 (factor -> NUM .)
+  ! reduce/reduce conflict for MINUS resolved using rule 35 (factor -> NUM .)
+  ! reduce/reduce conflict for THEN resolved using rule 35 (factor -> NUM .)
+  ! reduce/reduce conflict for AND resolved using rule 35 (factor -> NUM .)
+  ! reduce/reduce conflict for OR resolved using rule 35 (factor -> NUM .)
+  ! reduce/reduce conflict for SEMICOLON resolved using rule 35 (factor -> NUM .)
+  ! reduce/reduce conflict for COMMA resolved using rule 35 (factor -> NUM .)
+  ! reduce/reduce conflict for COLON resolved using rule 35 (factor -> NUM .)
+  ! reduce/reduce conflict for RP resolved using rule 35 (factor -> NUM .)
+  ! reduce/reduce conflict for RB resolved using rule 35 (factor -> NUM .)
+    MUL             reduce using rule 35 (factor -> NUM .)
+    DIV             reduce using rule 35 (factor -> NUM .)
+    ADD             reduce using rule 35 (factor -> NUM .)
+    MINUS           reduce using rule 35 (factor -> NUM .)
+    THEN            reduce using rule 35 (factor -> NUM .)
+    AND             reduce using rule 35 (factor -> NUM .)
+    OR              reduce using rule 35 (factor -> NUM .)
+    SEMICOLON       reduce using rule 35 (factor -> NUM .)
+    COMMA           reduce using rule 35 (factor -> NUM .)
+    COLON           reduce using rule 35 (factor -> NUM .)
+    RP              reduce using rule 35 (factor -> NUM .)
+    RB              reduce using rule 35 (factor -> NUM .)
+
+  ! AND             [ reduce using rule 44 (boolean_expression_unit -> NAME LE NUM .) ]
+  ! OR              [ reduce using rule 44 (boolean_expression_unit -> NAME LE NUM .) ]
+  ! ADD             [ reduce using rule 44 (boolean_expression_unit -> NAME LE NUM .) ]
+  ! MINUS           [ reduce using rule 44 (boolean_expression_unit -> NAME LE NUM .) ]
+  ! SEMICOLON       [ reduce using rule 44 (boolean_expression_unit -> NAME LE NUM .) ]
+  ! RP              [ reduce using rule 44 (boolean_expression_unit -> NAME LE NUM .) ]
+  ! THEN            [ reduce using rule 44 (boolean_expression_unit -> NAME LE NUM .) ]
+  ! COMMA           [ reduce using rule 44 (boolean_expression_unit -> NAME LE NUM .) ]
+  ! COLON           [ reduce using rule 44 (boolean_expression_unit -> NAME LE NUM .) ]
+  ! RB              [ reduce using rule 44 (boolean_expression_unit -> NAME LE NUM .) ]
+
+
+state 65
+
+    (47) boolean_expression_unit -> NAME GT expr .
+    (27) expr -> expr . ADD term
+    (28) expr -> expr . MINUS term
+
+  ! shift/reduce conflict for ADD resolved as shift
+  ! shift/reduce conflict for MINUS resolved as shift
+    AND             reduce using rule 47 (boolean_expression_unit -> NAME GT expr .)
+    OR              reduce using rule 47 (boolean_expression_unit -> NAME GT expr .)
+    SEMICOLON       reduce using rule 47 (boolean_expression_unit -> NAME GT expr .)
+    RP              reduce using rule 47 (boolean_expression_unit -> NAME GT expr .)
+    THEN            reduce using rule 47 (boolean_expression_unit -> NAME GT expr .)
+    COMMA           reduce using rule 47 (boolean_expression_unit -> NAME GT expr .)
+    COLON           reduce using rule 47 (boolean_expression_unit -> NAME GT expr .)
+    RB              reduce using rule 47 (boolean_expression_unit -> NAME GT expr .)
+    ADD             shift and go to state 62
+    MINUS           shift and go to state 61
+
+  ! ADD             [ reduce using rule 47 (boolean_expression_unit -> NAME GT expr .) ]
+  ! MINUS           [ reduce using rule 47 (boolean_expression_unit -> NAME GT expr .) ]
+
+
+state 66
+
+    (41) boolean_expression_unit -> NAME GT NUM .
+    (35) factor -> NUM .
+
+  ! reduce/reduce conflict for ADD resolved using rule 35 (factor -> NUM .)
+  ! reduce/reduce conflict for MINUS resolved using rule 35 (factor -> NUM .)
+  ! reduce/reduce conflict for THEN resolved using rule 35 (factor -> NUM .)
+  ! reduce/reduce conflict for AND resolved using rule 35 (factor -> NUM .)
+  ! reduce/reduce conflict for OR resolved using rule 35 (factor -> NUM .)
+  ! reduce/reduce conflict for SEMICOLON resolved using rule 35 (factor -> NUM .)
+  ! reduce/reduce conflict for COMMA resolved using rule 35 (factor -> NUM .)
+  ! reduce/reduce conflict for COLON resolved using rule 35 (factor -> NUM .)
+  ! reduce/reduce conflict for RP resolved using rule 35 (factor -> NUM .)
+  ! reduce/reduce conflict for RB resolved using rule 35 (factor -> NUM .)
+    MUL             reduce using rule 35 (factor -> NUM .)
+    DIV             reduce using rule 35 (factor -> NUM .)
+    ADD             reduce using rule 35 (factor -> NUM .)
+    MINUS           reduce using rule 35 (factor -> NUM .)
+    THEN            reduce using rule 35 (factor -> NUM .)
+    AND             reduce using rule 35 (factor -> NUM .)
+    OR              reduce using rule 35 (factor -> NUM .)
+    SEMICOLON       reduce using rule 35 (factor -> NUM .)
+    COMMA           reduce using rule 35 (factor -> NUM .)
+    COLON           reduce using rule 35 (factor -> NUM .)
+    RP              reduce using rule 35 (factor -> NUM .)
+    RB              reduce using rule 35 (factor -> NUM .)
+
+  ! AND             [ reduce using rule 41 (boolean_expression_unit -> NAME GT NUM .) ]
+  ! OR              [ reduce using rule 41 (boolean_expression_unit -> NAME GT NUM .) ]
+  ! ADD             [ reduce using rule 41 (boolean_expression_unit -> NAME GT NUM .) ]
+  ! MINUS           [ reduce using rule 41 (boolean_expression_unit -> NAME GT NUM .) ]
+  ! SEMICOLON       [ reduce using rule 41 (boolean_expression_unit -> NAME GT NUM .) ]
+  ! RP              [ reduce using rule 41 (boolean_expression_unit -> NAME GT NUM .) ]
+  ! THEN            [ reduce using rule 41 (boolean_expression_unit -> NAME GT NUM .) ]
+  ! COMMA           [ reduce using rule 41 (boolean_expression_unit -> NAME GT NUM .) ]
+  ! COLON           [ reduce using rule 41 (boolean_expression_unit -> NAME GT NUM .) ]
+  ! RB              [ reduce using rule 41 (boolean_expression_unit -> NAME GT NUM .) ]
+
+
+state 67
+
+    (49) boolean_expression_unit -> NAME GE expr .
+    (27) expr -> expr . ADD term
+    (28) expr -> expr . MINUS term
+
+  ! shift/reduce conflict for ADD resolved as shift
+  ! shift/reduce conflict for MINUS resolved as shift
+    AND             reduce using rule 49 (boolean_expression_unit -> NAME GE expr .)
+    OR              reduce using rule 49 (boolean_expression_unit -> NAME GE expr .)
+    SEMICOLON       reduce using rule 49 (boolean_expression_unit -> NAME GE expr .)
+    RP              reduce using rule 49 (boolean_expression_unit -> NAME GE expr .)
+    THEN            reduce using rule 49 (boolean_expression_unit -> NAME GE expr .)
+    COMMA           reduce using rule 49 (boolean_expression_unit -> NAME GE expr .)
+    COLON           reduce using rule 49 (boolean_expression_unit -> NAME GE expr .)
+    RB              reduce using rule 49 (boolean_expression_unit -> NAME GE expr .)
+    ADD             shift and go to state 62
+    MINUS           shift and go to state 61
+
+  ! ADD             [ reduce using rule 49 (boolean_expression_unit -> NAME GE expr .) ]
+  ! MINUS           [ reduce using rule 49 (boolean_expression_unit -> NAME GE expr .) ]
+
+
+state 68
+
+    (43) boolean_expression_unit -> NAME GE NUM .
+    (35) factor -> NUM .
+
+  ! reduce/reduce conflict for ADD resolved using rule 35 (factor -> NUM .)
+  ! reduce/reduce conflict for MINUS resolved using rule 35 (factor -> NUM .)
+  ! reduce/reduce conflict for THEN resolved using rule 35 (factor -> NUM .)
+  ! reduce/reduce conflict for AND resolved using rule 35 (factor -> NUM .)
+  ! reduce/reduce conflict for OR resolved using rule 35 (factor -> NUM .)
+  ! reduce/reduce conflict for SEMICOLON resolved using rule 35 (factor -> NUM .)
+  ! reduce/reduce conflict for COMMA resolved using rule 35 (factor -> NUM .)
+  ! reduce/reduce conflict for COLON resolved using rule 35 (factor -> NUM .)
+  ! reduce/reduce conflict for RP resolved using rule 35 (factor -> NUM .)
+  ! reduce/reduce conflict for RB resolved using rule 35 (factor -> NUM .)
+    MUL             reduce using rule 35 (factor -> NUM .)
+    DIV             reduce using rule 35 (factor -> NUM .)
+    ADD             reduce using rule 35 (factor -> NUM .)
+    MINUS           reduce using rule 35 (factor -> NUM .)
+    THEN            reduce using rule 35 (factor -> NUM .)
+    AND             reduce using rule 35 (factor -> NUM .)
+    OR              reduce using rule 35 (factor -> NUM .)
+    SEMICOLON       reduce using rule 35 (factor -> NUM .)
+    COMMA           reduce using rule 35 (factor -> NUM .)
+    COLON           reduce using rule 35 (factor -> NUM .)
+    RP              reduce using rule 35 (factor -> NUM .)
+    RB              reduce using rule 35 (factor -> NUM .)
+
+  ! AND             [ reduce using rule 43 (boolean_expression_unit -> NAME GE NUM .) ]
+  ! OR              [ reduce using rule 43 (boolean_expression_unit -> NAME GE NUM .) ]
+  ! ADD             [ reduce using rule 43 (boolean_expression_unit -> NAME GE NUM .) ]
+  ! MINUS           [ reduce using rule 43 (boolean_expression_unit -> NAME GE NUM .) ]
+  ! SEMICOLON       [ reduce using rule 43 (boolean_expression_unit -> NAME GE NUM .) ]
+  ! RP              [ reduce using rule 43 (boolean_expression_unit -> NAME GE NUM .) ]
+  ! THEN            [ reduce using rule 43 (boolean_expression_unit -> NAME GE NUM .) ]
+  ! COMMA           [ reduce using rule 43 (boolean_expression_unit -> NAME GE NUM .) ]
+  ! COLON           [ reduce using rule 43 (boolean_expression_unit -> NAME GE NUM .) ]
+  ! RB              [ reduce using rule 43 (boolean_expression_unit -> NAME GE NUM .) ]
+
+
+state 69
+
+    (48) boolean_expression_unit -> NAME LT expr .
+    (27) expr -> expr . ADD term
+    (28) expr -> expr . MINUS term
+
+  ! shift/reduce conflict for ADD resolved as shift
+  ! shift/reduce conflict for MINUS resolved as shift
+    AND             reduce using rule 48 (boolean_expression_unit -> NAME LT expr .)
+    OR              reduce using rule 48 (boolean_expression_unit -> NAME LT expr .)
+    SEMICOLON       reduce using rule 48 (boolean_expression_unit -> NAME LT expr .)
+    RP              reduce using rule 48 (boolean_expression_unit -> NAME LT expr .)
+    THEN            reduce using rule 48 (boolean_expression_unit -> NAME LT expr .)
+    COMMA           reduce using rule 48 (boolean_expression_unit -> NAME LT expr .)
+    COLON           reduce using rule 48 (boolean_expression_unit -> NAME LT expr .)
+    RB              reduce using rule 48 (boolean_expression_unit -> NAME LT expr .)
+    ADD             shift and go to state 62
+    MINUS           shift and go to state 61
+
+  ! ADD             [ reduce using rule 48 (boolean_expression_unit -> NAME LT expr .) ]
+  ! MINUS           [ reduce using rule 48 (boolean_expression_unit -> NAME LT expr .) ]
+
+
+state 70
+
+    (42) boolean_expression_unit -> NAME LT NUM .
+    (35) factor -> NUM .
+
+  ! reduce/reduce conflict for ADD resolved using rule 35 (factor -> NUM .)
+  ! reduce/reduce conflict for MINUS resolved using rule 35 (factor -> NUM .)
+  ! reduce/reduce conflict for THEN resolved using rule 35 (factor -> NUM .)
+  ! reduce/reduce conflict for AND resolved using rule 35 (factor -> NUM .)
+  ! reduce/reduce conflict for OR resolved using rule 35 (factor -> NUM .)
+  ! reduce/reduce conflict for SEMICOLON resolved using rule 35 (factor -> NUM .)
+  ! reduce/reduce conflict for COMMA resolved using rule 35 (factor -> NUM .)
+  ! reduce/reduce conflict for COLON resolved using rule 35 (factor -> NUM .)
+  ! reduce/reduce conflict for RP resolved using rule 35 (factor -> NUM .)
+  ! reduce/reduce conflict for RB resolved using rule 35 (factor -> NUM .)
+    MUL             reduce using rule 35 (factor -> NUM .)
+    DIV             reduce using rule 35 (factor -> NUM .)
+    ADD             reduce using rule 35 (factor -> NUM .)
+    MINUS           reduce using rule 35 (factor -> NUM .)
+    THEN            reduce using rule 35 (factor -> NUM .)
+    AND             reduce using rule 35 (factor -> NUM .)
+    OR              reduce using rule 35 (factor -> NUM .)
+    SEMICOLON       reduce using rule 35 (factor -> NUM .)
+    COMMA           reduce using rule 35 (factor -> NUM .)
+    COLON           reduce using rule 35 (factor -> NUM .)
+    RP              reduce using rule 35 (factor -> NUM .)
+    RB              reduce using rule 35 (factor -> NUM .)
+
+  ! AND             [ reduce using rule 42 (boolean_expression_unit -> NAME LT NUM .) ]
+  ! OR              [ reduce using rule 42 (boolean_expression_unit -> NAME LT NUM .) ]
+  ! ADD             [ reduce using rule 42 (boolean_expression_unit -> NAME LT NUM .) ]
+  ! MINUS           [ reduce using rule 42 (boolean_expression_unit -> NAME LT NUM .) ]
+  ! SEMICOLON       [ reduce using rule 42 (boolean_expression_unit -> NAME LT NUM .) ]
+  ! RP              [ reduce using rule 42 (boolean_expression_unit -> NAME LT NUM .) ]
+  ! THEN            [ reduce using rule 42 (boolean_expression_unit -> NAME LT NUM .) ]
+  ! COMMA           [ reduce using rule 42 (boolean_expression_unit -> NAME LT NUM .) ]
+  ! COLON           [ reduce using rule 42 (boolean_expression_unit -> NAME LT NUM .) ]
+  ! RB              [ reduce using rule 42 (boolean_expression_unit -> NAME LT NUM .) ]
+
+
+state 71
+
+    (51) boolean_expression_unit -> NAME EQ expr .
+    (27) expr -> expr . ADD term
+    (28) expr -> expr . MINUS term
+
+  ! shift/reduce conflict for ADD resolved as shift
+  ! shift/reduce conflict for MINUS resolved as shift
+    AND             reduce using rule 51 (boolean_expression_unit -> NAME EQ expr .)
+    OR              reduce using rule 51 (boolean_expression_unit -> NAME EQ expr .)
+    SEMICOLON       reduce using rule 51 (boolean_expression_unit -> NAME EQ expr .)
+    RP              reduce using rule 51 (boolean_expression_unit -> NAME EQ expr .)
+    THEN            reduce using rule 51 (boolean_expression_unit -> NAME EQ expr .)
+    COMMA           reduce using rule 51 (boolean_expression_unit -> NAME EQ expr .)
+    COLON           reduce using rule 51 (boolean_expression_unit -> NAME EQ expr .)
+    RB              reduce using rule 51 (boolean_expression_unit -> NAME EQ expr .)
+    ADD             shift and go to state 62
+    MINUS           shift and go to state 61
+
+  ! ADD             [ reduce using rule 51 (boolean_expression_unit -> NAME EQ expr .) ]
+  ! MINUS           [ reduce using rule 51 (boolean_expression_unit -> NAME EQ expr .) ]
+
+
+state 72
+
+    (45) boolean_expression_unit -> NAME EQ NUM .
+    (35) factor -> NUM .
+
+  ! reduce/reduce conflict for ADD resolved using rule 35 (factor -> NUM .)
+  ! reduce/reduce conflict for MINUS resolved using rule 35 (factor -> NUM .)
+  ! reduce/reduce conflict for THEN resolved using rule 35 (factor -> NUM .)
+  ! reduce/reduce conflict for AND resolved using rule 35 (factor -> NUM .)
+  ! reduce/reduce conflict for OR resolved using rule 35 (factor -> NUM .)
+  ! reduce/reduce conflict for SEMICOLON resolved using rule 35 (factor -> NUM .)
+  ! reduce/reduce conflict for COMMA resolved using rule 35 (factor -> NUM .)
+  ! reduce/reduce conflict for COLON resolved using rule 35 (factor -> NUM .)
+  ! reduce/reduce conflict for RP resolved using rule 35 (factor -> NUM .)
+  ! reduce/reduce conflict for RB resolved using rule 35 (factor -> NUM .)
+    MUL             reduce using rule 35 (factor -> NUM .)
+    DIV             reduce using rule 35 (factor -> NUM .)
+    ADD             reduce using rule 35 (factor -> NUM .)
+    MINUS           reduce using rule 35 (factor -> NUM .)
+    THEN            reduce using rule 35 (factor -> NUM .)
+    AND             reduce using rule 35 (factor -> NUM .)
+    OR              reduce using rule 35 (factor -> NUM .)
+    SEMICOLON       reduce using rule 35 (factor -> NUM .)
+    COMMA           reduce using rule 35 (factor -> NUM .)
+    COLON           reduce using rule 35 (factor -> NUM .)
+    RP              reduce using rule 35 (factor -> NUM .)
+    RB              reduce using rule 35 (factor -> NUM .)
+
+  ! AND             [ reduce using rule 45 (boolean_expression_unit -> NAME EQ NUM .) ]
+  ! OR              [ reduce using rule 45 (boolean_expression_unit -> NAME EQ NUM .) ]
+  ! ADD             [ reduce using rule 45 (boolean_expression_unit -> NAME EQ NUM .) ]
+  ! MINUS           [ reduce using rule 45 (boolean_expression_unit -> NAME EQ NUM .) ]
+  ! SEMICOLON       [ reduce using rule 45 (boolean_expression_unit -> NAME EQ NUM .) ]
+  ! RP              [ reduce using rule 45 (boolean_expression_unit -> NAME EQ NUM .) ]
+  ! THEN            [ reduce using rule 45 (boolean_expression_unit -> NAME EQ NUM .) ]
+  ! COMMA           [ reduce using rule 45 (boolean_expression_unit -> NAME EQ NUM .) ]
+  ! COLON           [ reduce using rule 45 (boolean_expression_unit -> NAME EQ NUM .) ]
+  ! RB              [ reduce using rule 45 (boolean_expression_unit -> NAME EQ NUM .) ]
+
+
+state 73
+
+    (52) boolean_expression_unit -> NAME NEQ expr .
+    (27) expr -> expr . ADD term
+    (28) expr -> expr . MINUS term
+
+  ! shift/reduce conflict for ADD resolved as shift
+  ! shift/reduce conflict for MINUS resolved as shift
+    AND             reduce using rule 52 (boolean_expression_unit -> NAME NEQ expr .)
+    OR              reduce using rule 52 (boolean_expression_unit -> NAME NEQ expr .)
+    SEMICOLON       reduce using rule 52 (boolean_expression_unit -> NAME NEQ expr .)
+    RP              reduce using rule 52 (boolean_expression_unit -> NAME NEQ expr .)
+    THEN            reduce using rule 52 (boolean_expression_unit -> NAME NEQ expr .)
+    COMMA           reduce using rule 52 (boolean_expression_unit -> NAME NEQ expr .)
+    COLON           reduce using rule 52 (boolean_expression_unit -> NAME NEQ expr .)
+    RB              reduce using rule 52 (boolean_expression_unit -> NAME NEQ expr .)
+    ADD             shift and go to state 62
+    MINUS           shift and go to state 61
+
+  ! ADD             [ reduce using rule 52 (boolean_expression_unit -> NAME NEQ expr .) ]
+  ! MINUS           [ reduce using rule 52 (boolean_expression_unit -> NAME NEQ expr .) ]
+
+
+state 74
+
+    (46) boolean_expression_unit -> NAME NEQ NUM .
+    (35) factor -> NUM .
+
+  ! reduce/reduce conflict for ADD resolved using rule 35 (factor -> NUM .)
+  ! reduce/reduce conflict for MINUS resolved using rule 35 (factor -> NUM .)
+  ! reduce/reduce conflict for THEN resolved using rule 35 (factor -> NUM .)
+  ! reduce/reduce conflict for AND resolved using rule 35 (factor -> NUM .)
+  ! reduce/reduce conflict for OR resolved using rule 35 (factor -> NUM .)
+  ! reduce/reduce conflict for SEMICOLON resolved using rule 35 (factor -> NUM .)
+  ! reduce/reduce conflict for COMMA resolved using rule 35 (factor -> NUM .)
+  ! reduce/reduce conflict for COLON resolved using rule 35 (factor -> NUM .)
+  ! reduce/reduce conflict for RP resolved using rule 35 (factor -> NUM .)
+  ! reduce/reduce conflict for RB resolved using rule 35 (factor -> NUM .)
+    MUL             reduce using rule 35 (factor -> NUM .)
+    DIV             reduce using rule 35 (factor -> NUM .)
+    ADD             reduce using rule 35 (factor -> NUM .)
+    MINUS           reduce using rule 35 (factor -> NUM .)
+    THEN            reduce using rule 35 (factor -> NUM .)
+    AND             reduce using rule 35 (factor -> NUM .)
+    OR              reduce using rule 35 (factor -> NUM .)
+    SEMICOLON       reduce using rule 35 (factor -> NUM .)
+    COMMA           reduce using rule 35 (factor -> NUM .)
+    COLON           reduce using rule 35 (factor -> NUM .)
+    RP              reduce using rule 35 (factor -> NUM .)
+    RB              reduce using rule 35 (factor -> NUM .)
+
+  ! AND             [ reduce using rule 46 (boolean_expression_unit -> NAME NEQ NUM .) ]
+  ! OR              [ reduce using rule 46 (boolean_expression_unit -> NAME NEQ NUM .) ]
+  ! ADD             [ reduce using rule 46 (boolean_expression_unit -> NAME NEQ NUM .) ]
+  ! MINUS           [ reduce using rule 46 (boolean_expression_unit -> NAME NEQ NUM .) ]
+  ! SEMICOLON       [ reduce using rule 46 (boolean_expression_unit -> NAME NEQ NUM .) ]
+  ! RP              [ reduce using rule 46 (boolean_expression_unit -> NAME NEQ NUM .) ]
+  ! THEN            [ reduce using rule 46 (boolean_expression_unit -> NAME NEQ NUM .) ]
+  ! COMMA           [ reduce using rule 46 (boolean_expression_unit -> NAME NEQ NUM .) ]
+  ! COLON           [ reduce using rule 46 (boolean_expression_unit -> NAME NEQ NUM .) ]
+  ! RB              [ reduce using rule 46 (boolean_expression_unit -> NAME NEQ NUM .) ]
+
+
+state 75
+
+    (38) boolean_expression -> boolean_expression AND boolean_expression_unit .
+
+    ADD             reduce using rule 38 (boolean_expression -> boolean_expression AND boolean_expression_unit .)
+    MINUS           reduce using rule 38 (boolean_expression -> boolean_expression AND boolean_expression_unit .)
+    THEN            reduce using rule 38 (boolean_expression -> boolean_expression AND boolean_expression_unit .)
+    AND             reduce using rule 38 (boolean_expression -> boolean_expression AND boolean_expression_unit .)
+    OR              reduce using rule 38 (boolean_expression -> boolean_expression AND boolean_expression_unit .)
+    SEMICOLON       reduce using rule 38 (boolean_expression -> boolean_expression AND boolean_expression_unit .)
+    COMMA           reduce using rule 38 (boolean_expression -> boolean_expression AND boolean_expression_unit .)
+    COLON           reduce using rule 38 (boolean_expression -> boolean_expression AND boolean_expression_unit .)
+    RP              reduce using rule 38 (boolean_expression -> boolean_expression AND boolean_expression_unit .)
+    RB              reduce using rule 38 (boolean_expression -> boolean_expression AND boolean_expression_unit .)
+
+
+state 76
+
+    (21) updates -> prob_update .
+
+    SEMICOLON       reduce using rule 21 (updates -> prob_update .)
+    ADD             reduce using rule 21 (updates -> prob_update .)
+
+
+state 77
+
+    (19) module_command_statement -> LB RB boolean_expression THEN updates . SEMICOLON
+    (20) updates -> updates . ADD prob_update
+
+    SEMICOLON       shift and go to state 90
+    ADD             shift and go to state 91
+
+
+state 78
+
+    (22) prob_update -> expr . COLON actions
+    (27) expr -> expr . ADD term
+    (28) expr -> expr . MINUS term
+
+    COLON           shift and go to state 92
+    ADD             shift and go to state 62
+    MINUS           shift and go to state 61
+
+
+state 79
+
+    (39) boolean_expression -> boolean_expression OR boolean_expression_unit .
+
+    ADD             reduce using rule 39 (boolean_expression -> boolean_expression OR boolean_expression_unit .)
+    MINUS           reduce using rule 39 (boolean_expression -> boolean_expression OR boolean_expression_unit .)
+    THEN            reduce using rule 39 (boolean_expression -> boolean_expression OR boolean_expression_unit .)
+    AND             reduce using rule 39 (boolean_expression -> boolean_expression OR boolean_expression_unit .)
+    OR              reduce using rule 39 (boolean_expression -> boolean_expression OR boolean_expression_unit .)
+    SEMICOLON       reduce using rule 39 (boolean_expression -> boolean_expression OR boolean_expression_unit .)
+    COMMA           reduce using rule 39 (boolean_expression -> boolean_expression OR boolean_expression_unit .)
+    COLON           reduce using rule 39 (boolean_expression -> boolean_expression OR boolean_expression_unit .)
+    RP              reduce using rule 39 (boolean_expression -> boolean_expression OR boolean_expression_unit .)
+    RB              reduce using rule 39 (boolean_expression -> boolean_expression OR boolean_expression_unit .)
+
+
+state 80
+
+    (18) module_var_def_statement -> NAME COLON LB expr COMMA . expr RB INIT NUM SEMICOLON
+    (27) expr -> . expr ADD term
+    (28) expr -> . expr MINUS term
+    (29) expr -> . NAME LP expr RP
+    (30) expr -> . term
+    (31) expr -> . boolean_expression
+    (32) term -> . term MUL factor
+    (33) term -> . term DIV factor
+    (34) term -> . factor
+    (38) boolean_expression -> . boolean_expression AND boolean_expression_unit
+    (39) boolean_expression -> . boolean_expression OR boolean_expression_unit
+    (40) boolean_expression -> . boolean_expression_unit
+    (35) factor -> . NUM
+    (36) factor -> . NAME LP expr RP
+    (37) factor -> . NAME
+    (41) boolean_expression_unit -> . NAME GT NUM
+    (42) boolean_expression_unit -> . NAME LT NUM
+    (43) boolean_expression_unit -> . NAME GE NUM
+    (44) boolean_expression_unit -> . NAME LE NUM
+    (45) boolean_expression_unit -> . NAME EQ NUM
+    (46) boolean_expression_unit -> . NAME NEQ NUM
+    (47) boolean_expression_unit -> . NAME GT expr
+    (48) boolean_expression_unit -> . NAME LT expr
+    (49) boolean_expression_unit -> . NAME GE expr
+    (50) boolean_expression_unit -> . NAME LE expr
+    (51) boolean_expression_unit -> . NAME EQ expr
+    (52) boolean_expression_unit -> . NAME NEQ expr
+
+    NAME            shift and go to state 41
+    NUM             shift and go to state 38
+
+    expr                           shift and go to state 93
+    term                           shift and go to state 40
+    factor                         shift and go to state 39
+    boolean_expression_unit        shift and go to state 30
+    boolean_expression             shift and go to state 42
+
+state 81
+
+    (12) const_value_statement -> CONST INT NAME ASSIGN NUM SEMICOLON .
+
+    $end            reduce using rule 12 (const_value_statement -> CONST INT NAME ASSIGN NUM SEMICOLON .)
+
+
+state 82
+
+    (13) const_value_statement -> CONST DOUBLE NAME ASSIGN NUM SEMICOLON .
+
+    $end            reduce using rule 13 (const_value_statement -> CONST DOUBLE NAME ASSIGN NUM SEMICOLON .)
+
+
+state 83
+
+    (14) const_value_statement -> CONST BOOL NAME ASSIGN NUM SEMICOLON .
+
+    $end            reduce using rule 14 (const_value_statement -> CONST BOOL NAME ASSIGN NUM SEMICOLON .)
+
+
+state 84
+
+    (36) factor -> NAME . LP expr RP
+    (37) factor -> NAME .
+
+    LP              shift and go to state 94
+    MUL             reduce using rule 37 (factor -> NAME .)
+    DIV             reduce using rule 37 (factor -> NAME .)
+    SEMICOLON       reduce using rule 37 (factor -> NAME .)
+    ADD             reduce using rule 37 (factor -> NAME .)
+    MINUS           reduce using rule 37 (factor -> NAME .)
+    COMMA           reduce using rule 37 (factor -> NAME .)
+    THEN            reduce using rule 37 (factor -> NAME .)
+    AND             reduce using rule 37 (factor -> NAME .)
+    OR              reduce using rule 37 (factor -> NAME .)
+    COLON           reduce using rule 37 (factor -> NAME .)
+    RP              reduce using rule 37 (factor -> NAME .)
+    RB              reduce using rule 37 (factor -> NAME .)
+
+
+state 85
+
+    (32) term -> term MUL factor .
+
+    MUL             reduce using rule 32 (term -> term MUL factor .)
+    DIV             reduce using rule 32 (term -> term MUL factor .)
+    ADD             reduce using rule 32 (term -> term MUL factor .)
+    MINUS           reduce using rule 32 (term -> term MUL factor .)
+    THEN            reduce using rule 32 (term -> term MUL factor .)
+    AND             reduce using rule 32 (term -> term MUL factor .)
+    OR              reduce using rule 32 (term -> term MUL factor .)
+    SEMICOLON       reduce using rule 32 (term -> term MUL factor .)
+    COMMA           reduce using rule 32 (term -> term MUL factor .)
+    COLON           reduce using rule 32 (term -> term MUL factor .)
+    RP              reduce using rule 32 (term -> term MUL factor .)
+    RB              reduce using rule 32 (term -> term MUL factor .)
+
+
+state 86
+
+    (33) term -> term DIV factor .
+
+    MUL             reduce using rule 33 (term -> term DIV factor .)
+    DIV             reduce using rule 33 (term -> term DIV factor .)
+    ADD             reduce using rule 33 (term -> term DIV factor .)
+    MINUS           reduce using rule 33 (term -> term DIV factor .)
+    THEN            reduce using rule 33 (term -> term DIV factor .)
+    AND             reduce using rule 33 (term -> term DIV factor .)
+    OR              reduce using rule 33 (term -> term DIV factor .)
+    SEMICOLON       reduce using rule 33 (term -> term DIV factor .)
+    COMMA           reduce using rule 33 (term -> term DIV factor .)
+    COLON           reduce using rule 33 (term -> term DIV factor .)
+    RP              reduce using rule 33 (term -> term DIV factor .)
+    RB              reduce using rule 33 (term -> term DIV factor .)
+
+
+state 87
+
+    (29) expr -> NAME LP expr . RP
+    (36) factor -> NAME LP expr . RP
+    (27) expr -> expr . ADD term
+    (28) expr -> expr . MINUS term
+
+    RP              shift and go to state 95
+    ADD             shift and go to state 62
+    MINUS           shift and go to state 61
+
+
+state 88
+
+    (28) expr -> expr MINUS term .
+    (32) term -> term . MUL factor
+    (33) term -> term . DIV factor
+
+    RP              reduce using rule 28 (expr -> expr MINUS term .)
+    ADD             reduce using rule 28 (expr -> expr MINUS term .)
+    MINUS           reduce using rule 28 (expr -> expr MINUS term .)
+    THEN            reduce using rule 28 (expr -> expr MINUS term .)
+    AND             reduce using rule 28 (expr -> expr MINUS term .)
+    OR              reduce using rule 28 (expr -> expr MINUS term .)
+    SEMICOLON       reduce using rule 28 (expr -> expr MINUS term .)
+    COMMA           reduce using rule 28 (expr -> expr MINUS term .)
+    COLON           reduce using rule 28 (expr -> expr MINUS term .)
+    RB              reduce using rule 28 (expr -> expr MINUS term .)
+    MUL             shift and go to state 57
+    DIV             shift and go to state 58
+
+
+state 89
+
+    (27) expr -> expr ADD term .
+    (32) term -> term . MUL factor
+    (33) term -> term . DIV factor
+
+    RP              reduce using rule 27 (expr -> expr ADD term .)
+    ADD             reduce using rule 27 (expr -> expr ADD term .)
+    MINUS           reduce using rule 27 (expr -> expr ADD term .)
+    THEN            reduce using rule 27 (expr -> expr ADD term .)
+    AND             reduce using rule 27 (expr -> expr ADD term .)
+    OR              reduce using rule 27 (expr -> expr ADD term .)
+    SEMICOLON       reduce using rule 27 (expr -> expr ADD term .)
+    COMMA           reduce using rule 27 (expr -> expr ADD term .)
+    COLON           reduce using rule 27 (expr -> expr ADD term .)
+    RB              reduce using rule 27 (expr -> expr ADD term .)
+    MUL             shift and go to state 57
+    DIV             shift and go to state 58
+
+
+state 90
+
+    (19) module_command_statement -> LB RB boolean_expression THEN updates SEMICOLON .
+
+    $end            reduce using rule 19 (module_command_statement -> LB RB boolean_expression THEN updates SEMICOLON .)
+
+
+state 91
+
+    (20) updates -> updates ADD . prob_update
+    (22) prob_update -> . expr COLON actions
+    (27) expr -> . expr ADD term
+    (28) expr -> . expr MINUS term
+    (29) expr -> . NAME LP expr RP
+    (30) expr -> . term
+    (31) expr -> . boolean_expression
+    (32) term -> . term MUL factor
+    (33) term -> . term DIV factor
+    (34) term -> . factor
+    (38) boolean_expression -> . boolean_expression AND boolean_expression_unit
+    (39) boolean_expression -> . boolean_expression OR boolean_expression_unit
+    (40) boolean_expression -> . boolean_expression_unit
+    (35) factor -> . NUM
+    (36) factor -> . NAME LP expr RP
+    (37) factor -> . NAME
+    (41) boolean_expression_unit -> . NAME GT NUM
+    (42) boolean_expression_unit -> . NAME LT NUM
+    (43) boolean_expression_unit -> . NAME GE NUM
+    (44) boolean_expression_unit -> . NAME LE NUM
+    (45) boolean_expression_unit -> . NAME EQ NUM
+    (46) boolean_expression_unit -> . NAME NEQ NUM
+    (47) boolean_expression_unit -> . NAME GT expr
+    (48) boolean_expression_unit -> . NAME LT expr
+    (49) boolean_expression_unit -> . NAME GE expr
+    (50) boolean_expression_unit -> . NAME LE expr
+    (51) boolean_expression_unit -> . NAME EQ expr
+    (52) boolean_expression_unit -> . NAME NEQ expr
+
+    NAME            shift and go to state 41
+    NUM             shift and go to state 38
+
+    term                           shift and go to state 40
+    boolean_expression             shift and go to state 42
+    expr                           shift and go to state 78
+    boolean_expression_unit        shift and go to state 30
+    prob_update                    shift and go to state 96
+    factor                         shift and go to state 39
+
+state 92
+
+    (22) prob_update -> expr COLON . actions
+    (23) actions -> . assignment AND assignment
+    (24) actions -> . assignment
+    (25) assignment -> . NAME ASSIGN expr
+    (26) assignment -> . LP NAME ASSIGN expr RP
+
+    NAME            shift and go to state 97
+    LP              shift and go to state 99
+
+    actions                        shift and go to state 98
+    assignment                     shift and go to state 100
+
+state 93
+
+    (18) module_var_def_statement -> NAME COLON LB expr COMMA expr . RB INIT NUM SEMICOLON
+    (27) expr -> expr . ADD term
+    (28) expr -> expr . MINUS term
+
+    RB              shift and go to state 101
+    ADD             shift and go to state 62
+    MINUS           shift and go to state 61
+
+
+state 94
+
+    (36) factor -> NAME LP . expr RP
+    (27) expr -> . expr ADD term
+    (28) expr -> . expr MINUS term
+    (29) expr -> . NAME LP expr RP
+    (30) expr -> . term
+    (31) expr -> . boolean_expression
+    (32) term -> . term MUL factor
+    (33) term -> . term DIV factor
+    (34) term -> . factor
+    (38) boolean_expression -> . boolean_expression AND boolean_expression_unit
+    (39) boolean_expression -> . boolean_expression OR boolean_expression_unit
+    (40) boolean_expression -> . boolean_expression_unit
+    (35) factor -> . NUM
+    (36) factor -> . NAME LP expr RP
+    (37) factor -> . NAME
+    (41) boolean_expression_unit -> . NAME GT NUM
+    (42) boolean_expression_unit -> . NAME LT NUM
+    (43) boolean_expression_unit -> . NAME GE NUM
+    (44) boolean_expression_unit -> . NAME LE NUM
+    (45) boolean_expression_unit -> . NAME EQ NUM
+    (46) boolean_expression_unit -> . NAME NEQ NUM
+    (47) boolean_expression_unit -> . NAME GT expr
+    (48) boolean_expression_unit -> . NAME LT expr
+    (49) boolean_expression_unit -> . NAME GE expr
+    (50) boolean_expression_unit -> . NAME LE expr
+    (51) boolean_expression_unit -> . NAME EQ expr
+    (52) boolean_expression_unit -> . NAME NEQ expr
+
+    NAME            shift and go to state 41
+    NUM             shift and go to state 38
+
+    expr                           shift and go to state 102
+    term                           shift and go to state 40
+    factor                         shift and go to state 39
+    boolean_expression_unit        shift and go to state 30
+    boolean_expression             shift and go to state 42
+
+state 95
+
+    (29) expr -> NAME LP expr RP .
+    (36) factor -> NAME LP expr RP .
+
+  ! reduce/reduce conflict for SEMICOLON resolved using rule 29 (expr -> NAME LP expr RP .)
+  ! reduce/reduce conflict for ADD resolved using rule 29 (expr -> NAME LP expr RP .)
+  ! reduce/reduce conflict for MINUS resolved using rule 29 (expr -> NAME LP expr RP .)
+  ! reduce/reduce conflict for COLON resolved using rule 29 (expr -> NAME LP expr RP .)
+  ! reduce/reduce conflict for THEN resolved using rule 29 (expr -> NAME LP expr RP .)
+  ! reduce/reduce conflict for AND resolved using rule 29 (expr -> NAME LP expr RP .)
+  ! reduce/reduce conflict for OR resolved using rule 29 (expr -> NAME LP expr RP .)
+  ! reduce/reduce conflict for COMMA resolved using rule 29 (expr -> NAME LP expr RP .)
+  ! reduce/reduce conflict for RP resolved using rule 29 (expr -> NAME LP expr RP .)
+  ! reduce/reduce conflict for RB resolved using rule 29 (expr -> NAME LP expr RP .)
+    RP              reduce using rule 29 (expr -> NAME LP expr RP .)
+    ADD             reduce using rule 29 (expr -> NAME LP expr RP .)
+    MINUS           reduce using rule 29 (expr -> NAME LP expr RP .)
+    THEN            reduce using rule 29 (expr -> NAME LP expr RP .)
+    AND             reduce using rule 29 (expr -> NAME LP expr RP .)
+    OR              reduce using rule 29 (expr -> NAME LP expr RP .)
+    SEMICOLON       reduce using rule 29 (expr -> NAME LP expr RP .)
+    COMMA           reduce using rule 29 (expr -> NAME LP expr RP .)
+    COLON           reduce using rule 29 (expr -> NAME LP expr RP .)
+    RB              reduce using rule 29 (expr -> NAME LP expr RP .)
+    MUL             reduce using rule 36 (factor -> NAME LP expr RP .)
+    DIV             reduce using rule 36 (factor -> NAME LP expr RP .)
+
+  ! SEMICOLON       [ reduce using rule 36 (factor -> NAME LP expr RP .) ]
+  ! ADD             [ reduce using rule 36 (factor -> NAME LP expr RP .) ]
+  ! MINUS           [ reduce using rule 36 (factor -> NAME LP expr RP .) ]
+  ! COLON           [ reduce using rule 36 (factor -> NAME LP expr RP .) ]
+  ! THEN            [ reduce using rule 36 (factor -> NAME LP expr RP .) ]
+  ! AND             [ reduce using rule 36 (factor -> NAME LP expr RP .) ]
+  ! OR              [ reduce using rule 36 (factor -> NAME LP expr RP .) ]
+  ! COMMA           [ reduce using rule 36 (factor -> NAME LP expr RP .) ]
+  ! RP              [ reduce using rule 36 (factor -> NAME LP expr RP .) ]
+  ! RB              [ reduce using rule 36 (factor -> NAME LP expr RP .) ]
+
+
+state 96
+
+    (20) updates -> updates ADD prob_update .
+
+    SEMICOLON       reduce using rule 20 (updates -> updates ADD prob_update .)
+    ADD             reduce using rule 20 (updates -> updates ADD prob_update .)
+
+
+state 97
+
+    (25) assignment -> NAME . ASSIGN expr
+
+    ASSIGN          shift and go to state 103
+
+
+state 98
+
+    (22) prob_update -> expr COLON actions .
+
+    SEMICOLON       reduce using rule 22 (prob_update -> expr COLON actions .)
+    ADD             reduce using rule 22 (prob_update -> expr COLON actions .)
+
+
+state 99
+
+    (26) assignment -> LP . NAME ASSIGN expr RP
+
+    NAME            shift and go to state 104
+
+
+state 100
+
+    (23) actions -> assignment . AND assignment
+    (24) actions -> assignment .
+
+    AND             shift and go to state 105
+    SEMICOLON       reduce using rule 24 (actions -> assignment .)
+    ADD             reduce using rule 24 (actions -> assignment .)
+
+
+state 101
+
+    (18) module_var_def_statement -> NAME COLON LB expr COMMA expr RB . INIT NUM SEMICOLON
+
+    INIT            shift and go to state 106
+
+
+state 102
+
+    (36) factor -> NAME LP expr . RP
+    (27) expr -> expr . ADD term
+    (28) expr -> expr . MINUS term
+
+    RP              shift and go to state 107
+    ADD             shift and go to state 62
+    MINUS           shift and go to state 61
+
+
+state 103
+
+    (25) assignment -> NAME ASSIGN . expr
+    (27) expr -> . expr ADD term
+    (28) expr -> . expr MINUS term
+    (29) expr -> . NAME LP expr RP
+    (30) expr -> . term
+    (31) expr -> . boolean_expression
+    (32) term -> . term MUL factor
+    (33) term -> . term DIV factor
+    (34) term -> . factor
+    (38) boolean_expression -> . boolean_expression AND boolean_expression_unit
+    (39) boolean_expression -> . boolean_expression OR boolean_expression_unit
+    (40) boolean_expression -> . boolean_expression_unit
+    (35) factor -> . NUM
+    (36) factor -> . NAME LP expr RP
+    (37) factor -> . NAME
+    (41) boolean_expression_unit -> . NAME GT NUM
+    (42) boolean_expression_unit -> . NAME LT NUM
+    (43) boolean_expression_unit -> . NAME GE NUM
+    (44) boolean_expression_unit -> . NAME LE NUM
+    (45) boolean_expression_unit -> . NAME EQ NUM
+    (46) boolean_expression_unit -> . NAME NEQ NUM
+    (47) boolean_expression_unit -> . NAME GT expr
+    (48) boolean_expression_unit -> . NAME LT expr
+    (49) boolean_expression_unit -> . NAME GE expr
+    (50) boolean_expression_unit -> . NAME LE expr
+    (51) boolean_expression_unit -> . NAME EQ expr
+    (52) boolean_expression_unit -> . NAME NEQ expr
+
+    NAME            shift and go to state 41
+    NUM             shift and go to state 38
+
+    expr                           shift and go to state 108
+    term                           shift and go to state 40
+    factor                         shift and go to state 39
+    boolean_expression_unit        shift and go to state 30
+    boolean_expression             shift and go to state 42
+
+state 104
+
+    (26) assignment -> LP NAME . ASSIGN expr RP
+
+    ASSIGN          shift and go to state 109
+
+
+state 105
+
+    (23) actions -> assignment AND . assignment
+    (25) assignment -> . NAME ASSIGN expr
+    (26) assignment -> . LP NAME ASSIGN expr RP
+
+    NAME            shift and go to state 97
+    LP              shift and go to state 99
+
+    assignment                     shift and go to state 110
+
+state 106
+
+    (18) module_var_def_statement -> NAME COLON LB expr COMMA expr RB INIT . NUM SEMICOLON
+
+    NUM             shift and go to state 111
+
+
+state 107
+
+    (36) factor -> NAME LP expr RP .
+
+    MUL             reduce using rule 36 (factor -> NAME LP expr RP .)
+    DIV             reduce using rule 36 (factor -> NAME LP expr RP .)
+    SEMICOLON       reduce using rule 36 (factor -> NAME LP expr RP .)
+    ADD             reduce using rule 36 (factor -> NAME LP expr RP .)
+    MINUS           reduce using rule 36 (factor -> NAME LP expr RP .)
+    COMMA           reduce using rule 36 (factor -> NAME LP expr RP .)
+    THEN            reduce using rule 36 (factor -> NAME LP expr RP .)
+    AND             reduce using rule 36 (factor -> NAME LP expr RP .)
+    OR              reduce using rule 36 (factor -> NAME LP expr RP .)
+    COLON           reduce using rule 36 (factor -> NAME LP expr RP .)
+    RP              reduce using rule 36 (factor -> NAME LP expr RP .)
+    RB              reduce using rule 36 (factor -> NAME LP expr RP .)
+
+
+state 108
+
+    (25) assignment -> NAME ASSIGN expr .
+    (27) expr -> expr . ADD term
+    (28) expr -> expr . MINUS term
+
+  ! shift/reduce conflict for ADD resolved as shift
+    SEMICOLON       reduce using rule 25 (assignment -> NAME ASSIGN expr .)
+    AND             reduce using rule 25 (assignment -> NAME ASSIGN expr .)
+    ADD             shift and go to state 62
+    MINUS           shift and go to state 61
+
+  ! ADD             [ reduce using rule 25 (assignment -> NAME ASSIGN expr .) ]
+
+
+state 109
+
+    (26) assignment -> LP NAME ASSIGN . expr RP
+    (27) expr -> . expr ADD term
+    (28) expr -> . expr MINUS term
+    (29) expr -> . NAME LP expr RP
+    (30) expr -> . term
+    (31) expr -> . boolean_expression
+    (32) term -> . term MUL factor
+    (33) term -> . term DIV factor
+    (34) term -> . factor
+    (38) boolean_expression -> . boolean_expression AND boolean_expression_unit
+    (39) boolean_expression -> . boolean_expression OR boolean_expression_unit
+    (40) boolean_expression -> . boolean_expression_unit
+    (35) factor -> . NUM
+    (36) factor -> . NAME LP expr RP
+    (37) factor -> . NAME
+    (41) boolean_expression_unit -> . NAME GT NUM
+    (42) boolean_expression_unit -> . NAME LT NUM
+    (43) boolean_expression_unit -> . NAME GE NUM
+    (44) boolean_expression_unit -> . NAME LE NUM
+    (45) boolean_expression_unit -> . NAME EQ NUM
+    (46) boolean_expression_unit -> . NAME NEQ NUM
+    (47) boolean_expression_unit -> . NAME GT expr
+    (48) boolean_expression_unit -> . NAME LT expr
+    (49) boolean_expression_unit -> . NAME GE expr
+    (50) boolean_expression_unit -> . NAME LE expr
+    (51) boolean_expression_unit -> . NAME EQ expr
+    (52) boolean_expression_unit -> . NAME NEQ expr
+
+    NAME            shift and go to state 41
+    NUM             shift and go to state 38
+
+    expr                           shift and go to state 112
+    term                           shift and go to state 40
+    factor                         shift and go to state 39
+    boolean_expression_unit        shift and go to state 30
+    boolean_expression             shift and go to state 42
+
+state 110
+
+    (23) actions -> assignment AND assignment .
+
+    SEMICOLON       reduce using rule 23 (actions -> assignment AND assignment .)
+    ADD             reduce using rule 23 (actions -> assignment AND assignment .)
+
+
+state 111
+
+    (18) module_var_def_statement -> NAME COLON LB expr COMMA expr RB INIT NUM . SEMICOLON
+
+    SEMICOLON       shift and go to state 113
+
+
+state 112
+
+    (26) assignment -> LP NAME ASSIGN expr . RP
+    (27) expr -> expr . ADD term
+    (28) expr -> expr . MINUS term
+
+    RP              shift and go to state 114
+    ADD             shift and go to state 62
+    MINUS           shift and go to state 61
+
+
+state 113
+
+    (18) module_var_def_statement -> NAME COLON LB expr COMMA expr RB INIT NUM SEMICOLON .
+
+    $end            reduce using rule 18 (module_var_def_statement -> NAME COLON LB expr COMMA expr RB INIT NUM SEMICOLON .)
+
+
+state 114
+
+    (26) assignment -> LP NAME ASSIGN expr RP .
+
+    SEMICOLON       reduce using rule 26 (assignment -> LP NAME ASSIGN expr RP .)
+    ADD             reduce using rule 26 (assignment -> LP NAME ASSIGN expr RP .)
+    AND             reduce using rule 26 (assignment -> LP NAME ASSIGN expr RP .)
+
+WARNING: 
+WARNING: Conflicts:
+WARNING: 
+WARNING: shift/reduce conflict for AND in state 42 resolved as shift
+WARNING: shift/reduce conflict for OR in state 42 resolved as shift
+WARNING: shift/reduce conflict for ADD in state 63 resolved as shift
+WARNING: shift/reduce conflict for MINUS in state 63 resolved as shift
+WARNING: shift/reduce conflict for ADD in state 65 resolved as shift
+WARNING: shift/reduce conflict for MINUS in state 65 resolved as shift
+WARNING: shift/reduce conflict for ADD in state 67 resolved as shift
+WARNING: shift/reduce conflict for MINUS in state 67 resolved as shift
+WARNING: shift/reduce conflict for ADD in state 69 resolved as shift
+WARNING: shift/reduce conflict for MINUS in state 69 resolved as shift
+WARNING: shift/reduce conflict for ADD in state 71 resolved as shift
+WARNING: shift/reduce conflict for MINUS in state 71 resolved as shift
+WARNING: shift/reduce conflict for ADD in state 73 resolved as shift
+WARNING: shift/reduce conflict for MINUS in state 73 resolved as shift
+WARNING: shift/reduce conflict for ADD in state 108 resolved as shift
+WARNING: reduce/reduce conflict in state 64 resolved using rule (factor -> NUM)
+WARNING: rejected rule (boolean_expression_unit -> NAME LE NUM) in state 64
+WARNING: reduce/reduce conflict in state 66 resolved using rule (factor -> NUM)
+WARNING: rejected rule (boolean_expression_unit -> NAME GT NUM) in state 66
+WARNING: reduce/reduce conflict in state 68 resolved using rule (factor -> NUM)
+WARNING: rejected rule (boolean_expression_unit -> NAME GE NUM) in state 68
+WARNING: reduce/reduce conflict in state 70 resolved using rule (factor -> NUM)
+WARNING: rejected rule (boolean_expression_unit -> NAME LT NUM) in state 70
+WARNING: reduce/reduce conflict in state 72 resolved using rule (factor -> NUM)
+WARNING: rejected rule (boolean_expression_unit -> NAME EQ NUM) in state 72
+WARNING: reduce/reduce conflict in state 74 resolved using rule (factor -> NUM)
+WARNING: rejected rule (boolean_expression_unit -> NAME NEQ NUM) in state 74
+WARNING: reduce/reduce conflict in state 95 resolved using rule (expr -> NAME LP expr RP)
+WARNING: rejected rule (factor -> NAME LP expr RP) in state 95
+WARNING: Rule (boolean_expression_unit -> NAME LE NUM) is never reduced
+WARNING: Rule (boolean_expression_unit -> NAME GT NUM) is never reduced
+WARNING: Rule (boolean_expression_unit -> NAME GE NUM) is never reduced
+WARNING: Rule (boolean_expression_unit -> NAME LT NUM) is never reduced
+WARNING: Rule (boolean_expression_unit -> NAME EQ NUM) is never reduced
+WARNING: Rule (boolean_expression_unit -> NAME NEQ NUM) is never reduced

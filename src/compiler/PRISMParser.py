@@ -1,30 +1,357 @@
+# -*- coding: utf-8 -*-
 import ply.yacc as yacc
-
-from module.ModulesFile import ModulesFile, ModelType
+from module.ModulesFile import *
 from PRISMLex import MyLexer
+from module.Module import *
+from util.FuncUtil import *
+from removeComment import clear_comment
+
+
+class ExpressionHelper(object):
+
+    binary_op_map = {
+        '+': lambda x, y: x + y,
+        '-': lambda x, y: x - y,
+        '*': lambda x, y: x * y,
+        '/': lambda x, y: x / y
+    }
+
+    func_map = {
+        'stdcdf': stdcdf
+    }
+
+    @classmethod
+    def execbinary(cls, op, *params):
+        func = cls.binary_op_map[op]
+        return func(*params)
+
+    @classmethod
+    def execfunc(cls, func_name, *params):
+        func = cls.func_map.get(func_name, None)
+        if not func:
+            raise Exception("Not supported function {}".format(func_name))
+        return func(*params)
+
+    @staticmethod
+    def resolve_boolean_expression(val1, val2, op):
+        # val1, val2 : number literal
+        # op: > < >= <= == !=
+        if '<' == op:
+            return val1 < val2
+        if '>' == op:
+            return val1 > val2
+        if '>=' == op:
+            return val1 >= val2
+        if '<=' == op:
+            return val1 <= val2
+        if '==' == op:
+            return val1 == val2
+        if '!=' == op:
+            return val1 != val2
 
 
 class BasicParser(object):
+    def __init__(self):
+        self.moduledefbegin = False  # 表示当前是否正在解析module模块
+        '''
+        当parser分析到一行Command时，可能最后会解析成多个Command对象
+        每个Command对象包含以下信息：name, guard, prob, action, module
+        目前默认不设置Command的name，即name为空
+        module在每次解析到LB时进行初始化表示当前正在生成的module
+        prob在解析到prob_expr的时候进行设置，prob是一个函数对象，因为需要根据判定对象（变量）的值进行实时计算
+        最重要的Command对象在解析到prob_update时进行初始化，因为从Command的构成上讲，
+        一个prob + update就构成了一个Command对象。
+        之所以要在BasicParser中保存module和guard对象是因为
+        它们是被多个Command对象所共享的。
+        '''
+        self.module = None  # 当前正在解析的module对象
+        self.guard = None  # 表示当前Command对象的guard属性
+        self.binary_op_map = {
+            '+': lambda x, y: x + y,
+            '-': lambda x, y: x - y,
+            '*': lambda x, y: x * y,
+            '/': lambda x, y: x / y
+        }
+        self.func_map = {
+            'stdcdf': stdcdf
+        }
+        # name : value storage structure for constants
+        self.cmap = {}
+        # name : func object storage structure for variables and formula
+        self.vfmap = {}
+
     def p_statement(self, p):
         '''statement : model_type_statement
-                     | const_value_statement'''
+                     | const_value_statement
+                     | module_def_begin_statement
+                     | module_def_end_statement
+                     | module_var_def_statement
+                     | module_command_statement
+                     | formula_statement'''
+        pass
 
     def p_model_type(self, p):
         '''model_type_statement : DTMC
                       | CTMC'''
-        if not self.model:
-            if 'dtmc' == p[0]:
-                self.model = ModulesFile(ModelType.DTMC)
-            else:
-                self.model = ModulesFile(ModelType.CTMC)
-        else:
-            self.model.modelType = [1,0]['dtmc' == p[1]]
+        model_type = ModelType.CTMC
+        if p[1] == 'dtmc':
+            model_type = ModelType.DTMC
+        ModelConstructor.model = ModulesFile.ModulesFile(modeltype=model_type)
+
+    def p_module_def_begin_statement(self, p):
+        '''module_def_begin_statement : MODULE NAME'''
+        self.moduledefbegin = True
+        self.module = Module(p[2])
+
+    def p_module_def_end_statement(self, p):
+        '''module_def_end_statement : ENDMODULE'''
+        if self.moduledefbegin:
+            self.moduledefbegin = False
+            ModelConstructor.model.addModule(self.module)
 
     def p_const_expression(self, p):
-        '''const_value_statement : CONST TYPE NAME ASSIGN NUM SEMICOLON'''
-        if not self.checktype(p[2], p[5]):
-            print "type error in {}".format(p)
-        self.model.addConstant(p[3], self.resolvetype(p[5], p[2]))
+        '''const_value_statement : CONST INT NAME ASSIGN NUM SEMICOLON
+                                 | CONST DOUBLE NAME ASSIGN NUM SEMICOLON
+                                 | CONST BOOL NAME ASSIGN NUM SEMICOLON'''
+        # if not self.checktype(p[2], p[5]):
+        #     print "type error in {}".format(p)
+        name = p[3]
+        value = self.resolvetype(p[5], p[2])
+        ModelConstructor.model.addConstant(name, value)
+        self.cmap[p[3]] = value
+
+    def p_const_expression1(self, p):
+        '''const_value_statement : CONST INT NAME SEMICOLON
+                             | CONST DOUBLE NAME SEMICOLON
+                             | CONST BOOL NAME SEMICOLON'''
+        # 支持解析不确定的常量表达式
+        name = p[3]
+        ModelConstructor.model.addConstant(name, None)
+        self.cmap[name] = None
+
+    def p_module_var_def_statement(self, p):
+        '''module_var_def_statement : NAME COLON LB expr COMMA expr RB INIT NUM SEMICOLON'''
+        #  让var的lowbound和upperbound支持expression
+        tokens = copy.copy(p.slice)
+        min = tokens[4].value()
+        max = tokens[6].value()
+        var = Variable(p[1], p[len(p) - 2], range(min, max + 1),
+                       int)  # 目前默认变量的类型是int p[index] index不能是负数
+        self.module.addVariable(var)
+        print "added variable {} = {} range : [{}, {}]".format(var.getName(), var.initVal, var.valRange[0],
+                                                               var.valRange[-1])
+        self.vfmap[var.getName()] = lambda: ModelConstructor.model.getLocalVar(var.getName())
+
+    def p_module_command_statement(self, p):
+        '''module_command_statement : LB RB boolean_expression THEN updates SEMICOLON'''
+        print "Command discovered"
+
+    def p_updates(self, p):
+        '''updates : updates ADD prob_update'''
+        pass
+
+    def p_updates2(self, p):
+        '''updates : prob_update'''
+        pass
+
+    def p_update(self, p):
+        '''prob_update : expr COLON actions'''
+        # construct a command
+        prob = p[1]  # prob_expr is a function
+        action = p[3]  # actions is a function
+        command = Command("", self.guard, action, self.module, prob)
+        self.module.addCommand(command)
+        print "Command added."
+
+    def p_actions(self, p):
+        '''actions : assignment AND assignment'''
+        f1 = p[1]
+        f2 = p[3]
+
+        def f():
+            f1()
+            f2()
+
+        p[0] = f
+
+    def p_actions2(self, p):
+        '''actions : assignment'''
+        p[0] = p[1]  # a assignment is a function that udpate the variable in model.localVars
+
+    def p_assignment(self, p):
+        '''assignment : NAME ASSIGN expr'''
+        update_func = copy.deepcopy(p[3])
+        var_name = copy.deepcopy(p[1]).value
+
+        def f(vs, cs):
+            var = vs[var_name]
+            if not var or not isinstance(var, Variable):
+                raise Exception("invalid variable name")
+            var.setValue(update_func())
+
+        p[0] = f
+
+    def p_assignment1(self, p):
+        '''assignment : LP NAME ASSIGN expr RP'''
+        update_func = copy.deepcopy(p[4])
+        key = p[2]
+
+        def f(vs, cs):
+            var = vs[key]
+            if not var or not isinstance(var, Variable):
+                raise Exception("invalid variable name: {}".format(key))
+            var.setValue(update_func())
+
+        p[0] = f
+
+    def p_expr(self, p):
+        '''expr : expr ADD term
+                | expr MINUS term'''
+        func = self.binary_op_map[p[2]]
+        slice_copy = copy.deepcopy(p.slice)
+
+        def f():
+            return func(slice_copy[1].value, slice_copy[3].value)
+
+        p[0] = f
+
+    def p_expr1(self, p):
+        '''expr : NAME LP expr RP'''
+        # 目前的函数调用只能解析只包含一个参数的函数调用
+        slices = copy.deepcopy(p.slice)
+        func = self.func_map.get(slices[1].value, None)
+        if not func:
+            raise Exception("not supported function {}".format(p[1]))
+
+        def f():
+            return func(slice[3].value())
+
+        p[0] = f
+
+    def p_expr2(self, p):
+        '''expr : term
+                | boolean_expression'''
+        p[0] = p[1]
+
+    def p_term(self, p):
+        '''term : term MUL factor
+                | term DIV factor'''
+        func = self.binary_op_map[p[2]]
+        slice_copy = copy.deepcopy(p.slice)
+
+        def f():
+            return func(slice_copy[1].value(), slice_copy[3].value())
+
+        p[0] = f
+
+    def p_term1(self, p):
+        '''term : factor'''
+        p[0] = p[1]
+
+    def p_factor(self, p):
+        '''factor : NUM'''
+        # slice = copy.deepcopy(p.slice)
+        num = p[1]
+        p[0] = lambda: num
+
+    def p_factor1(self, p):
+        '''factor : NAME LP expr RP'''
+        slice = copy.deepcopy(p.slice)
+        func = self.func_map.get(slice[1].value, None)
+        if not func:
+            raise Exception("Not supported function {}".format(slice[1].value))
+        p[0] = lambda: func(slice[3].value())
+
+    def p_factor2(self, p):
+        '''factor : NAME'''
+        slice_cpy = copy.copy(p.slice)
+        name = slice_cpy[1].value
+
+        def f():
+            var = ModelConstructor.model.localVars.get(name, None)
+            if var:
+                value = var.getValue()
+            else:
+                var = ModelConstructor.model.getConstant(name)
+                value  = var
+            return value
+
+        p[0] = f
+
+    def p_boolean_expression(self, p):
+        '''boolean_expression : boolean_expression AND boolean_expression_unit
+                              | boolean_expression OR boolean_expression_unit
+                              | boolean_expression_unit'''
+        if len(p) == 4:
+            if p[2] == "&":
+                def f():
+                    return p[1]() and p[3]()
+            if p[2] == "|":
+                def f():
+                    return p[1]() or p[3]()
+            p[0] = f
+        elif len(p) == 2:
+            p[0] = p[1]
+        self.guard = p[0]
+        print self.guard
+
+    def p_boolean_expression_unit(self, p):
+        '''boolean_expression_unit : NAME GT NUM
+                                   | NAME LT NUM
+                                   | NAME GE NUM
+                                   | NAME LE NUM
+                                   | NAME EQ NUM
+                                   | NAME NEQ NUM'''
+        # 解析单个变量与某个常量进行比较
+        tokens = copy.deepcopy(p.slice)
+
+        def f(t, handler):
+            def inner(vs, cs):
+                var = vs[t[1].value]
+                if not var or not isinstance(var, Variable):
+                    raise Exception("invalid variable name")
+                left = var.getValue()
+                right = t[3]
+                op = t[2]
+                print str(left) + str(op) + str(right)
+                return handler(left, right, op)
+
+            return inner
+
+        p[0] = f(tokens, ExpressionHelper.resolve_boolean_expression)
+        print "guard find : {} == {}".format(tokens[1].value, tokens[3])
+
+    def p_boolean_expression_unit1(self, p):
+        '''boolean_expression_unit : NAME GT expr
+                                   | NAME LT expr
+                                   | NAME GE expr
+                                   | NAME LE expr
+                                   | NAME EQ expr
+                                   | NAME NEQ expr'''
+        # 解析某个变量与一个表达式进行比较
+        tokens = copy.copy(p.slice)
+
+        def f(t, handler):
+            # handler is a boolean_expression_resolver : handler(val1, val2,
+            # op)
+            def inner(vs, cs):
+                var = vs[t[1].value]
+                if not var or not isinstance(var, Variable):
+                    raise Exception("invalid var name")
+                left = var.getValue()
+                right = t[3].value()
+                op = t[2].value
+                return handler(left, right, op)
+
+            return inner
+
+        p[0] = f(tokens, ExpressionHelper.resolve_boolean_expression)
+
+    def p_formula(self, p):
+        '''formula_statement : FORMULA NAME ASSIGN expr SEMICOLON'''
+        slices = copy.copy(p.slice)
+        self.vfmap[slices[2].value] = slices[4].value
+        print "formula added: {} = "
 
     def checktype(self, type, value):
         return True
@@ -37,41 +364,47 @@ class BasicParser(object):
         if 'bool' == type:
             return bool(strval)
 
-    def getModel(self, modelfile):
+    def resolvenum(self, strval):
+        if strval.find(r"\.") == -1:
+            return int(strval)
+        return float(strval)
+
+    def parse_model(self, filepath):
+        commentremoved = clear_comment(filepath)
+        print "Parsing model file : {}".format(commentremoved)
         lines = []
-        with open(modelfile) as f:
+
+        with open(commentremoved) as f:
             for l in f:
                 lines.append(l)
         if self.parser:
             myLexer = MyLexer()
-            myLexer.build()
             lexer = myLexer.lexer
             for line in lines:
                 self.parser.parse(line, lexer=lexer)
-        if self.model:
-            return self.model
-        return None
 
     def build(self):
         self.tokens = MyLexer.tokens
-        self.parser = yacc.yacc(module=self)
-        self.model = ModulesFile()
+        self.parser = yacc.yacc(module=self, debug=1)
 
 
 class ModelConstructor(object):
+    model = None
+
     def __init__(self):
-        self.lexer = MyLexer()
         self.parser = BasicParser()
         self.parser.build()
+        ModelConstructor.model = ModulesFile.ModulesFile(ModelType.DTMC)
 
-    def parseModelFile(self, modelfile):
-        return self.parser.getModel(modelfile)
+    def parseModelFile(self, filepath):
+        self.parser.parse_model(filepath)
+        return ModelConstructor.model
+
 
 def testModelConstruction():
     constructor = ModelConstructor()
-    model = constructor.parseModelFile("../../prism_model/smalltest.prism")
-    print "modeltype : {}".format(model.modelType)
-    print "constants in model : {}".format(model.constants)
+    constructor.parseModelFile("../../prism_model/smalltest.prism")
+
 
 if __name__ == "__main__":
     testModelConstruction()

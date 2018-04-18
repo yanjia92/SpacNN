@@ -1,7 +1,1 @@
-dtmc
-
-const int const1 = 1;
-
-module timer
-
-endmodule
+formula t = t_turn==1&day<=YEAR*365;

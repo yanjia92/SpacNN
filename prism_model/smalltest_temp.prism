@@ -1,0 +1,5 @@
+const int YEAR = 5;
+
+t_turn : [0, 1] init 1;
+day : [0, 365]
+formula t = t_turn==1&day<=YEAR*365;

@@ -72,8 +72,6 @@ class Module(object):
         return None
 
 
-
-
 class CommandKind:
     FAILURE, REPAIR, NONE = range(3)
 
@@ -81,6 +79,7 @@ class CommandKind:
 class Command(object):
     # name: name of the command
     # about guard and action in Command:
+        # they are function objects both
         # they all take two dictionaries vs, cs(set of variables and constants)
         # as its parameter
     # module: Module instance which the command get attached to
@@ -90,11 +89,11 @@ class Command(object):
     # prob: represents probability/rate
     def __init__(
             self,
-            name,
-            guard,
-            action,
-            module,
-            prob,
+            name = "",
+            guard = None,
+            action = None,
+            module = None,
+            prob = None,
             kind=None,
             biasingRate=None):
         self.name = name
@@ -108,6 +107,7 @@ class Command(object):
         # failure biasing doesn't change rate, it only changes
         # probability of the embedded DTMC
         self.biasingRate = biasingRate
+        print "Guard is None: " + str(self.guard is None)
 
     def evalGuard(self):
         if 'cs' in dir(self) and 'vs' in dir(self):

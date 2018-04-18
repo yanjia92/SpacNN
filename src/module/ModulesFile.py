@@ -72,10 +72,10 @@ class ModulesFile(object):
         # failure biasing is enabled or not
         self.fb = fb
 
-
     def init(self, modules, labels):
-        for module in modules:
-            self.addModule(module)
+        if modules:
+            for module in modules:
+                self.addModule(module)
         if labels:
             for name, label in labels.items():
                 self.addLabel(name, label)
@@ -83,6 +83,8 @@ class ModulesFile(object):
 
     # module: module instance
     def addModule(self, module):
+        if module == None:
+            raise Exception("module cannot be None")
         self.modules[module.name] = module
         # add variables
         for k, v in module.variables.items():
@@ -118,6 +120,11 @@ class ModulesFile(object):
         module = self.getModuleByName(module)
         if module:
             return module.setConstant(name, value)
+
+    # added when trying to write the compiler for the PRISM language
+    # store the constant value in ModulesFile unitedly
+    def addConstant(self, name, value):
+        self.constants.update({name : value})
 
     # label: a function represents ap
     # label is implemented as a function object that receive

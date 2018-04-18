@@ -39,10 +39,12 @@ class ModuleFactory(object):
             # failed.
             return vs['timer_turn'] == False and vs['sb_status'] == 1 and vs['s3r_status'] == 1
 
+        # failure action
         def faction(vs, cs):
             vs['sb_status'].setValue(0)
             vs['timer_turn'].setValue(True)
 
+        # normal action
         def naction(vs, cs):
             vs['timer_turn'].setValue(True)
 

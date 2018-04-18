@@ -4,7 +4,7 @@ dtmc
 
 global t_turn : bool init true; // global variable: 表示当前Time模块是否可运行
 
-// system constants and formulaedt
+// system constants and formulae
 // ================
 const int YEAR = 5;
 const double SCREEN_THICKNESS;     // 屏蔽层厚度: 1-100
@@ -103,5 +103,37 @@ label "failure" = sb_status=0 | s3r_status=0;
 
 
 
+
+
+dtmc
+
+const int YEAR = 5;
+// 屏蔽层厚度
+const double SCREEN_THICKNESS;
+const double S3R_K =66.8333333333;
+const double SB_K =0.0039;
+const double e = 2.71828182;
+
+module Time
+    day : [0, YEAR*365] init 0;
+    t_turn : [0, 1] init 1;
+    [] t_turn==1&day<=YEAR*365 -> 1.0 : day=day+1&t_turn=0;
+endmodule
+
+// 太阳能电池模块
+const double SB_P_THRESHOLD =0.819;
+const double SB_A_MU =0.1754;
+const double SB_A_SIGMA =0.48699609;
+const double SB_B =1.8;
+
+formula sb_dose = day / 365.0 * SB_K * SCREEN_THICKNESS;
+formula x =  (1 - SB_P_THRESHOLD) / ln(1 + SB_B * sb_dose);
+formula std_x = (x - SB_A_MU) / SB_A_SIGMA;
+formula sb_fail_prob = stdcdf(std_x);
+
+module SolarBattery
+    sb_status: [0, 1] init 1; // 太阳能电池所处的状态：1：正常；0：失效
+    [] sb_status=1&t_turn=0 ->  sb_fail_prob:(sb_status=0)&(t_turn=1)+(1.0-sb_fail_prob):(sb_status=1)&(t_turn=1);
+endmodule
 
 

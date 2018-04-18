@@ -1,0 +1,4 @@
+module mdl
+a : [0, 1] init 1;
+[] a==1 -> 1.0:(a=0);
+endmodule
