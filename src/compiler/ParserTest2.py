@@ -28,6 +28,10 @@ binary_op_map = {
     '/' : lambda x,y : x / y
 }
 
+def p_statement(p):
+    '''statement : NAME EQUALS expression'''
+    name = p[1]
+    variables[name] = p[3]
 
 def p_expression(p):
     '''expression : expression PLUS term
@@ -36,9 +40,9 @@ def p_expression(p):
     p[0] = func(p[1], p[3])
 
 
-def p_expression1(p):
-    '''expression : NAME LP expression RP'''
-    p[0] = resolve_func_expr(p[1], p[3])
+# def p_expression1(p):
+#     '''expression : NAME LP expression RP'''
+#     p[0] = resolve_func_expr(p[1], p[3])
 
 
 def p_expression2(p):
@@ -84,8 +88,9 @@ def resolve_func_expr(func_name, *value):
 
 yacc.yacc()
 
-data = "log(a+b)"
-print yacc.parse(data) == log(variables['a'] + variables['b'])
+data = "a=a+1"
+yacc.parse(data)
+assert variables['a'] == 2
 
 
 

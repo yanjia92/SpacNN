@@ -1,1 +1,20 @@
-formula t = t_turn==1&day<=YEAR*365;
+// Satellite Power System
+// consists of modules of 蓄电池，太阳能充电池，充电控制器，放电控制器，分流器
+dtmc
+
+// system constants and formulae
+// ================
+const int YEAR = 5;
+const double SCREEN_THICKNESS;     // 屏蔽层厚度: 1-100
+const double S3R_K = 200.5 / 3.0;   // 电离损伤剂量与厚度成反比关系，即d1 = S3R_K/SCREEN_THICKNESS
+const double SB_K = 0.0039; // 位移损伤剂量与厚度成正比关系，即d = SB_K * SCREEN_THICKNESS
+const double e = 2.71828182; // math.e
+// const int year;
+formula IEL_YEAR= S3R_K / SCREEN_THICKNESS;      // S3R一年内受到的电离能损剂量之和
+formula NIEL_YEAR = SB_K * SCREEN_THICKNESS;     // 太阳能电池一年内所受的非电离能损之和
+
+module Time
+    day : [0, YEAR*365] init 0; // 1 years
+    t_turn : [0, 1] init 1;
+    [] t_turn==1&day<=YEAR*365 -> 1.0:(day=day+1)&(t_turn=0);
+endmodule

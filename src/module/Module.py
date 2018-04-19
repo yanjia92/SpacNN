@@ -107,7 +107,7 @@ class Command(object):
         # failure biasing doesn't change rate, it only changes
         # probability of the embedded DTMC
         self.biasingRate = biasingRate
-        print "Guard is None: " + str(self.guard is None)
+        # print "Guard is None ? : " + str(self.guard is None)
 
     def evalGuard(self):
         if 'cs' in dir(self) and 'vs' in dir(self):
