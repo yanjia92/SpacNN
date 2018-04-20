@@ -108,7 +108,8 @@ class ModulesFile(object):
     # For now, let's assume there are no variables with same name in
     # different modules
     def getLocalVar(self, varName='', moduleName=''):
-        return self.localVars[varName]
+        var = self.localVars[varName]
+        return var
 
     # For now, let's assume there are no constant with same name in
     # different modules

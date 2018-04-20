@@ -6,7 +6,7 @@ from math import *
 # given that it's less than t.
 # e.g. implementation of forcing.
 # if forcing is False, return normal random variable from the exponential distribution
-# of the rate parameter set to be lamda.
+# of the rate parameter set to be lambda.
 def randomExpo(lamda, t=None, forcing=True):
     import random, math
     rnd = random.uniform(0, 1)

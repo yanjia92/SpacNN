@@ -14,13 +14,33 @@ logger.addHandler(handler)
 logger.setLevel(logging.INFO)
 
 
+def bin_add(x,y):
+    '''bin_add'''
+    return x+y
+
+
+def bin_minus(x, y):
+    '''bin_minus'''
+    return x - y
+
+
+def bin_times(x, y):
+    '''bin times'''
+    return x * y
+
+
+def bin_div(x, y):
+    '''bin divide'''
+    return x / y
+
+
 class ExpressionHelper(object):
 
     binary_op_map = {
-        '+': lambda x, y: x + y,
-        '-': lambda x, y: x - y,
-        '*': lambda x, y: x * y,
-        '/': lambda x, y: x / y
+        '+': bin_add,
+        '-': bin_minus,
+        '*': bin_times,
+        '/': bin_div,
     }
 
     func_map = {
@@ -60,6 +80,10 @@ class ExpressionHelper(object):
 
 
 class BasicParser(object):
+    FRML_FUNC_PREFIX = "FRML"
+    VAR_FUNC_PREFIX = "VAR"
+    SPLIT = ":"
+
     def __init__(self):
         self.moduledefbegin = False  # 表示当前是否正在解析module模块
         '''
@@ -96,7 +120,8 @@ class BasicParser(object):
                      | module_def_end_statement
                      | module_var_def_statement
                      | module_command_statement
-                     | formula_statement'''
+                     | formula_statement
+                     | label_statement'''
         # print "slice: {}".format(p.slice)
         pass
 
@@ -228,12 +253,13 @@ class BasicParser(object):
     def p_expr(self, p):
         '''expr : expr ADD term
                 | expr MINUS term'''
-        func = self.binary_op_map[p[2]]
+        func = ExpressionHelper.binary_op_map[p[2]]
         slice_copy = copy.deepcopy(p.slice)
 
         def f():
+            '''binary expression function'''
             return func(slice_copy[1].value(), slice_copy[3].value())
-
+        f.func_doc = "func_{}".format(func.func_name)
         p[0] = f
 
     def p_expr2(self, p):
@@ -247,25 +273,26 @@ class BasicParser(object):
     def p_term(self, p):
         '''term : term MUL factor
                 | term DIV factor'''
-        func = self.binary_op_map[p[2]]
+        func = ExpressionHelper.binary_op_map[p[2]]
         slice_copy = copy.deepcopy(p.slice)
 
         def f():
             return func(slice_copy[1].value(), slice_copy[3].value())
+        f.func_doc = func.__name__
         p[0] = f
 
     def p_term1(self, p):
         '''term : factor'''
         p[0] = p[1]
 
-    # def p_term2(self, p):
-    #     '''term : LP expr RP'''
-    #     p[0] = p[2]
-
     def p_factor(self, p):
         '''factor : NUM'''
         num = p[1]
-        p[0] = lambda: num
+
+        def f():
+            return num
+        f.func_doc = "return {}".format(str(num))
+        p[0] = f
 
     def p_factor1(self, p):
         '''factor : NAME'''
@@ -279,6 +306,7 @@ class BasicParser(object):
                 return ModelConstructor.model.getConstant(name).getValue()
             # name refers to a formula
             return self.vfmap[name]()
+        f.func_doc = "return {}".format(name)
         p[0] = f
 
     def p_factor2(self, p):
@@ -287,7 +315,11 @@ class BasicParser(object):
         func = ExpressionHelper.func_map.get(slice[1].value, None)
         if not func:
             raise Exception("Not supported function {}".format(slice[1].value))
-        p[0] = lambda: func(slice[3].value())
+
+        def f():
+            return func(slice[3].value())
+        f.func_doc = "func_{}".format(func.__name__)
+        p[0] = f
 
     def p_factor3(self, p):
         '''factor : LP expr RP'''
@@ -370,8 +402,11 @@ class BasicParser(object):
         self.vfmap[frml_name] = slices[4].value
         logger.info("Formula_{} added.".format(slices[2].value))
 
-    def checktype(self, type, value):
-        return True
+    def p_label_statement(self, p):
+        '''label_statement : LABEL NAME ASSIGN boolean_expression SEMICOLON'''
+        lbl_name = p[2]
+        lbl_func = p[4]
+        ModelConstructor.model.labels[lbl_name] = lbl_func
 
     def resolvetype(self, strval, type):
         if 'int' == type:
@@ -405,7 +440,6 @@ class BasicParser(object):
                         tokens.append(token)
                     print tokens
                 self.parser.parse(line, lexer=lexer)
-
 
     def build(self):
         self.tokens = MyLexer.tokens

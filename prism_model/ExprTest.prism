@@ -1,0 +1,9 @@
+const int C1 = 1;
+const double C2 = 2.5;
+
+formula x =
+
+module TestMdl
+    status : [0, 1] init 1;
+
+endmodule

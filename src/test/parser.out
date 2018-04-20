@@ -1,0 +1,298 @@
+Created by PLY version 3.11 (http://www.dabeaz.com/ply)
+
+Unused terminals:
+
+    THEN
+    CONST
+    DTMC
+    CTMC
+    NUMBERSIGN
+    GLOBAL
+    MODELTYPE
+    LABEL
+    MUL
+    FORMULA
+    DIV
+    TRUE
+    MINUS
+    LB
+    SEMICOLON
+    QUOTE
+    RB
+    INIT
+    COLON
+    ENDMODULE
+    COMMA
+    ASSIGN
+    LP
+    MODULE
+    RP
+    FALSE
+    INT
+    DOUBLE
+    ADD
+    BOOL
+    NOT
+    TYPE
+
+Grammar
+
+Rule 0     S' -> bool_expr
+Rule 1     bool_expr -> bool_expr AND bool_expr_unit
+Rule 2     bool_expr -> bool_expr OR bool_expr_unit
+Rule 3     bool_expr -> bool_expr_unit
+Rule 4     bool_expr_unit -> NAME EQ NUM
+Rule 5     bool_expr_unit -> NAME NEQ NUM
+Rule 6     bool_expr_unit -> NAME GT NUM
+Rule 7     bool_expr_unit -> NAME LT NUM
+Rule 8     bool_expr_unit -> NAME GE NUM
+Rule 9     bool_expr_unit -> NAME LE NUM
+
+Terminals, with rules where they appear
+
+ADD                  : 
+AND                  : 1
+ASSIGN               : 
+BOOL                 : 
+COLON                : 
+COMMA                : 
+CONST                : 
+CTMC                 : 
+DIV                  : 
+DOUBLE               : 
+DTMC                 : 
+ENDMODULE            : 
+EQ                   : 4
+FALSE                : 
+FORMULA              : 
+GE                   : 8
+GLOBAL               : 
+GT                   : 6
+INIT                 : 
+INT                  : 
+LABEL                : 
+LB                   : 
+LE                   : 9
+LP                   : 
+LT                   : 7
+MINUS                : 
+MODELTYPE            : 
+MODULE               : 
+MUL                  : 
+NAME                 : 4 5 6 7 8 9
+NEQ                  : 5
+NOT                  : 
+NUM                  : 4 5 6 7 8 9
+NUMBERSIGN           : 
+OR                   : 2
+QUOTE                : 
+RB                   : 
+RP                   : 
+SEMICOLON            : 
+THEN                 : 
+TRUE                 : 
+TYPE                 : 
+error                : 
+
+Nonterminals, with rules where they appear
+
+bool_expr            : 1 2 0
+bool_expr_unit       : 1 2 3
+
+Parsing method: LALR
+
+state 0
+
+    (0) S' -> . bool_expr
+    (1) bool_expr -> . bool_expr AND bool_expr_unit
+    (2) bool_expr -> . bool_expr OR bool_expr_unit
+    (3) bool_expr -> . bool_expr_unit
+    (4) bool_expr_unit -> . NAME EQ NUM
+    (5) bool_expr_unit -> . NAME NEQ NUM
+    (6) bool_expr_unit -> . NAME GT NUM
+    (7) bool_expr_unit -> . NAME LT NUM
+    (8) bool_expr_unit -> . NAME GE NUM
+    (9) bool_expr_unit -> . NAME LE NUM
+
+    NAME            shift and go to state 1
+
+    bool_expr                      shift and go to state 2
+    bool_expr_unit                 shift and go to state 3
+
+state 1
+
+    (4) bool_expr_unit -> NAME . EQ NUM
+    (5) bool_expr_unit -> NAME . NEQ NUM
+    (6) bool_expr_unit -> NAME . GT NUM
+    (7) bool_expr_unit -> NAME . LT NUM
+    (8) bool_expr_unit -> NAME . GE NUM
+    (9) bool_expr_unit -> NAME . LE NUM
+
+    EQ              shift and go to state 8
+    NEQ             shift and go to state 9
+    GT              shift and go to state 5
+    LT              shift and go to state 7
+    GE              shift and go to state 6
+    LE              shift and go to state 4
+
+
+state 2
+
+    (0) S' -> bool_expr .
+    (1) bool_expr -> bool_expr . AND bool_expr_unit
+    (2) bool_expr -> bool_expr . OR bool_expr_unit
+
+    AND             shift and go to state 10
+    OR              shift and go to state 11
+
+
+state 3
+
+    (3) bool_expr -> bool_expr_unit .
+
+    AND             reduce using rule 3 (bool_expr -> bool_expr_unit .)
+    OR              reduce using rule 3 (bool_expr -> bool_expr_unit .)
+    $end            reduce using rule 3 (bool_expr -> bool_expr_unit .)
+
+
+state 4
+
+    (9) bool_expr_unit -> NAME LE . NUM
+
+    NUM             shift and go to state 12
+
+
+state 5
+
+    (6) bool_expr_unit -> NAME GT . NUM
+
+    NUM             shift and go to state 13
+
+
+state 6
+
+    (8) bool_expr_unit -> NAME GE . NUM
+
+    NUM             shift and go to state 14
+
+
+state 7
+
+    (7) bool_expr_unit -> NAME LT . NUM
+
+    NUM             shift and go to state 15
+
+
+state 8
+
+    (4) bool_expr_unit -> NAME EQ . NUM
+
+    NUM             shift and go to state 16
+
+
+state 9
+
+    (5) bool_expr_unit -> NAME NEQ . NUM
+
+    NUM             shift and go to state 17
+
+
+state 10
+
+    (1) bool_expr -> bool_expr AND . bool_expr_unit
+    (4) bool_expr_unit -> . NAME EQ NUM
+    (5) bool_expr_unit -> . NAME NEQ NUM
+    (6) bool_expr_unit -> . NAME GT NUM
+    (7) bool_expr_unit -> . NAME LT NUM
+    (8) bool_expr_unit -> . NAME GE NUM
+    (9) bool_expr_unit -> . NAME LE NUM
+
+    NAME            shift and go to state 1
+
+    bool_expr_unit                 shift and go to state 18
+
+state 11
+
+    (2) bool_expr -> bool_expr OR . bool_expr_unit
+    (4) bool_expr_unit -> . NAME EQ NUM
+    (5) bool_expr_unit -> . NAME NEQ NUM
+    (6) bool_expr_unit -> . NAME GT NUM
+    (7) bool_expr_unit -> . NAME LT NUM
+    (8) bool_expr_unit -> . NAME GE NUM
+    (9) bool_expr_unit -> . NAME LE NUM
+
+    NAME            shift and go to state 1
+
+    bool_expr_unit                 shift and go to state 19
+
+state 12
+
+    (9) bool_expr_unit -> NAME LE NUM .
+
+    AND             reduce using rule 9 (bool_expr_unit -> NAME LE NUM .)
+    OR              reduce using rule 9 (bool_expr_unit -> NAME LE NUM .)
+    $end            reduce using rule 9 (bool_expr_unit -> NAME LE NUM .)
+
+
+state 13
+
+    (6) bool_expr_unit -> NAME GT NUM .
+
+    AND             reduce using rule 6 (bool_expr_unit -> NAME GT NUM .)
+    OR              reduce using rule 6 (bool_expr_unit -> NAME GT NUM .)
+    $end            reduce using rule 6 (bool_expr_unit -> NAME GT NUM .)
+
+
+state 14
+
+    (8) bool_expr_unit -> NAME GE NUM .
+
+    AND             reduce using rule 8 (bool_expr_unit -> NAME GE NUM .)
+    OR              reduce using rule 8 (bool_expr_unit -> NAME GE NUM .)
+    $end            reduce using rule 8 (bool_expr_unit -> NAME GE NUM .)
+
+
+state 15
+
+    (7) bool_expr_unit -> NAME LT NUM .
+
+    AND             reduce using rule 7 (bool_expr_unit -> NAME LT NUM .)
+    OR              reduce using rule 7 (bool_expr_unit -> NAME LT NUM .)
+    $end            reduce using rule 7 (bool_expr_unit -> NAME LT NUM .)
+
+
+state 16
+
+    (4) bool_expr_unit -> NAME EQ NUM .
+
+    AND             reduce using rule 4 (bool_expr_unit -> NAME EQ NUM .)
+    OR              reduce using rule 4 (bool_expr_unit -> NAME EQ NUM .)
+    $end            reduce using rule 4 (bool_expr_unit -> NAME EQ NUM .)
+
+
+state 17
+
+    (5) bool_expr_unit -> NAME NEQ NUM .
+
+    AND             reduce using rule 5 (bool_expr_unit -> NAME NEQ NUM .)
+    OR              reduce using rule 5 (bool_expr_unit -> NAME NEQ NUM .)
+    $end            reduce using rule 5 (bool_expr_unit -> NAME NEQ NUM .)
+
+
+state 18
+
+    (1) bool_expr -> bool_expr AND bool_expr_unit .
+
+    AND             reduce using rule 1 (bool_expr -> bool_expr AND bool_expr_unit .)
+    OR              reduce using rule 1 (bool_expr -> bool_expr AND bool_expr_unit .)
+    $end            reduce using rule 1 (bool_expr -> bool_expr AND bool_expr_unit .)
+
+
+state 19
+
+    (2) bool_expr -> bool_expr OR bool_expr_unit .
+
+    AND             reduce using rule 2 (bool_expr -> bool_expr OR bool_expr_unit .)
+    OR              reduce using rule 2 (bool_expr -> bool_expr OR bool_expr_unit .)
+    $end            reduce using rule 2 (bool_expr -> bool_expr OR bool_expr_unit .)
+

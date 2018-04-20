@@ -1,14 +1,14 @@
 # -*- coding:utf-8 -*-
-import ply.yacc as yacc
-from PRISMLex import MyLexer
+import compiler.ply.yacc as yacc
+from compiler.PRISMLex import MyLexer
 import copy
 
 tokens = MyLexer.tokens
 
 
 _vars = {
-    'a' : 1,
-    'b' : 2,
+    'a': 1,
+    'b': 2,
 }
 
 def p_bool_expr(p):
@@ -54,7 +54,7 @@ def resolve_bool_expr(val1, val2, op):
             return var < val2
         if '>' == op:
             return var > val2
-        if '>=' == op :
+        if '>=' == op:
             return var >= val2
         if '<=' == op:
             return var <= val2
@@ -68,12 +68,11 @@ yacc.yacc()
 # b = 2 a = 1
 data = "b != 2 | a == 0"
 myLexer = MyLexer()
-myLexer.build()
 lexer = myLexer.lexer
 result = yacc.parse(data, lexer=lexer)
-print result()
+assert result() is False
 _vars['a'] = 0
-print result()
+assert result() is True
 
 
 
