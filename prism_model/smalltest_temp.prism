@@ -34,7 +34,7 @@ const double S3R_A_MU = 570.8 * 13;
 const double S3R_A_SIGMA = 6.7471 * 120;
 formula s3r_cur_dose = (day / 365.0) * IEL_YEAR;
 formula s3r_cdf_x = S3R_DELTAV_THRESHOLD / (S3R_B * powe(S3R_B * s3r_cur_dose));
-formula s3r_std_cdf_x = s3r_cdf_x - S3R_A_MU / S3R_A_SIGMA;
+formula s3r_std_cdf_x = (s3r_cdf_x - S3R_A_MU) / S3R_A_SIGMA;
 formula s3r_fail_prob = 1 - stdcdf(s3r_std_cdf_x);
 
 module S3R
