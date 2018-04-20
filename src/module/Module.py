@@ -71,6 +71,9 @@ class Module(object):
             return self.variables[name]
         return None
 
+    def __str__(self):
+        return self.name
+
 
 class CommandKind:
     FAILURE, REPAIR, NONE = range(3)
@@ -176,7 +179,7 @@ class Variable(object):
             return self.value.__cmp__(v)
 
     def __str__(self):
-        return '(%s = %s)' % (self.name, self.getValue())
+        return "(Variable {} : {})".format(self.name, self.getValue())
 
     def setValue(self, v):
         if isinstance(v, self.valType):

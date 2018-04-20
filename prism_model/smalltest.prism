@@ -5,7 +5,7 @@ dtmc
 // system constants and formulae
 // ================
 const int YEAR = 5;
-const double SCREEN_THICKNESS;     // 屏蔽层厚度: 1-100
+const double SCREEN_THICKNESS = 1;     // 屏蔽层厚度: 1-100
 const double S3R_K = 200.5 / 3.0;   // 电离损伤剂量与厚度成反比关系，即d1 = S3R_K/SCREEN_THICKNESS
 const double SB_K = 0.0039; // 位移损伤剂量与厚度成正比关系，即d = SB_K * SCREEN_THICKNESS
 const double e = 2.71828182; // math.e
@@ -14,7 +14,53 @@ formula IEL_YEAR= S3R_K / SCREEN_THICKNESS;      // S3R一年内受到的电离�
 formula NIEL_YEAR = SB_K * SCREEN_THICKNESS;     // 太阳能电池一年内所受的非电离能损之和
 
 module Time
-    day : [0, YEAR*365] init 0; // 1 years
     t_turn : [0, 1] init 1;
-    [] t_turn==1&day<=YEAR*365 -> 1.0:(day=day+1)&(t_turn=0);
+    day : [0, YEAR*365] init 0; // 1 years
+    [] t_turn==1&day<=YEAR*365 -> 1.0 : (day=day+1)&(t_turn=0);
 endmodule
+
+// 太阳能电池模块
+// Solar battery constants, formulae
+// =================================
+const double SB_P_THRESHOLD = 0.78; // 太阳能电池要求的最低功率
+const double SB_A_MU = 0.1754;        // a的期望值
+const double SB_A_SIGMA = 0.02319029 * 21; // a的标准差
+const double SB_B = 1.8;               // pmax公式中的另一个参数
+formula sb_dose = (day / 365.0) * NIEL_YEAR; // 太阳能电池当前所受的非电离能损剂量
+formula sb_cdf_x = (1 - SB_P_THRESHOLD) / log(1 + sb_dose * SB_B); // a > cdf_x
+formula sb_std_cdf_x = (sb_cdf_x - SB_A_MU) / SB_A_SIGMA;              // 对应到标准正态分布后的x
+formula sb_fail_prob = 1 - stdcdf(sb_std_cdf_x);
+
+module SB
+    sb_status: [0, 1] init 1; // 太阳能电池所处的状态：1：正常；0：失效
+    [] sb_status==1&t_turn==0 ->  sb_fail_prob : (sb_status=0) & (t_turn=1) + (1.0-sb_fail_prob) : (sb_status=1) & (t_turn=1);
+endmodule
+
+// 分流调节器
+// S3R constants, variables, formulae
+// ==================================
+// constants
+const double S3R_DELTAV_THRESHOLD = 580;                 // 阈值电压漂移阈值——阈值电压漂移大于此值即认为失效
+const double S3R_B = 0.01731;                     // 阈值电压漂移公式中的参数b
+const double S3R_A_MU = 570.8 * 13;               // a的期望
+const double S3R_A_SIGMA = 6.7471 * 120;          // a的标准差
+formula s3r_cur_dose = (day / 365.0) * IEL_YEAR; // S3R当前所受的电离能损总剂量
+formula s3r_cdf_x = S3R_DELTAV_THRESHOLD / (S3R_B * powe(S3R_B * s3r_cur_dose));
+formula s3r_std_cdf_x = s3r_cdf_x - S3R_A_MU / S3R_A_SIGMA;
+formula s3r_fail_prob = 1 - stdcdf(s3r_std_cdf_x);
+
+module S3R
+    s3r_status: [0, 1] init 1;
+    [] s3r_status==1&t_turn==0 -> s3r_fail_prob:(s3r_status=0)&(t_turn=1) + (1 - s3r_fail_prob):(s3r_status=1)&(t_turn=1);
+endmodule
+
+module BCR
+	bcr_status: [0, 1] init 1;
+	[] bcr_status==1&t_turn==0 -> s3r_fail_prob:(bcr_status=0)&(t_turn=1) + (1 - s3r_fail_prob):(bcr_status=1)&(t_turn=1);
+endmodule
+
+module BDR
+    bdr_status: [0, 1] init 1;
+    [] bdr_status==1&t_turn==0 -> s3r_fail_prob:(bdr_status=0)&(t_turn=1) + (1 - s3r_fail_prob):(bdr_status=1)&(t_turn=1);
+endmodule
+

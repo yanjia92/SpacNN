@@ -5,6 +5,13 @@ from PRISMLex import MyLexer
 from module.Module import *
 from util.FuncUtil import *
 from removeComment import clear_comment
+from util.MathUtils import *
+import logging
+
+logger = logging.getLogger("PRISMParser logging")
+handler = logging.StreamHandler(sys.stdout)
+logger.addHandler(handler)
+logger.setLevel(logging.INFO)
 
 
 class ExpressionHelper(object):
@@ -17,7 +24,9 @@ class ExpressionHelper(object):
     }
 
     func_map = {
-        'stdcdf': stdcdf
+        'stdcdf': stdcdf,
+        'log': log,
+        'powe': powe
     }
 
     @classmethod
@@ -114,12 +123,12 @@ class BasicParser(object):
         '''const_value_statement : CONST INT NAME ASSIGN NUM SEMICOLON
                                  | CONST DOUBLE NAME ASSIGN NUM SEMICOLON
                                  | CONST BOOL NAME ASSIGN NUM SEMICOLON'''
-        # if not self.checktype(p[2], p[5]):
-        #     print "type error in {}".format(p)
         name = p[3]
         value = self.resolvetype(p[5], p[2])
-        ModelConstructor.model.addConstant(name, value)
-        self.cmap[p[3]] = value
+        obj = Constant(name, value)
+        ModelConstructor.model.addConstant(name, obj)
+        self.cmap[p[3]] = obj
+        logger.info("Constant added: {} = {}".format(name, value))
 
     def p_const_expression1(self, p):
         '''const_value_statement : CONST INT NAME SEMICOLON
@@ -127,8 +136,10 @@ class BasicParser(object):
                              | CONST BOOL NAME SEMICOLON'''
         # 支持解析不确定的常量表达式
         name = p[3]
-        ModelConstructor.model.addConstant(name, None)
-        self.cmap[name] = None
+        obj = Constant(name)
+        ModelConstructor.model.addConstant(name, obj)
+        self.cmap[name] = obj
+        logger.info("Unspecified constant added: {}".format(name))
 
     def p_const_expression2(self, p):
         '''const_value_statement : CONST INT NAME ASSIGN expr SEMICOLON
@@ -136,8 +147,10 @@ class BasicParser(object):
                                  | CONST BOOL NAME ASSIGN expr SEMICOLON'''
         name = p[3]
         value = self.resolvetype(p[5](), p[2])
-        ModelConstructor.model.addConstant(name, value)
-        self.cmap[name] = value
+        obj = Constant(name, value)
+        ModelConstructor.model.addConstant(name, obj)
+        self.cmap[name] = obj
+        logger.info("Constant added: {} = {}".format(name, value))
 
     def p_module_var_def_statement(self, p):
         '''module_var_def_statement : NAME COLON LB expr COMMA expr RB INIT NUM SEMICOLON'''
@@ -148,9 +161,8 @@ class BasicParser(object):
         var = Variable(p[1], p[len(p) - 2], range(min, max + 1),
                        int)  # 目前默认变量的类型是int p[index] index不能是负数
         self.module.addVariable(var)
-        print "added variable {} = {} range : [{}, {}]".format(var.getName(), var.initVal, var.valRange[0],
-                                                               var.valRange[-1])
         self.vfmap[var.getName()] = lambda: ModelConstructor.model.getLocalVar(var.getName())
+        logger.info("Variable_{} added to Module_{}. init={}, range=[{}, {}]".format(var.getName(), str(self.module), var.initVal, var.valRange[0], var.valRange[-1]))
 
     def p_module_command_statement(self, p):
         '''module_command_statement : LB RB boolean_expression THEN updates SEMICOLON'''
@@ -220,26 +232,17 @@ class BasicParser(object):
         slice_copy = copy.deepcopy(p.slice)
 
         def f():
-            return func(slice_copy[1].value, slice_copy[3].value)
+            return func(slice_copy[1].value(), slice_copy[3].value())
 
         p[0] = f
-
-    # def p_expr1(self, p):
-    #     '''expr : NAME LP expr RP'''
-    #     # 目前的函数调用只能解析只包含一个参数的函数调用
-    #     slices = copy.deepcopy(p.slice)
-    #     func = self.func_map.get(slices[1].value, None)
-    #     if not func:
-    #         raise Exception("not supported function {}".format(p[1]))
-
-    #     def f():
-    #         return func(slice[3].value())
-
-    #     p[0] = f
 
     def p_expr2(self, p):
         '''expr : term'''
         p[0] = p[1]
+
+    # def p_expr3(self, p):
+    #     '''expr : LP expr RP'''
+    #     p[0] = p[2]
 
     def p_term(self, p):
         '''term : term MUL factor
@@ -249,7 +252,6 @@ class BasicParser(object):
 
         def f():
             return func(slice_copy[1].value(), slice_copy[3].value())
-
         p[0] = f
 
     def p_term1(self, p):
@@ -257,9 +259,8 @@ class BasicParser(object):
         p[0] = p[1]
 
     # def p_term2(self, p):
-    #     '''term : NUM'''
-    #     num = p[1]
-    #     p[0] = lambda: num
+    #     '''term : LP expr RP'''
+    #     p[0] = p[2]
 
     def p_factor(self, p):
         '''factor : NUM'''
@@ -272,23 +273,25 @@ class BasicParser(object):
         name = slice_cpy[1].value
 
         def f():
-            var = ModelConstructor.model.localVars.get(name, None)
-            if var:
-                value = var.getValue()
-            else:
-                var = ModelConstructor.model.getConstant(name)
-                value  = var
-            return value
-
+            if name in ModelConstructor.model.localVars.keys():
+                return ModelConstructor.model.getLocalVar(name).getValue()
+            if name in ModelConstructor.model.constants.keys():
+                return ModelConstructor.model.getConstant(name).getValue()
+            # name refers to a formula
+            return self.vfmap[name]()
         p[0] = f
 
-    # def p_factor2(self, p):
-    #     '''factor : NAME LP expr RP'''
-    #     slice = copy.deepcopy(p.slice)
-    #     func = self.func_map.get(slice[1].value, None)
-    #     if not func:
-    #         raise Exception("Not supported function {}".format(slice[1].value))
-    #     p[0] = lambda: func(slice[3].value())
+    def p_factor2(self, p):
+        '''factor : NAME LP expr RP'''
+        slice = copy.copy(p.slice)
+        func = ExpressionHelper.func_map.get(slice[1].value, None)
+        if not func:
+            raise Exception("Not supported function {}".format(slice[1].value))
+        p[0] = lambda: func(slice[3].value())
+
+    def p_factor3(self, p):
+        '''factor : LP expr RP'''
+        p[0] = p[2]
 
     def p_boolean_expression(self, p):
         '''boolean_expression : boolean_expression AND boolean_expression_unit
@@ -360,11 +363,12 @@ class BasicParser(object):
 
         p[0] = f(tokens, ExpressionHelper.resolve_boolean_expression)
 
-    def p_formula(self, p):
+    def p_formula_statement(self, p):
         '''formula_statement : FORMULA NAME ASSIGN expr SEMICOLON'''
         slices = copy.copy(p.slice)
-        self.vfmap[slices[2].value] = slices[4].value
-        print "formula added: {} = "
+        frml_name = slices[2].value
+        self.vfmap[frml_name] = slices[4].value
+        logger.info("Formula_{} added.".format(slices[2].value))
 
     def checktype(self, type, value):
         return True
@@ -401,6 +405,7 @@ class BasicParser(object):
                         tokens.append(token)
                     print tokens
                 self.parser.parse(line, lexer=lexer)
+
 
     def build(self):
         self.tokens = MyLexer.tokens

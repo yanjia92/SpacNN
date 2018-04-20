@@ -19,12 +19,6 @@ class MyLexer(object):
         'init': 'INIT',
         'true': 'TRUE',
         'false': 'FALSE',
-        'max': 'MAX',
-        'min': 'MIN',
-        'exp': 'EXP',
-        'log': 'LOG',
-        'pow': 'POW',
-        'stdcdf': 'STDCDF',
         'formula': 'FORMULA'
     }
 
@@ -121,6 +115,12 @@ def testPRISMLex():
     removed_path = clear_comment(file_path)
     lexer.tokenize_file(removed_path)
 
-if __name__ == "__main__":
-    testPRISMLex()
+def testLexString():
+    lexer = MyLexer()
+    data = "formula s3r_fail_prob = 1 - stdcdf(s3r_std_cdf_x);"
+    lexer.tokenize_string(data)
 
+
+if __name__ == "__main__":
+    # testPRISMLex()
+    testLexString()

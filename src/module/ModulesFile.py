@@ -123,8 +123,8 @@ class ModulesFile(object):
 
     # added when trying to write the compiler for the PRISM language
     # store the constant value in ModulesFile unitedly
-    def addConstant(self, name, value):
-        self.constants.update({name : value})
+    def addConstant(self, name, constant_obj):
+        self.constants.update({name: constant_obj})
 
     # label: a function represents ap
     # label is implemented as a function object that receive

@@ -1,7 +1,7 @@
 dtmc
 
 const int YEAR = 5;
-const double SCREEN_THICKNESS;
+const double SCREEN_THICKNESS = 1;
 const double S3R_K = 200.5 / 3.0;
 const double SB_K = 0.0039;
 const double e = 2.71828182;
@@ -9,7 +9,46 @@ formula IEL_YEAR= S3R_K / SCREEN_THICKNESS;
 formula NIEL_YEAR = SB_K * SCREEN_THICKNESS;
 
 module Time
-day : [0, YEAR*365] init 0;
 t_turn : [0, 1] init 1;
-[] t_turn==1&day<=YEAR*365 -> 1.0:(day=day+1)&(t_turn=0);
+day : [0, YEAR*365] init 0;
+[] t_turn==1&day<=YEAR*365 -> 1.0 : (day=day+1)&(t_turn=0);
 endmodule
+
+const double SB_P_THRESHOLD = 0.78;
+const double SB_A_MU = 0.1754;
+const double SB_A_SIGMA = 0.02319029 * 21;
+const double SB_B = 1.8;
+formula sb_dose = (day / 365.0) * NIEL_YEAR;
+formula sb_cdf_x = (1 - SB_P_THRESHOLD) / log(1 + sb_dose * SB_B);
+formula sb_std_cdf_x = (sb_cdf_x - SB_A_MU) / SB_A_SIGMA;
+formula sb_fail_prob = 1 - stdcdf(sb_std_cdf_x);
+
+module SB
+sb_status: [0, 1] init 1;
+[] sb_status==1&t_turn==0 ->  sb_fail_prob : (sb_status=0) & (t_turn=1) + (1.0-sb_fail_prob) : (sb_status=1) & (t_turn=1);
+endmodule
+
+const double S3R_DELTAV_THRESHOLD = 580;
+const double S3R_B = 0.01731;
+const double S3R_A_MU = 570.8 * 13;
+const double S3R_A_SIGMA = 6.7471 * 120;
+formula s3r_cur_dose = (day / 365.0) * IEL_YEAR;
+formula s3r_cdf_x = S3R_DELTAV_THRESHOLD / (S3R_B * powe(S3R_B * s3r_cur_dose));
+formula s3r_std_cdf_x = s3r_cdf_x - S3R_A_MU / S3R_A_SIGMA;
+formula s3r_fail_prob = 1 - stdcdf(s3r_std_cdf_x);
+
+module S3R
+s3r_status: [0, 1] init 1;
+[] s3r_status==1&t_turn==0 -> s3r_fail_prob:(s3r_status=0)&(t_turn=1) + (1 - s3r_fail_prob):(s3r_status=1)&(t_turn=1);
+endmodule
+
+module BCR
+bcr_status: [0, 1] init 1;
+[] bcr_status==1&t_turn==0 -> s3r_fail_prob:(bcr_status=0)&(t_turn=1) + (1 - s3r_fail_prob):(bcr_status=1)&(t_turn=1);
+endmodule
+
+module BDR
+bdr_status: [0, 1] init 1;
+[] bdr_status==1&t_turn==0 -> s3r_fail_prob:(bdr_status=0)&(t_turn=1) + (1 - s3r_fail_prob):(bdr_status=1)&(t_turn=1);
+endmodule
+
