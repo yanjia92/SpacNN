@@ -85,7 +85,9 @@ class BasicParser(object):
     SPLIT = ":"
 
     def __init__(self):
-        self.moduledefbegin = False  # 表示当前是否正在解析module模块
+        # 表示当前是否正在解析module模块
+        # 用途: 值为false时,对boolean_expression的解析不会将结果保存为guard
+        self.moduledefbegin = False
         '''
         当parser分析到一行Command时，可能最后会解析成多个Command对象
         每个Command对象包含以下信息：name, guard, prob, action, module
@@ -330,18 +332,23 @@ class BasicParser(object):
                               | boolean_expression OR boolean_expression_unit
                               | boolean_expression_unit'''
         print "boolean_expression detached."
-        if len(p) == 4:
-            if p[2] == "&":
+        slices = copy.copy(p.slice)
+        if len(slices) == 4:
+            if slices[2].value == "&":
                 def f():
-                    return p[1]() and p[3]()
-            if p[2] == "|":
+                    return slices[1].value() and slices[3].value()
+            if slices[2].value == "|":
                 def f():
-                    return p[1]() or p[3]()
+                    return slices[1].value() or slices[3].value()
+
             p[0] = f
         elif len(p) == 2:
             p[0] = p[1]
-        self.guard = p[0]
-        # print self.guard
+        if self.moduledefbegin:
+            # 如果当前正在解析command
+            # 否则要么是解析formula,要么是label
+            self.guard = p[0]
+
 
     def p_boolean_expression_unit(self, p):
         '''boolean_expression_unit : NAME GT NUM
@@ -353,21 +360,20 @@ class BasicParser(object):
         # 解析单个变量与某个常量进行比较
         tokens = copy.copy(p.slice)
 
-        def f(t, handler):
-            def inner(vs, cs):
-                var = vs[t[1].value]
+        def f(tokens, handler):
+            def inner():
+                vs = ModelConstructor.model.localVars
+                var = vs[tokens[1].value]
                 if not var or not isinstance(var, Variable):
                     raise Exception("invalid variable name")
                 left = var.getValue()
-                right = t[3]
-                op = t[2]
-                print str(left) + str(op) + str(right)
+                right = tokens[3]
+                op = tokens[2]
                 return handler(left, right, op)
 
             return inner
 
         p[0] = f(tokens, ExpressionHelper.resolve_boolean_expression)
-        print "guard find : {} == {}".format(tokens[1].value, tokens[3])
 
     def p_boolean_expression_unit1(self, p):
         '''boolean_expression_unit : NAME GT expr
@@ -382,7 +388,8 @@ class BasicParser(object):
         def f(t, handler):
             # handler is a boolean_expression_resolver : handler(val1, val2,
             # op)
-            def inner(vs, cs):
+            def inner():
+                vs = ModelConstructor.model.localVars
                 var = vs[t[1].value]
                 if not var or not isinstance(var, Variable):
                     raise Exception("invalid var name")

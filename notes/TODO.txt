@@ -1,3 +1,5 @@
 // 如何确保expression的parsing是正确的？ 单元测试成功 testParseExpr.py
-如何确保生成的ModulesFile是正确的？
-    ModelFactory的职能？ modules labels({name : func})
+增加label,测试label
+
+目前command的update部分不允许出现boolean_expression
+因为在parse module的时候,默认将所有的boolean_expression解析为当前command的guard
