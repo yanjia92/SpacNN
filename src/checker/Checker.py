@@ -1,4 +1,3 @@
-# 1.Checker.py
 __author__ = 'hekk'
 
 import logging
@@ -474,8 +473,6 @@ class Checker(threading.Thread):
             upperBound = 1 - math.exp(-1 * expectation * duration * q_1)
             return upperBound
 
-
-    # Begin to check.
     def run(self):
         msg = None
         if self.checkingType == Checker.CheckingType.QUALITATIVE:

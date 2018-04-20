@@ -1,14 +1,12 @@
 # -*- coding:utf-8 -*-
 import logging
-from nn.NNRegressor import BPNeuralNetwork
 import matplotlib.pyplot as plt
-import sys
-from model.Models import sps_model_dtmc
 from checker.Checker import Checker
-from experiment.ExperimentWrapper import ExperimentWrapper
 from config import SPSConfig
+from experiment.ExperimentWrapper import ExperimentWrapper
 from model.ModelFactory import ModelFactory
 from model.ModuleFactory import ModuleFactory
+from nn.NNRegressor import BPNeuralNetwork
 
 logger = logging.getLogger("TestNNTRegression logging")
 
@@ -18,6 +16,7 @@ file_handler = logging.FileHandler("../log/nnregr.log")
 logger.addHandler(file_handler)
 
 logger.setLevel(logging.INFO)
+
 
 def testrunexpe():
     from experiment.ExperimentWrapper import executepoissionexpe, executemodelchecking

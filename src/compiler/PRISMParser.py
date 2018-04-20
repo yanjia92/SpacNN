@@ -120,7 +120,8 @@ class BasicParser(object):
                      | module_def_end_statement
                      | module_var_def_statement
                      | module_command_statement
-                     | formula_statement'''
+                     | formula_statement
+                     | label_statement'''
         # print "slice: {}".format(p.slice)
         pass
 
