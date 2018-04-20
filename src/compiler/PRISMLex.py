@@ -13,13 +13,13 @@ class MyLexer(object):
         'int' : 'INT',
         'double' : 'DOUBLE',
         'bool' : 'BOOL',
-        'label': 'LABEL',
         'module': 'MODULE',
         'endmodule': 'ENDMODULE',
         'init': 'INIT',
         'true': 'TRUE',
         'false': 'FALSE',
-        'formula': 'FORMULA'
+        'formula': 'FORMULA',
+        'label' : "LABEL",
     }
 
 

@@ -402,6 +402,12 @@ class BasicParser(object):
         self.vfmap[frml_name] = slices[4].value
         logger.info("Formula_{} added.".format(slices[2].value))
 
+    def p_label_statement(self, p):
+        '''label_statement : LABEL NAME ASSIGN boolean_expression SEMICOLON'''
+        lbl_name = p[2]
+        lbl_func = p[4]
+        ModelConstructor.model.labels[lbl_name] = lbl_func
+
     def resolvetype(self, strval, type):
         if 'int' == type:
             return int(strval)
