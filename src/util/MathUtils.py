@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 from math import *
+
+
 # generate random variable from a exponential distribution
 # given that it's less than t.
 # e.g. implementation of forcing.
@@ -31,3 +33,7 @@ def pcf(x):
     y = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * exp(-x * x)
 
     return 0.5 * (1.0 + sign * y)
+
+
+def powe(x):
+    return pow(e, x)

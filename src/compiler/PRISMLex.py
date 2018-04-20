@@ -19,14 +19,9 @@ class MyLexer(object):
         'init': 'INIT',
         'true': 'TRUE',
         'false': 'FALSE',
-        'max': 'MAX',
-        'min': 'MIN',
-        'exp': 'EXP',
-        'log': 'LOG',
-        'pow': 'POW',
-        'stdcdf': 'STDCDF',
         'formula': 'FORMULA'
     }
+
 
     tokens = [
                  'NAME',
@@ -42,11 +37,12 @@ class MyLexer(object):
                  "COLON",
                  "QUOTE",
                  "COMMA",
-                 "THEN"  # -> in command statement
+                 "THEN",  # -> in command statement
+                 "NUMBERSIGN", # '#'
              ] + list(keywords.values())
 
     def t_NUM(self, t):
-        r"[\+\-]?\d+\.?\d*"
+        r"[\-]?\d+\.?\d*"
         if t.value.find(r".") != -1:
             # float value type
             t.value = float(t.value)
@@ -93,6 +89,7 @@ class MyLexer(object):
     t_QUOTE = r"'"
     t_COMMA = r","
     t_THEN = r"\->"
+    t_NUMBERSIGN = r"\#"
 
     def t_error(self, t):
         print "Illegal character '{}' ({}) in line {}.".format(t.value[0], hex(ord(t.value[0])), t.lexer.lineno)
@@ -109,15 +106,21 @@ class MyLexer(object):
         content = ''
         for line in _file:
             content += line
-        return self.tokenize_string(content)
+        self.tokenize_string(content)
 
 
 def testPRISMLex():
     lexer = MyLexer()
-    file_path = "../../prism_model/smalltest.prism"
+    file_path = "../../prism_model/CommandTest.prism"
     removed_path = clear_comment(file_path)
     lexer.tokenize_file(removed_path)
 
-if __name__ == "__main__":
-    testPRISMLex()
+def testLexString():
+    lexer = MyLexer()
+    data = "formula s3r_fail_prob = 1 - stdcdf(s3r_std_cdf_x);"
+    lexer.tokenize_string(data)
 
+
+if __name__ == "__main__":
+    # testPRISMLex()
+    testLexString()

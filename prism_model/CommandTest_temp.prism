@@ -1,4 +1,1 @@
-module mdl
-a : [0, 1] init 1;
-[] a==1 -> 1.0:(a=0);
-endmodule
+[] t_turn==1&day<=YEAR*365 -> (day=day+1)&(t_turn=0);

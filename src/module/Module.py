@@ -71,6 +71,9 @@ class Module(object):
             return self.variables[name]
         return None
 
+    def __str__(self):
+        return self.name
+
 
 class CommandKind:
     FAILURE, REPAIR, NONE = range(3)
@@ -107,7 +110,7 @@ class Command(object):
         # failure biasing doesn't change rate, it only changes
         # probability of the embedded DTMC
         self.biasingRate = biasingRate
-        print "Guard is None: " + str(self.guard is None)
+        # print "Guard is None ? : " + str(self.guard is None)
 
     def evalGuard(self):
         if 'cs' in dir(self) and 'vs' in dir(self):
@@ -176,7 +179,7 @@ class Variable(object):
             return self.value.__cmp__(v)
 
     def __str__(self):
-        return '(%s = %s)' % (self.name, self.getValue())
+        return "(Variable {} : {})".format(self.name, self.getValue())
 
     def setValue(self, v):
         if isinstance(v, self.valType):
