@@ -12,8 +12,8 @@ class ExpressionHelper(object):
     binary_op_map = {
         '+': lambda x, y: x + y,
         '-': lambda x, y: x - y,
-        '*': lambda x, y: x * y,
-        '/': lambda x, y: x / y
+        '*': lambda x, y :x * y,
+        '\\': lambda x,y : x / y,
     }
 
     func_map = {
