@@ -1,12 +1,13 @@
 # -*- coding:utf-8 -*-
 from module.Module import Constant
 
+
 class SPSConfig():
     def __init__(self):
         self.params = {}
         self.params['SB_K'] = Constant('SB_K', 0.0039)
         self.params['SB_B'] = Constant('SB_B', 1.8)
-        self.params['SB_P_THRESHOLD'] = Constant('SB_P_THRESHOLD', 0.78* 1.05)
+        self.params['SB_P_THRESHOLD'] = Constant('SB_P_THRESHOLD', 0.78 * 1.05)
         self.params['SB_A_MU'] = Constant('SB_A_MU', 0.1754)
         self.params['SB_A_SIGMA'] = Constant('SB_A_SIGMA', 0.02319029 * 21)
         self.params['S3R_K'] = Constant('S3R_K', 200.5 / 3.0)  # s3r, bdr, bcr三个模块均摊电离能损
@@ -26,7 +27,6 @@ class SPSConfig():
     def setParam(self, name, value):
         self.params[name].value = value
 
-
     def export2prism(self, prismfileaddr):
         """
         SPSConfig.py文件中保存着SPS系统的唯一一份参数值的映射
@@ -44,12 +44,14 @@ class SPSConfig():
                 i = temp.find(r"//")
                 temp = temp[:i]
                 comment = temp[i:]
+                if i == -1:
+                    comment = ""
                 for k, v in self.params.items():
                     if temp.find(k.lower()) != -1 and temp.find("const") != -1:
                         i = line.find('=')
                         if i == -1:
                             break
-                        line = line[:i+1] + str(v.getValue()) + ";" + comment + "\n"
+                        line = line[:i+1] + " " + str(v.getValue()) + ";" + comment + "\n"
                         f_new.write(line)
                         written = True
                         break
@@ -58,3 +60,6 @@ class SPSConfig():
         f_new.close()
 
 
+
+config = SPSConfig()
+config.export2prism("../../prism_model/smalltest.prism")

@@ -1,107 +1,56 @@
-// Satellite Power System
-// consists of modules of 蓄电池，太阳能充电池，充电控制器，放电控制器，分流器
 dtmc
 
-global t_turn : bool init true; // global variable: 表示当前Time模块是否可运行
-
-// system constants and formulae
-// ================
 const int YEAR = 5;
-const double SCREEN_THICKNESS;     // 屏蔽层厚度: 1-100
-const double S3R_K =66.8333333333;
-const double SB_K =0.0039;
-const double e = 2.71828182; // math.e
-// const int year;
-formula IEL_YEAR= S3R_K / SCREEN_THICKNESS;      // S3R一年内受到的电离能损剂量之和
-formula NIEL_YEAR = SB_K * SCREEN_THICKNESS;     // 太阳能电池一年内所受的非电离能损之和
+const double SCREEN_THICKNESS = 1;
+const double S3R_K = 66.8333333333;
+const double SB_K = 0.0039;
+const double e = 2.71828182;
+formula IEL_YEAR= S3R_K / SCREEN_THICKNESS;
+formula NIEL_YEAR = SB_K * SCREEN_THICKNESS;
 
 module Time
-    day : [0..YEAR*365] init 0; // 1 years
-    [] t_turn=true&day<=YEAR*365 -> (day'=min(day+1, YEAR*365))&(t_turn'=false);
+t_turn : [0, 1] init 1;
+day : [0, YEAR*365] init 0;
+[] t_turn==1&day<=YEAR*365 -> 1.0 : (day=day+1)&(t_turn=0);
 endmodule
 
-// 太阳能电池模块
-// Solar battery constants, formulae
-// =================================
-const double SB_P_THRESHOLD =0.819;
-const double SB_A_MU =0.1754;
-const double SB_A_SIGMA =0.48699609;
-const double SB_B =1.8;
-formula sb_dose = (day / 365.0) * NIEL_YEAR; // 太阳能电池当前所受的非电离能损剂量
-formula sb_cdf_x = (1 - SB_P_THRESHOLD) / (log(1 + sb_dose * SB_B, e)); // a > cdf_x
-formula sb_std_cdf_x = (sb_cdf_x - SB_A_MU) / SB_A_SIGMA;              // 对应到标准正态分布后的x
-// Compute CDF of standard normal distribution
-// taken from https://www.johndcook.com/blog/cpp_phi/
-// ================================================================================
-const double a1 =  0.254829592;
-const double a2 = -0.284496736;
-const double a3 =  1.421413741;
-const double a4 = -1.453152027;
-const double a5 =  1.061405429;
-const double p  =  0.3275911;
-formula sb_sign = sb_std_cdf_x < 0 ? -1 : 1;
-formula sb_std_cdf_x_2 = sb_sign * sb_std_cdf_x / pow(2.0, 0.5);
-formula sb_t = 1.0/(1.0 + p * sb_std_cdf_x_2);
-formula sb_y = 1.0 - (((((a5*sb_t + a4)*sb_t) + a3)*sb_t + a2)*sb_t + a1)*sb_t*pow(e, -sb_std_cdf_x_2 * sb_std_cdf_x_2);
-formula sb_fail_prob = 1 - 0.5 * (1.0 + sb_sign * sb_y);  // 根据solar battery所受非电离能损剂量计算出的失效概率
-module SolarBattery
-    sb_status: [0..1] init 1; // 太阳能电池所处的状态：1：正常；0：失效
-    [] sb_status=1&t_turn=false ->  sb_fail_prob:(sb_status'=0)&(t_turn'=true)+(1.0-sb_fail_prob):(sb_status'=1)&(t_turn'=true);
+const double SB_P_THRESHOLD = 0.819;
+const double SB_A_MU = 0.1754;
+const double SB_A_SIGMA = 0.48699609;
+const double SB_B = 1.8;
+formula sb_dose = (day / 365.0) * NIEL_YEAR;
+formula sb_cdf_x = (1 - SB_P_THRESHOLD) / log(1 + sb_dose * SB_B);
+formula sb_std_cdf_x = (sb_cdf_x - SB_A_MU) / SB_A_SIGMA;
+formula sb_fail_prob = 1 - stdcdf(sb_std_cdf_x);
+
+module SB
+sb_status: [0, 1] init 1;
+[] sb_status==1&t_turn==0 ->  sb_fail_prob : (sb_status=0) & (t_turn=1) + (1.0-sb_fail_prob) : (sb_status=1) & (t_turn=1);
 endmodule
 
-// 分流调节器
-// S3R constants, variables, formulae
-// ==================================
-// constants
-const int S3R_DELTAV_THRESHOLD =10.0;
-const double S3R_B =0.0007467;
-const double S3R_A_MU =7420.4;
-const double S3R_A_SIGMA =1484.362;
-formula s3r_cur_dose = (day / 365.0) * IEL_YEAR; // S3R当前所受的电离能损总剂量
-formula s3r_cdf_x = S3R_DELTAV_THRESHOLD / (S3R_B * pow(e, S3R_B * s3r_cur_dose));
+const double S3R_DELTAV_THRESHOLD = 10.0;
+const double S3R_B = 0.0007467;
+const double S3R_A_MU = 7420.4;
+const double S3R_A_SIGMA = 1484.362;
+formula s3r_cur_dose = (day / 365.0) * IEL_YEAR;
+formula s3r_cdf_x = S3R_DELTAV_THRESHOLD / (S3R_B * powe(S3R_B * s3r_cur_dose));
 formula s3r_std_cdf_x = (s3r_cdf_x - S3R_A_MU) / S3R_A_SIGMA;
-// compute the cumulative probability density (cdf) of standard normal distribution
-// taken from https://www.johndcook.com/blog/cpp_phi/
-// ================================================================================
-formula s3r_sign = s3r_std_cdf_x < 0 ? -1 : 1;
-formula s3r_std_cdf_x_2 = s3r_sign * s3r_std_cdf_x / pow(2.0, 0.5);
-formula s3r_t = 1.0/(1.0 + p * s3r_std_cdf_x_2);
-formula s3r_y = 1.0 - (((((a5*s3r_t + a4)*s3r_t) + a3)*s3r_t + a2)*s3r_t + a1)*s3r_t*pow(e, -s3r_std_cdf_x_2 * s3r_std_cdf_x_2);
-formula s3r_fail_prob = 1 - 0.5 * (1.0 + s3r_sign * s3r_y);  // 根据s3r所受电离能损剂量计算出的失效概率
+formula s3r_fail_prob = 1 - stdcdf(s3r_std_cdf_x);
 
 module S3R
-    s3r_status: [0..1] init 1;
-    [] s3r_status=1&t_turn=false -> s3r_fail_prob:(s3r_status'=0)&(t_turn'=true) + (1 - s3r_fail_prob):(s3r_status'=1)&(t_turn'=true);
+s3r_status: [0, 1] init 1;
+[] s3r_status==1&t_turn==0 -> s3r_fail_prob:(s3r_status=0)&(t_turn=1) + (1 - s3r_fail_prob):(s3r_status=1)&(t_turn=1);
 endmodule
 
 module BCR
-	bcr_status: [0..1] init 1;
-	[] bcr_status=1&t_turn=false -> s3r_fail_prob:(bcr_status'=0)&(t_turn'=true) + (1 - s3r_fail_prob):(bcr_status'=1)&(t_turn'=true);
+bcr_status: [0, 1] init 1;
+[] bcr_status==1&t_turn==0 -> s3r_fail_prob:(bcr_status=0)&(t_turn=1) + (1 - s3r_fail_prob):(bcr_status=1)&(t_turn=1);
 endmodule
 
 module BDR
-    bdr_status: [0..1] init 1;
-    [] bdr_status=1&t_turn=false -> s3r_fail_prob:(bdr_status'=0)&(t_turn'=true) + (1 - s3r_fail_prob):(bdr_status'=1)&(t_turn'=true);
+bdr_status: [0, 1] init 1;
+[] bdr_status==1&t_turn==0 -> s3r_fail_prob:(bdr_status=0)&(t_turn=1) + (1 - s3r_fail_prob):(bdr_status=1)&(t_turn=1);
 endmodule
 
-// 蓄电池模块
-// Charge Battery constants
-// ========================
-const double delta_temp_up = 1.21; // 当蓄电池处于过放状态时，每天温度的增加值
-const double cb_temp_base = 1.012;
-const double cb_temp_a = 1.64; // 当电池处于过充状态时，温度的增加值是过充时间的一个指数函数: temp = cb_temp_a * cb_temp_base**day
-
-//module ChargeBattery
-  //  cb_status: [0..2] init 2; // 2: 正常工作；1: 过充电状态；0: 过放电状态
-    //[] cb_status=2&bcr_status=0&bdr_status=1&mod(day, 365)<182&t_turn=false -> (cb_status'=1)&(t_turn'=true);
-    //[] cb_status=2&bcr_status=1&bdr_status=0&mod(day, 365)>=182&t_turn=false -> (cb_status'=0)&(t_turn'=true);
-//endmodule
-
-label "failure" = sb_status=0 | s3r_status=0;
-
-
-
-
-
-
-
+label failure = sb_status == 0 | s3r_status == 0 | bcr_status == 0 | bdr_status == 0;
+label up = sb_status == 1 & s3r_status == 1 & bcr_status == 1 & bdr_status == 1;

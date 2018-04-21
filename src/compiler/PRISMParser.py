@@ -7,6 +7,10 @@ from util.FuncUtil import *
 from removeComment import clear_comment
 from util.MathUtils import *
 import logging
+from model.ModelFactory import ModelFactory
+
+
+
 
 logger = logging.getLogger("PRISMParser logging")
 handler = logging.StreamHandler(sys.stdout)
@@ -469,6 +473,7 @@ class ModelConstructor(object):
 def testModelConstruction():
     constructor = ModelConstructor()
     model = constructor.parseModelFile("../../prism_model/smalltest.prism")
+    model1 = ModelFactory().spsmodel()
     print model.modules.values()[0].commands
 
 if __name__ == "__main__":

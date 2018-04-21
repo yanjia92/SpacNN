@@ -1,5 +1,30 @@
-// 如何确保expression的parsing是正确的？ 单元测试成功 testParseExpr.py
-增加label,测试label
+未完成
+    测试parsed model的正确性.在NNRegressor中测试以及checker中测试.
+        要验证的方面:比较parsed model和ModelFactory生成的model之间的异同.
+        ModelFactory返回的model: labels + modules + stop_condition
+        ModelFactory_model:
+            repeated Module modules;
+            repeated Label label;
+            optional Label stop_condition;
+        Module:
+            string name;
+            repeated Constant constants;
+            repeated Variable variables;
+            repeated Command commands;
+        Label:
+            string name;
+            function bool_expr;
 
+        Thus, comparison step in step:
+            1. all constants name value 
+            2. variables valrange init_value 
+            3. commands guard prob action
+
+已完成
+如何确保expression的parsing是正确的？ 单元测试成功 testParseExpr.py
+增加label,测试label testLabel.py单元测试成功
+
+
+不足
 目前command的update部分不允许出现boolean_expression
 因为在parse module的时候,默认将所有的boolean_expression解析为当前command的guard
