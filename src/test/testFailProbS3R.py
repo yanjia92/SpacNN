@@ -15,7 +15,8 @@ logger = logging.getLogger("s3r test logger")
 logger.addHandler(logging.FileHandler("../log/tests3r.log", "a"))
 logger.setLevel(logging.INFO)
 
-YEAR=5
+
+YEAR = 5
 
 
 class TestCase(unittest.TestCase):
@@ -57,7 +58,7 @@ class TestCase(unittest.TestCase):
             #     plt.plot(xs,ys, color="black")
             #     plt.show()
             # print "std_x=%f p=%f" % (std_xs[-1], ps[-1])
-            logger.info("t=%d, std_x=%f, p=%.7f", t, std_xs[-1], ps[-1])
+            logger.info("thickness=%d, std_x=%f, p=%.7f", t, std_xs[-1], ps[-1])
             if t == 10:
                 logger.info("\n")
 

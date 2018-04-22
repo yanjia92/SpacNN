@@ -8,6 +8,7 @@ import bisect
 import math
 import time
 
+
 # class represent an interval in DTMC/CTMC
 # using -1 as the end to represent the unbound situation
 class Interval:
@@ -429,17 +430,14 @@ class Checker(threading.Thread):
         logging.info("max len: %d" % (max(pathlens)))
         logging.info("aver len: %d" % (math.floor(float(sum(pathlens))/len(pathlens))))
         postex = self.postEx(n, x)
-        # logging.info('%.10e of %d samples satisfy ltl' % (x, sz))
         logging.info("Estimation: %.10e" % postex)
-        # compute the probability the system fails before time 5 years using
-        # results from p52-nakayama(1).pdf
         l = postex - self.d
         h = postex + self.d
         l = 0 if l < 0 else l
         h = 1 if h > 1 else h
 
-        return l, h
-
+        # return l, h
+        return postex
 
     def intervalUnreliability(self, duration):
         # compute the interval unreliability within the interval [0, duration)

@@ -1,4 +1,5 @@
-from module.Module import *
+# -*- coding: utf-8 -*-
+from module.Module import Module, Constant, Variable, Command, CommandKind
 from util.MathUtils import *
 from util.util import *
 import logging
@@ -8,6 +9,7 @@ logger = logging.getLogger("test fail prob sb.py")
 logger.addHandler(logging.StreamHandler(sys.stdout))
 logger.setLevel(logging.DEBUG)
 import matplotlib.pyplot as plt
+from compiler.PRISMParser import ModelConstructor
 
 YEAR = 5
 
@@ -136,8 +138,29 @@ def test():
         #     plt.xlabel("dose")
         #     plt.ylabel("failure probability")
         #     plt.show()
-        print ps[-1], std_xs[-1]
+        print "p={}, std_x={}".format(ps[-1], std_xs[-1])
+
+
+def get_parsed():
+    constructor = ModelConstructor()
+    model = constructor.parseModelFile("../../prism_model/smalltest.prism")
+    return model
+
+
+# 测试同样的数据for parsed model
+def test_parsed():
+    parsed = get_parsed()
+    days = range(1, YEAR * 365)
+    sb_mdl = parsed.getModuleByName("SB")
+    fail_probs = []
+    for thickness in range(1, 11):
+        parsed.setConstant("SCREEN_THICKNESS", thickness)
+        for day in days:
+            parsed.setVariable("day", day)
+            fail_prob = sb_mdl.commands[0].prob
+            print "thickness={}, prob={}".format(thickness, fail_prob)
 
 
 if __name__ == '__main__':
-    test()
+    # test()
+    test_parsed()

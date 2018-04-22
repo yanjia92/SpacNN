@@ -1,5 +1,4 @@
 # -*- coding:utf-8 -*-
-import ModulesFile
 import logging
 logging.basicConfig(level=logging.DEBUG)
 from collections import OrderedDict
@@ -38,7 +37,7 @@ class Module(object):
         return self.commands.pop(name)
 
     def getCommand(self, name):
-        if not self.commands.has_key(name):
+        if name not in self.commands.keys():
             # todo throws null pointer exception
             return
         return self.commands.get(name)
@@ -140,13 +139,13 @@ class Command(object):
         self.action = action
 
 
-
 class TypeError(object):
     def __init__(self, message):
         self.message = message
 
     def __str__(self):
         return "TypeError: %s" % self.message
+
 
 class Variable(object):
     def __init__(

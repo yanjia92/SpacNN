@@ -1,25 +1,20 @@
 # -*- coding:utf-8 -*-
+from collections import OrderedDict
 from functools import reduce
-import logging
 from State import State
 from Step import Step
 import Module
-from collections import OrderedDict
-import copy
 import random
 import itertools
 import math
 import util.MathUtils as MathUtils
-import sys
+import logging
+import copy
+from Module import Constant, Variable
 
 logger = logging.getLogger("ModulesFile logging")
-
-# 文件日志
-file_handler = logging.FileHandler("../log/model.log")
-# 为logger添加日志处理器
-logger.addHandler(file_handler)
+logger.addHandler(logging.StreamHandler())
 logger.setLevel(logging.INFO)
-
 
 allUpCnt = 0
 failureCnt = 0
@@ -116,16 +111,21 @@ class ModulesFile(object):
     def getConstant(self, name='', moduleName=''):
         return self.constants[name]
 
-    # used for experiments with different constants like PRISM
-    def setConstant(self, name, value, module):
-        module = self.getModuleByName(module)
-        if module:
-            return module.setConstant(name, value)
-
     # added when trying to write the compiler for the PRISM language
     # store the constant value in ModulesFile unitedly
-    def addConstant(self, name, constant_obj):
-        self.constants.update({name: constant_obj})
+    def setConstant(self, name, val_or_obj):
+        if not isinstance(val_or_obj, Constant):
+            self.constants.update({name: Constant(name, val_or_obj)})
+            return
+        self.constants.update({name: val_or_obj})
+
+    def setVariable(self, name, val_or_obj):
+        if not self.localVars[name]:
+            return
+        if not isinstance(val_or_obj, Variable):
+            self.localVars[name].setValue(val_or_obj)
+        else:
+            self.localVars[name].setValue(val_or_obj.getValue())
 
     # label: a function represents ap
     # label is implemented as a function object that receive

@@ -10,6 +10,7 @@ filehandler = logging.FileHandler('../log/testmodel.log', mode='w')
 logger.addHandler(filehandler)
 logger.setLevel(logging.INFO)
 
+
 class Test(unittest.TestCase):
     def setUp(self):
         if not hasattr(self, 'model'):
@@ -26,7 +27,6 @@ class Test(unittest.TestCase):
             for _ in range(paths):
                 _, path = self.model.genRandomPath(length)
                 logger.info('{0}, {1}'.format(thickness, path))
-
 
 
 if __name__ == '__main__':

@@ -1,12 +1,10 @@
 from module.Module import *
-from config.SPSConfig import *
 from math import log, e, pow
 from util.MathUtils import pcf
 import logging
 logger = logging.getLogger('ModuleFactory logger')
-handler = logging.FileHandler('../log/modulefactory.log')
-logger.addHandler(handler)
-logger.setLevel(logging.WARN)
+logger.addHandler(logging.StreamHandler())
+logger.setLevel(logging.INFO)
 
 
 class ModuleFactory(object):

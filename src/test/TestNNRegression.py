@@ -10,11 +10,8 @@ from nn.NNRegressor import BPNeuralNetwork
 
 logger = logging.getLogger("TestNNTRegression logging")
 
-# 文件日志
 file_handler = logging.FileHandler("../log/nnregr.log")
-# 为logger添加日志处理器
 logger.addHandler(file_handler)
-
 logger.setLevel(logging.INFO)
 
 

@@ -20,6 +20,15 @@
             2. variables valrange init_value 
             3. commands guard prob action
 
+        comparison result:
+            1. _F, _U in model solution: call model._fillinstate()
+            2. failurecondition UI
+            3. stopcondition UI
+
+    LTL公式的输入 UI
+    testChecker.py
+    修改command语法规则,增加name解析
+
 已完成
 如何确保expression的parsing是正确的？ 单元测试成功 testParseExpr.py
 增加label,测试label testLabel.py单元测试成功

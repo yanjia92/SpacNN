@@ -1,6 +1,6 @@
 import logging
 import unittest
-logger=logging.getLogger('test fail prob log')
+logger = logging.getLogger('test fail prob log')
 logger.addHandler(logging.FileHandler('../log/testfailprob.log'))
 logger.setLevel(logging.INFO)
 from config.SPSConfig import SPSConfig
@@ -19,6 +19,7 @@ class Test(unittest.TestCase):
     def testsbfail(self):
         module = self.factory.sbmodule()
         config = self.config
+
         def f(day_var):
             def inner():
                 day = day_var.getValue()
@@ -32,12 +33,14 @@ class Test(unittest.TestCase):
             return inner
         for varday in [Variable('day', v) for v in interval(1, 365, 1)]:
             ff = f(varday)
-            logger.info('sb: day_{0}, prob={1}'.format(varday.getValue(), ff()))
-
+            logger.info(
+                'sb: day_{0}, prob={1}'.format(
+                    varday.getValue(), ff()))
 
     def tests3rfail(self):
         module = self.factory.s3rmodule()
         config = self.config
+
         def f(day_var):
             def inner():
                 day = day_var.getValue()
@@ -46,18 +49,19 @@ class Test(unittest.TestCase):
                 x = config.getParam('S3R_DELTAV_THRESHOLD') / (
                     config.getParam('S3R_B') * pow(e, config.getParam('S3R_B') * dose))
                 std_x = (-config.getParam('S3R_A_MU') + x) / \
-                        config.getParam('S3R_A_SIGMA').getValue()
-                logger.info('s3r: day_{0}, std_x={1}'.format(day_var.getValue(), std_x))
+                    config.getParam('S3R_A_SIGMA').getValue()
+                logger.info(
+                    's3r: day_{0}, std_x={1}'.format(
+                        day_var.getValue(), std_x))
                 p = 1 - pcf(std_x)
                 return p
             return inner
         for varday in [Variable('day', v) for v in interval(1, 365, 1)]:
             ff = f(varday)
-            logger.info('s3r: day_{0}, prob={1}'.format(varday.getValue(), ff()))
-
-
+            logger.info(
+                's3r: day_{0}, prob={1}'.format(
+                    varday.getValue(), ff()))
 
 
 if __name__ == "__main__":
     unittest.main()
-

@@ -8,12 +8,12 @@ from removeComment import clear_comment
 from util.MathUtils import *
 import logging
 from model.ModelFactory import ModelFactory
-
-
+from model.ModuleFactory import ModuleFactory
+from config.SPSConfig import SPSConfig
 
 
 logger = logging.getLogger("PRISMParser logging")
-handler = logging.StreamHandler(sys.stdout)
+handler = logging.StreamHandler()
 logger.addHandler(handler)
 logger.setLevel(logging.INFO)
 
@@ -137,7 +137,7 @@ class BasicParser(object):
         model_type = ModelType.CTMC
         if p[1] == 'dtmc':
             model_type = ModelType.DTMC
-        ModelConstructor.model = ModulesFile.ModulesFile(modeltype=model_type)
+        ModelConstructor.model = ModulesFile(modeltype=model_type)
 
     def p_module_def_begin_statement(self, p):
         '''module_def_begin_statement : MODULE NAME'''
@@ -157,7 +157,7 @@ class BasicParser(object):
         name = p[3]
         value = self.resolvetype(p[5], p[2])
         obj = Constant(name, value)
-        ModelConstructor.model.addConstant(name, obj)
+        ModelConstructor.model.setConstant(name, obj)
         self.cmap[p[3]] = obj
         logger.info("Constant added: {} = {}".format(name, value))
 
@@ -220,9 +220,9 @@ class BasicParser(object):
         f1 = p[1]
         f2 = p[3]
 
-        def f():
-            f1()
-            f2()
+        def f(vs, cs):
+            f1(vs, cs)
+            f2(vs, cs)
 
         p[0] = f
 
@@ -339,11 +339,11 @@ class BasicParser(object):
         slices = copy.copy(p.slice)
         if len(slices) == 4:
             if slices[2].value == "&":
-                def f():
-                    return slices[1].value() and slices[3].value()
+                def f(vs, cs):
+                    return slices[1].value(vs, cs) and slices[3].value(vs, cs)
             if slices[2].value == "|":
-                def f():
-                    return slices[1].value() or slices[3].value()
+                def f(vs, cs):
+                    return slices[1].value(vs, cs) or slices[3].value(vs, cs)
 
             p[0] = f
         elif len(p) == 2:
@@ -365,8 +365,7 @@ class BasicParser(object):
         tokens = copy.copy(p.slice)
 
         def f(tokens, handler):
-            def inner():
-                vs = ModelConstructor.model.localVars
+            def inner(vs ,cs):
                 var = vs[tokens[1].value]
                 if not var or not isinstance(var, Variable):
                     raise Exception("invalid variable name")
@@ -392,8 +391,7 @@ class BasicParser(object):
         def f(t, handler):
             # handler is a boolean_expression_resolver : handler(val1, val2,
             # op)
-            def inner():
-                vs = ModelConstructor.model.localVars
+            def inner(vs, cs):
                 var = vs[t[1].value]
                 if not var or not isinstance(var, Variable):
                     raise Exception("invalid var name")
@@ -463,7 +461,7 @@ class ModelConstructor(object):
     def __init__(self):
         self.parser = BasicParser()
         self.parser.build()
-        ModelConstructor.model = ModulesFile.ModulesFile(ModelType.DTMC)
+        ModelConstructor.model = ModulesFile(ModelType.DTMC)
 
     def parseModelFile(self, filepath):
         self.parser.parse_model(filepath)
@@ -472,9 +470,9 @@ class ModelConstructor(object):
 
 def testModelConstruction():
     constructor = ModelConstructor()
-    model = constructor.parseModelFile("../../prism_model/smalltest.prism")
-    model1 = ModelFactory().spsmodel()
-    print model.modules.values()[0].commands
+    parsed = constructor.parseModelFile("../../prism_model/smalltest.prism")
+    built = ModelFactory(ModuleFactory(SPSConfig())).spsmodel()
+    print parsed.modules.values()[0].commands
 
 if __name__ == "__main__":
     testModelConstruction()
