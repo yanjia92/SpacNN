@@ -208,12 +208,13 @@ class BasicParser(object):
         pass
 
     def p_prob_update(self, p):
-        '''prob_update : expr COLON actions'''
-        prob = p[1]  # prob_expr is a function
-        action = p[3]  # actions is a function
-        command = Command("", self.guard, action, self.module, prob)
+        '''prob_update : DQ NAME DQ expr COLON actions'''
+        prob = p[4]  # prob_expr is a function
+        action = p[6]  # actions is a function
+        name = copy.copy(p[2])
+        command = Command(name, self.guard, action, self.module, prob)
         self.module.addCommand(command)
-        print "Command added."
+        print "Command_{} added.".format(name)
 
     def p_actions(self, p):
         '''actions : actions AND assignment'''

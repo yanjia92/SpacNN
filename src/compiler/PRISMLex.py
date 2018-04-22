@@ -19,7 +19,7 @@ class MyLexer(object):
         'true': 'TRUE',
         'false': 'FALSE',
         'formula': 'FORMULA',
-        'label' : "LABEL",
+        'label': "LABEL",
     }
 
 
@@ -38,7 +38,8 @@ class MyLexer(object):
                  "QUOTE",
                  "COMMA",
                  "THEN",  # -> in command statement
-                 "NUMBERSIGN", # '#'
+                 "NUMBERSIGN",  # '#'
+                 "DQ",
              ] + list(keywords.values())
 
     def t_NUM(self, t):
@@ -90,6 +91,7 @@ class MyLexer(object):
     t_COMMA = r","
     t_THEN = r"\->"
     t_NUMBERSIGN = r"\#"
+    t_DQ = r"\""
 
     def t_error(self, t):
         print "Illegal character '{}' ({}) in line {}.".format(t.value[0], hex(ord(t.value[0])), t.lexer.lineno)
@@ -120,7 +122,14 @@ def testLexString():
     data = "formula s3r_fail_prob = 1 - stdcdf(s3r_std_cdf_x);"
     lexer.tokenize_string(data)
 
+# test double quotation parsing
+def testDQ():
+    lexer = MyLexer()
+    file_path = "../../prism_model/DQUOTATION_TEST.prism"
+    lexer.tokenize_file(file_path)
+
 
 if __name__ == "__main__":
     # testPRISMLex()
-    testLexString()
+    # testLexString()
+    testDQ()
