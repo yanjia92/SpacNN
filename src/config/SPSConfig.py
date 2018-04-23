@@ -63,3 +63,7 @@ class SPSConfig():
 def export_2_smalltest():
     config = SPSConfig()
     config.export2prism("../../prism_model/smalltest.prism")
+
+
+if __name__ == "__main__":
+    export_2_smalltest()

@@ -5,8 +5,8 @@ from util.util import *
 from model.ModuleFactory import ModuleFactory
 from config.SPSConfig import SPSConfig
 import unittest
-import numpy as np
-import matplotlib.pyplot as plt
+# import numpy as np
+# import matplotlib.pyplot as plt
 import math
 
 import logging
@@ -41,8 +41,8 @@ class TestCase(unittest.TestCase):
                 mean = s3r.getConstant("S3R_A_MU").getValue()
                 sigma = s3r.getConstant("S3R_A_SIGMA").getValue()
                 b = s3r.getConstant("S3R_B").getValue()
-                deltav = np.random.normal(mean, sigma) * b * math.exp(b * dose)
-                ys.append(deltav)
+                # deltav = np.random.normal(mean, sigma) * b * math.exp(b * dose)
+                # ys.append(deltav)
                 x = s3r.getConstant("S3R_DELTAV_THRESHOLD").getValue() / (
                 s3r.getConstant("S3R_B").getValue() * exp(s3r.getConstant("S3R_B").getValue() * dose))
                 std_x = (x - s3r.getConstant("S3R_A_MU").getValue()) / s3r.getConstant("S3R_A_SIGMA").getValue()
