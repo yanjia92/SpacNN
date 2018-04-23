@@ -14,7 +14,7 @@ from config.SPSConfig import SPSConfig
 logger = logging.getLogger("PRISMParser logging")
 handler = logging.StreamHandler()
 logger.addHandler(handler)
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.ERROR)
 
 
 def bin_add(x,y):

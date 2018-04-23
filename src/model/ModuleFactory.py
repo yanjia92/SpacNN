@@ -4,7 +4,7 @@ from util.MathUtils import pcf
 import logging
 logger = logging.getLogger('ModuleFactory logger')
 logger.addHandler(logging.StreamHandler())
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.ERROR)
 
 
 class ModuleFactory(object):
@@ -13,6 +13,8 @@ class ModuleFactory(object):
         self.timer = self._timermodule()
         self.sb = self._sbmodule()
         self.s3r = self._s3rmodule()
+        self.bcr = self._bcrmodule()
+        self.bdr = self._bdrmodule()
 
     def _sbmodule(self):
         config = self.config
@@ -35,7 +37,7 @@ class ModuleFactory(object):
         def guard(vs, cs):
             # sb_status and s3r_status must both be 1, e.g. the system has not
             # failed.
-            return vs['timer_turn'] == False and vs['sb_status'] == 1 and vs['s3r_status'] == 1
+            return vs['timer_turn'] == False and vs['sb_status'] == 1 and vs['s3r_status'] == 1 and vs['bcr_status'] == 1 and vs['bdr_status'] == 1
 
         # failure action
         def faction(vs, cs):
@@ -109,8 +111,10 @@ class ModuleFactory(object):
         )
 
         def guard(vs, cs):
-            return vs['day'] < self.config.getParam(
-                'DURATION_IN_DAY').getValue() and vs['timer_turn'] == True
+            day_val = vs['day'].getValue()
+            DAY_MAX = self.config.getParam("DURATION_IN_DAY")
+            t_turn = vs['timer_turn'].getValue()
+            return day_val < DAY_MAX and t_turn is True
 
         def action(vs, cs):
             vs['day'].setValue(vs['day'].getValue() + 1)
@@ -147,7 +151,7 @@ class ModuleFactory(object):
         def guard(vs, cs):
             # the sb_status and s3r_status must both be 1 for this transition
             # to happen
-            return vs['timer_turn'] == False and vs['s3r_status'] == 1 and vs['sb_status'] == 1
+            return vs['timer_turn'] == False and vs['s3r_status'] == 1 and vs['sb_status'] == 1 and vs['bcr_status'] == 1 and vs['bdr_status'] == 1
 
         def faction(vs, cs):
             vs['s3r_status'].setValue(0)
@@ -200,6 +204,143 @@ class ModuleFactory(object):
         )
         return module
 
+    def _bcrmodule(self):
+        config = self.config
+        module = Module('bcr module')
+
+        module.addVariable(
+            Variable(
+                'bcr_status',
+                1,
+                range(2),
+                int
+            )
+        )
+
+        def guard(vs, cs):
+            # the sb_status and s3r_status must both be 1 for this transition
+            # to happen
+            return vs['timer_turn'] == False and vs['bcr_status'] == 1 and vs['sb_status'] == 1 and vs['bdr_status'] == 1 and vs['s3r_status'] == 1
+
+        def faction(vs, cs):
+            vs['bcr_status'].setValue(0)
+            vs['timer_turn'].setValue(True)
+
+        def naction(vs, cs):
+            vs['timer_turn'].setValue(True)
+
+        def f(day_var):
+            def inner():
+                day = day_var.getValue()
+                dose = config.getParam('S3R_K') / config.getParam(
+                    'SCREEN_THICKNESS') * (day / 365.0)
+                x = config.getParam('S3R_DELTAV_THRESHOLD') / (
+                    config.getParam('S3R_B') * pow(e, config.getParam('S3R_B') * dose))
+                std_x = (-config.getParam('S3R_A_MU') + x) / \
+                    config.getParam('S3R_A_SIGMA').getValue()
+                p = 1 - pcf(std_x)
+                # logger.info('day:{0}, bcr failure prob:{1}'.format(day, p))
+                return p
+            return inner
+
+        def n(day_var):
+            def inner():
+                ff = f(day_var)
+                return 1 - ff()
+            return inner
+
+        if not hasattr(self, 'timer'):
+            self.timer = self._timermodule()
+
+        module.addCommand(
+            Command(
+                'bcr failure',
+                guard,
+                faction,
+                module,
+                f(self.timer.getVariable('day'))
+            )
+        )
+
+        module.addCommand(
+            Command(
+                'bcr normal',
+                guard,
+                naction,
+                module,
+                n(self.timer.getVariable('day'))
+            )
+        )
+        return module
+
+    def _bdrmodule(self):
+        config = self.config
+        module = Module('bdr module')
+
+        module.addVariable(
+            Variable(
+                'bdr_status',
+                1,
+                range(2),
+                int
+            )
+        )
+
+        def guard(vs, cs):
+            # the sb_status and s3r_status must both be 1 for this transition
+            # to happen
+            return vs['timer_turn'] == False and vs['bdr_status'] == 1 and vs['sb_status'] == 1 and vs['bcr_status'] == 1 and vs['s3r_status'] == 1
+
+        def faction(vs, cs):
+            vs['bdr_status'].setValue(0)
+            vs['timer_turn'].setValue(True)
+
+        def naction(vs, cs):
+            vs['timer_turn'].setValue(True)
+
+        def f(day_var):
+            def inner():
+                day = day_var.getValue()
+                dose = config.getParam('S3R_K') / config.getParam(
+                    'SCREEN_THICKNESS') * (day / 365.0)
+                x = config.getParam('S3R_DELTAV_THRESHOLD') / (
+                    config.getParam('S3R_B') * pow(e, config.getParam('S3R_B') * dose))
+                std_x = (-config.getParam('S3R_A_MU') + x) / \
+                    config.getParam('S3R_A_SIGMA').getValue()
+                p = 1 - pcf(std_x)
+                return p
+            return inner
+
+        def n(day_var):
+            def inner():
+                ff = f(day_var)
+                return 1 - ff()
+            return inner
+
+        if not hasattr(self, 'timer'):
+            self.timer = self._timermodule()
+
+        module.addCommand(
+            Command(
+                'bdr failure',
+                guard,
+                faction,
+                module,
+                f(self.timer.getVariable('day'))
+            )
+        )
+
+        module.addCommand(
+            Command(
+                'bdr normal',
+                guard,
+                naction,
+                module,
+                n(self.timer.getVariable('day'))
+            )
+        )
+        return module
+
     def sbmodule(self):
         return self.sb
 
@@ -208,3 +349,9 @@ class ModuleFactory(object):
 
     def timermodule(self):
         return self.timer
+
+    def bcrmodule(self):
+        return self.bcr
+
+    def bdrmodule(self):
+        return self.bdr

@@ -12,9 +12,9 @@ import logging
 import copy
 from Module import Constant, Variable
 
-logger = logging.getLogger("ModulesFile logging")
-logger.addHandler(logging.StreamHandler())
-logger.setLevel(logging.INFO)
+# logger = logging.getLogger("ModulesFile logging")
+# logger.addHandler(logging.StreamHandler())
+# logger.setLevel(logging.INFO)
 
 allUpCnt = 0
 failureCnt = 0
@@ -225,7 +225,6 @@ class ModulesFile(object):
         path = list()
         timeSum = 0.0
         passedTime = 0.0
-        strPath = ''
         while timeSum < duration:
             # get enabled commands list
             variables = [var.getValue() for _, var in self.localVars.items()]
@@ -236,7 +235,7 @@ class ModulesFile(object):
                 enabledCommands = []
                 for _,module in self.modules.items():
                     for _,comm in module.allCommands().items():
-                        if (comm.guard(self.localVars, self.constants)):
+                        if comm.guard(self.localVars, self.constants):
                             enabledCommands.append(comm)
             else:
                 enabledCommands = self.scDict[varsStr]
@@ -277,9 +276,6 @@ class ModulesFile(object):
                 biasingExitRate)
             path.append(step)
             passedTime += holdingTime
-            if len(strPath):
-                strPath += ','
-            strPath += step.asKey()
 
             if len(path) >= 1 and self.stopCondition and self.stopCondition(
                     self.localVars, self.constants):
@@ -303,7 +299,6 @@ class ModulesFile(object):
         # MUST be executed before the function returns
         # to prepare generating next random path.
         self.restoreSystem()
-
         return None, path
 
     def getCurrentState(self):
@@ -421,8 +416,8 @@ class ModulesFile(object):
             varTuple = tuple([item[1].getValue() for item in self.localVars.items()])
             varsStr = ''.join([str(v) for v in varTuple])
             self.scDict[varsStr] = enabledCommands
-        logger.info(str(self.scDict.keys()))
         self.restoreSystem()
+        self.commPrepared = True
 
     def exportPathTo(self, path, filename):
         f = file(filename, 'w')

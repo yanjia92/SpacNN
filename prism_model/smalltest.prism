@@ -10,7 +10,7 @@ formula NIEL_YEAR = SB_K * SCREEN_THICKNESS;
 module Time
 t_turn : [0, 1] init 1;
 day : [0, YEAR*365] init 1;
-[] t_turn==1&day<=YEAR*365 -> 1.0 : (day=day+1)&(t_turn=0);
+[] t_turn==1&day<=YEAR*365 -> "inc_day_cmd" 1.0 : (day=day+1)&(t_turn=0);
 endmodule
 
 const double SB_P_THRESHOLD = 0.819;
