@@ -1,12 +1,11 @@
-__author__ = 'hekk'
+# -*- coding:utf-8 -*-
 
-import logging
-logging.basicConfig(level=logging.ERROR)
 import threading
 import re
 import bisect
 import math
 import time
+import logging
 
 
 # class represent an interval in DTMC/CTMC
@@ -59,7 +58,7 @@ class Checker(threading.Thread):
         a=1,
         b=1,
         c=0.8,
-        d=0.05,
+        d=0.1,
         duration=1.0,
             checkingType=None,
         fb = False):
@@ -370,25 +369,21 @@ class Checker(threading.Thread):
     # Estiamte the probability of property holding
     def mc2(self):
         sz = self.getSampleSize()
-        logging.info('Sampling size: %s' % sz)
         x, n = 0, 0
         hitTimes = 0
         satisfying = 0
-        t1 = time.time()
         pathlens = []
+        spaths = set()  # 满足性质的path集合
+        nspaths = set()  # 不满足性质的path集合
         for i in range(sz):
             satisfied, path = self.getRandomPath()
             pathlens.append(len(path))
-            # logging.info("Path: %s" % (str(path)))
+
             n += 1
             if n & 1023 == 0:
-                # pass
                 t2 = time.time()
-                logging.info('Sampling: %d of %d, time=%s' % (n, sz, t2-t1))
             if isinstance(satisfied, bool):
-                # logging.info("cache hit\n")
                 hitTimes += 1
-                # logging.info("verification result: %s" % str(satisfied))
                 if satisfied:
                     satisfying += 1
                     pb1 = self.model.probForPath(path, False)
@@ -396,19 +391,14 @@ class Checker(threading.Thread):
                     if pb2 == 0:
                         continue
                     likelihood = pb1/pb2
-                    # logging.info("x %.10e added with %.10e" % (x, likelihood))
                     x += likelihood
-                    # logging.info("x %.10e" % (x))
+
                 continue
 
             verified = self.verify(path)
-            # add verified result to cache
-            # prefix = self._get_decidable_prefix(path, path[0], 0)
-            # strPrefix = ','.join([step.asKey() for step in prefix])
-            # self.cachedPrefixes[strPrefix] = verified
 
-            # logging.info("verification result: %s" % str(verified))
             if verified:
+                spaths.add(str(path))
                 if self.fb:
                     satisfying += 1
                     try:
@@ -419,24 +409,13 @@ class Checker(threading.Thread):
                         logging.error("path's length: %d" % (len(path)))
                         logging.error("path: %s" % str(path))
                         continue
-                    # logging.info('x %.10e added with %.10e' % (x, likelihood))
                     x += likelihood
                 else:
                     x += 1
-                # logging.info("x = %.10e" % (x))
-            # logging.info('-------------\n\n')
-
-        logging.info("lens: %s" % str(pathlens))
-        logging.info("max len: %d" % (max(pathlens)))
-        logging.info("aver len: %d" % (math.floor(float(sum(pathlens))/len(pathlens))))
+            else:
+                nspaths.add(str(path))
         postex = self.postEx(n, x)
-        logging.info("Estimation: %.10e" % postex)
-        l = postex - self.d
-        h = postex + self.d
-        l = 0 if l < 0 else l
-        h = 1 if h > 1 else h
 
-        # return l, h
         return postex
 
     def intervalUnreliability(self, duration):

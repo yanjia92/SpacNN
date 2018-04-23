@@ -16,7 +16,7 @@ class SPSConfig():
         self.params['S3R_A_SIGMA'] = Constant('S3R_A_SIGMA', 6.7471 * 220)
         self.params['S3R_B'] = Constant('S3R_B', 0.0131*0.57 * 0.1)
         self.params['SCREEN_THICKNESS'] = Constant('SCREEN_THICKNESS', 1)
-        self.params['DURATION_IN_DAY'] = Constant('DURATION_IN_DAY', 365)
+        self.params['DURATION_IN_DAY'] = Constant('DURATION_IN_DAY', 365*2)
 
     def getParam(self, name):
         if name in self.params.keys():

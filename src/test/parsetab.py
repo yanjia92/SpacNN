@@ -6,7 +6,7 @@ _tabversion = '3.10'
 
 _lr_method = 'LALR'
 
-_lr_signature = 'ADD AND ASSIGN BOOL COLON COMMA CONST CTMC DIV DOUBLE DTMC ENDMODULE EQ FALSE FORMULA GE GLOBAL GT INIT INT LABEL LB LE LP LT MINUS MODELTYPE MODULE MUL NAME NEQ NOT NUM NUMBERSIGN OR QUOTE RB RP SEMICOLON THEN TRUE TYPEbool_expr : bool_expr AND bool_expr_unitbool_expr : bool_expr OR bool_expr_unitbool_expr : bool_expr_unitbool_expr_unit : NAME EQ NUM\n                      | NAME NEQ NUM\n                      | NAME GT NUM\n                      | NAME LT NUM\n                      | NAME GE NUM\n                      | NAME LE NUM'
+_lr_signature = 'ADD AND ASSIGN BOOL COLON COMMA CONST CTMC DIV DOUBLE DQ DTMC ENDMODULE EQ FALSE FORMULA GE GLOBAL GT INIT INT LABEL LB LE LP LT MINUS MODELTYPE MODULE MUL NAME NEQ NOT NUM NUMBERSIGN OR QUOTE RB RP SEMICOLON THEN TRUE TYPEbool_expr : bool_expr AND bool_expr_unitbool_expr : bool_expr OR bool_expr_unitbool_expr : bool_expr_unitbool_expr_unit : NAME EQ NUM\n                      | NAME NEQ NUM\n                      | NAME GT NUM\n                      | NAME LT NUM\n                      | NAME GE NUM\n                      | NAME LE NUM'
     
 _lr_action_items = {'AND':([2,3,12,13,14,15,16,17,18,19,],[10,-3,-9,-6,-8,-7,-4,-5,-1,-2,]),'GT':([1,],[5,]),'NAME':([0,10,11,],[1,1,1,]),'LT':([1,],[7,]),'GE':([1,],[6,]),'LE':([1,],[4,]),'NUM':([4,5,6,7,8,9,],[12,13,14,15,16,17,]),'$end':([2,3,12,13,14,15,16,17,18,19,],[0,-3,-9,-6,-8,-7,-4,-5,-1,-2,]),'EQ':([1,],[8,]),'OR':([2,3,12,13,14,15,16,17,18,19,],[11,-3,-9,-6,-8,-7,-4,-5,-1,-2,]),'NEQ':([1,],[9,]),}
 

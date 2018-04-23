@@ -91,10 +91,3 @@ yacc.yacc()
 data = "a=a+1"
 yacc.parse(data)
 assert variables['a'] == 2
-
-
-
-
-
-
-
