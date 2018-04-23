@@ -1,0 +1,22 @@
+===============parsed===============
+thickness=1, p_max=0.0
+thickness=2, p_max=1.54706056188e-07
+thickness=3, p_max=0.000400974058178
+thickness=4, p_max=0.00677848176575
+thickness=5, p_max=0.0262861513005
+thickness=6, p_max=0.0565346320265
+thickness=7, p_max=0.0915041230896
+thickness=8, p_max=0.126808907664
+thickness=9, p_max=0.160183170836
+thickness=10, p_max=0.190721549113
+===============built===============
+thickness=1, p_max=0.0
+thickness=2, p_max=1.57101641696e-07
+thickness=3, p_max=0.000403784978434
+thickness=4, p_max=0.00680603002299
+thickness=5, p_max=0.0263570763463
+thickness=6, p_max=0.0566449255015
+thickness=7, p_max=0.09164093926
+thickness=8, p_max=0.126960459652
+thickness=9, p_max=0.160341098008
+thickness=10, p_max=0.190880511996

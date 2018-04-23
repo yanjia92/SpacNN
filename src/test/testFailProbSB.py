@@ -7,8 +7,8 @@ import sys
 from config.SPSConfig import SPSConfig
 logger = logging.getLogger("test fail prob sb.py")
 logger.addHandler(logging.StreamHandler(sys.stdout))
+logger.addHandler(logging.FileHandler("../log/testsbfail.log", "w"))
 logger.setLevel(logging.DEBUG)
-import matplotlib.pyplot as plt
 from compiler.PRISMParser import ModelConstructor
 
 YEAR = 5
@@ -118,6 +118,8 @@ sb.addCommand(comm_normal)
 
 
 def test():
+    results = []
+    logger.info("===============built===============")
     for t in range(1, 11):
         sb.setConstant(Constant('SCREEN_THICKNESS', t))
         ps = []
@@ -126,7 +128,7 @@ def test():
         for v in [Variable('day', i) for i in interval(1, 365*YEAR, 1)]:
             dose = v.getValue()/365.0 * sb.getConstant("SB_K").getValue() * sb.getConstant("SCREEN_THICKNESS").getValue()
             doses.append(dose)
-            x = (1- sb.getConstant("SB_P_THRESHOLD").getValue())/ (log(1 + sb.getConstant("SB_B").getValue() * dose))
+            x = (1 - sb.getConstant("SB_P_THRESHOLD").getValue())/ (log(1 + sb.getConstant("SB_B").getValue() * dose))
             std_x = (x - sb.getConstant("SB_A_MU").getValue())/sb.getConstant("SB_A_SIGMA").getValue()
             p = 1 - pcf(std_x)
             ps.append(p)
@@ -138,7 +140,10 @@ def test():
         #     plt.xlabel("dose")
         #     plt.ylabel("failure probability")
         #     plt.show()
-        print "p={}, std_x={}".format(ps[-1], std_xs[-1])
+        # print "p={}, std_x={}".format(ps[-1], std_xs[-1])
+        results.append(ps)
+        logger.info("thickness={}, p_max={}".format(t, ps[-1]))
+    return results
 
 
 def get_parsed():
@@ -150,17 +155,31 @@ def get_parsed():
 # 测试同样的数据for parsed model
 def test_parsed():
     parsed = get_parsed()
-    days = range(1, YEAR * 365)
+    days = range(1, YEAR * 365+1)
     sb_mdl = parsed.getModuleByName("SB")
-    fail_probs = []
+    results = []
+    logger.info("===============parsed===============")
     for thickness in range(1, 11):
+        probs = []
         parsed.setConstant("SCREEN_THICKNESS", thickness)
-        for day in days:
-            parsed.setVariable("day", day)
-            fail_prob = sb_mdl.commands[0].prob
-            print "thickness={}, prob={}".format(thickness, fail_prob)
+        for d in days:
+            parsed.setVariable("day", d)
+            fail_prob = sb_mdl.commands["sb_fail_cmd"].prob()
+            probs.append(fail_prob)
+        results.append(probs)
+        logger.info("thickness={}, p_max={}".format(thickness, probs[-1]))
+    return results
+
+
+def test_final():
+    # result_parsed = test_parsed()
+    # result_built = test()
+    # for ps1, ps2 in zip(result_parsed, result_built):
+    #     for p1, p2 in zip(ps1, ps2):
+    #         assert p1 == p2
+    test_parsed()
+    test()
 
 
 if __name__ == '__main__':
-    # test()
-    test_parsed()
+    test_final()
