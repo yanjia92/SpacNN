@@ -81,7 +81,7 @@ def f1(day_var):
             x -
             sb.getConstant('SB_A_MU').getValue() /
             sb.getConstant('SB_A_SIGMA').getValue())
-        return 1- pcf(std_x)
+        return 1 - pcf(std_x)
     return failprobsb
 
 def f1n(day_var):
@@ -179,6 +179,8 @@ def test_final():
     #         assert p1 == p2
     test_parsed()
     test()
+    print interval(1, 365*YEAR, 1)[-1]
+    print range(1, YEAR * 365+1)[-1]
 
 
 if __name__ == '__main__':

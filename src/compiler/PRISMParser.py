@@ -3,7 +3,6 @@ import ply.yacc as yacc
 from module.ModulesFile import *
 from PRISMLex import MyLexer
 from module.Module import *
-from util.FuncUtil import *
 from removeComment import clear_comment
 from util.MathUtils import *
 import logging
@@ -48,7 +47,7 @@ class ExpressionHelper(object):
     }
 
     func_map = {
-        'stdcdf': stdcdf,
+        'stdcdf': pcf,
         'log': log,
         'powe': powe
     }
@@ -112,7 +111,7 @@ class BasicParser(object):
             '/': lambda x, y: x / y
         }
         self.func_map = {
-            'stdcdf': stdcdf
+            'stdcdf': pcf
         }
         # name : value storage structure for constants
         self.cmap = {}

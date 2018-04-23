@@ -4,13 +4,12 @@ const int YEAR = 5;
 const double SCREEN_THICKNESS = 1;
 const double S3R_K = 66.8333333333;
 const double SB_K = 0.0039;
-const double e = 2.71828182;
 formula IEL_YEAR= S3R_K / SCREEN_THICKNESS;
 formula NIEL_YEAR = SB_K * SCREEN_THICKNESS;
 
 module Time
 t_turn : [0, 1] init 1;
-day : [0, YEAR*365] init 0;
+day : [0, YEAR*365] init 1;
 [] t_turn==1&day<=YEAR*365 -> 1.0 : (day=day+1)&(t_turn=0);
 endmodule
 
