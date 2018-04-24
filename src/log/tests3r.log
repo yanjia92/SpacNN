@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 std_x=784.634267, p=0.000000
 std_x=890.174040, p=0.000000
 std_x=928.384840, p=0.000000
@@ -202,3 +203,27 @@ thickness=9, std_x=3.776346, p=0.0000796
 thickness=10, std_x=3.800723, p=0.0000722
 
 
+=======
+===============parsed===============
+thickness=1, p_max=0.0211360804882
+thickness=2, p_max=0.00151375693117
+thickness=3, p_max=0.00047812416834
+thickness=4, p_max=0.000253040686205
+thickness=5, p_max=0.000169235234308
+thickness=6, p_max=0.000128289182324
+thickness=7, p_max=0.000104795047003
+thickness=8, p_max=8.9822950015e-05
+thickness=9, p_max=7.95560381766e-05
+thickness=10, p_max=7.2126607893e-05
+===============built===============
+thickness=1, p_max=0.0211360804882
+thickness=2, p_max=0.00151375693117
+thickness=3, p_max=0.000478124168341
+thickness=4, p_max=0.000253040686205
+thickness=5, p_max=0.000169235234308
+thickness=6, p_max=0.000128289182324
+thickness=7, p_max=0.000104795047003
+thickness=8, p_max=8.9822950015e-05
+thickness=9, p_max=7.95560381766e-05
+thickness=10, p_max=7.21266078931e-05
+>>>>>>> a32f3ad80435d1cf6133e15ea0e57808ae08858d
