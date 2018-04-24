@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
+import logging
+import sys
+from math import fabs
+
+from config.SPSConfig import SPSConfig
 from module.Module import Module, Constant, Variable, Command, CommandKind
 from util.MathUtils import *
 from util.util import *
-import logging
-import sys
-from config.SPSConfig import SPSConfig
+
 logger = logging.getLogger("test fail prob sb.py")
 logger.addHandler(logging.StreamHandler(sys.stdout))
 logger.addHandler(logging.FileHandler("../log/testsbfail.log", "w"))
@@ -120,7 +123,7 @@ sb.addCommand(comm_normal)
 def test():
     results = []
     logger.info("===============built===============")
-    for t in range(1, 11):
+    for t in range(4, 5):
         sb.setConstant(Constant('SCREEN_THICKNESS', t))
         ps = []
         doses = []
@@ -128,19 +131,11 @@ def test():
         for v in [Variable('day', i) for i in interval(1, 365*YEAR, 1)]:
             dose = v.getValue()/365.0 * sb.getConstant("SB_K").getValue() * sb.getConstant("SCREEN_THICKNESS").getValue()
             doses.append(dose)
-            x = (1 - sb.getConstant("SB_P_THRESHOLD").getValue())/ (log(1 + sb.getConstant("SB_B").getValue() * dose))
+            x = (1 - sb.getConstant("SB_P_THRESHOLD").getValue()) / (log(1 + sb.getConstant("SB_B").getValue() * dose))
             std_x = (x - sb.getConstant("SB_A_MU").getValue())/sb.getConstant("SB_A_SIGMA").getValue()
             p = 1 - pcf(std_x)
             ps.append(p)
             std_xs.append(std_x)
-        # if t == 10:
-        #     # when thickness = 10
-        #     logger.info("max dose=%f, max prob=%f", doses[-1], ps[-1])
-        #     plt.plot(doses, ps, "k")
-        #     plt.xlabel("dose")
-        #     plt.ylabel("failure probability")
-        #     plt.show()
-        # print "p={}, std_x={}".format(ps[-1], std_xs[-1])
         results.append(ps)
         logger.info("thickness={}, p_max={}".format(t, ps[-1]))
     return results
@@ -159,7 +154,7 @@ def test_parsed():
     sb_mdl = parsed.getModuleByName("SB")
     results = []
     logger.info("===============parsed===============")
-    for thickness in range(1, 11):
+    for thickness in range(4, 5):
         probs = []
         parsed.setConstant("SCREEN_THICKNESS", thickness)
         for d in days:
@@ -177,10 +172,11 @@ def test_final():
     # for ps1, ps2 in zip(result_parsed, result_built):
     #     for p1, p2 in zip(ps1, ps2):
     #         assert p1 == p2
-    test_parsed()
-    test()
-    print interval(1, 365*YEAR, 1)[-1]
-    print range(1, YEAR * 365+1)[-1]
+    result1 = test_parsed()[0]
+    result2 = test()[0]
+    precision = 1e-6
+    for day, (v1, v2) in enumerate(zip(result1, result2)):
+        assert fabs(v1 - v2) <= precision, "day={}, v1={}, v2={}".format(day+1, v1, v2)
 
 
 if __name__ == '__main__':

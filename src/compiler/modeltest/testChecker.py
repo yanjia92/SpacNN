@@ -13,6 +13,7 @@ THICKNESS = "SCREEN_THICKNESS"
 ltl = ['U[1, {}]'.format(int(365 * 2)), 'T', 'failure']  # 一年之内系统失效
 DURATION = 365*2
 
+
 def get_built_model():
     config = SPSConfig()
     return ModelFactory(ModuleFactory(config)).spsmodel()
@@ -33,7 +34,7 @@ def check():
 
     rslt1 = []
     rslt2 = []
-    thickness = range(1,2)
+    thickness = range(1, 2)
     for t in thickness:
         built.setConstant(THICKNESS, t)
         parsed.setConstant(THICKNESS, t)

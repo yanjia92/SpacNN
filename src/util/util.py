@@ -15,8 +15,9 @@ def sigmond_prime(x):
 def interval(a, b, step):
     # 返回[a,b]之间的一系列数值组成的数组,数组之间的step为step
     result = []
-    result.append(a)
     while a <= b:
         result.append(a)
         a += step
     return result
+
+

@@ -1,11 +1,11 @@
 # -*- coding:utf-8 -*-
 
-import threading
-import re
 import bisect
-import math
-import time
 import logging
+import math
+import re
+import threading
+import time
 
 
 # class represent an interval in DTMC/CTMC
@@ -38,7 +38,7 @@ class Interval:
         if not self.bounded:
             return step.passedTime >= self.begin
         else:
-            return step.passedTime < self.end and step.passedTime >= self.begin
+            return self.end > step.passedTime >= self.begin
 
 
 class Checker(threading.Thread):
@@ -58,7 +58,7 @@ class Checker(threading.Thread):
         a=1,
         b=1,
         c=0.8,
-        d=0.1,
+        d=0.02,
         duration=1.0,
             checkingType=None,
         fb = False):
@@ -98,8 +98,10 @@ class Checker(threading.Thread):
         return d1 / d2
 
     def getSampleSize(self):
-        return int(1.0 / ((1 - self.c) * 4 * self.d *
+        sz =  int(1.0 / ((1 - self.c) * 4 * self.d *
                           self.d) - self.a - self.b - 1)
+        self.logger.info("Checker is going to generates {} paths".format(sz))
+        return sz
 
     # path: list of Step instance
     # step: current steps(which contains current state)

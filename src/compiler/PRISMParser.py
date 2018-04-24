@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import logging
 
 import ply.yacc as yacc
 from PRISMLex import MyLexer
@@ -7,6 +6,7 @@ from config.SPSConfig import SPSConfig
 from model.ModelFactory import ModelFactory
 from model.ModuleFactory import ModuleFactory
 from module.Module import *
+from module.Module import Module
 from module.ModulesFile import *
 from removeComment import clear_comment
 from util.MathUtils import *
@@ -113,7 +113,7 @@ class BasicParser(object):
         # name : func object storage structure for variables and formula
         self.vfmap = {}
         self.logger = logging.getLogger("BasicParser logging")
-        self.logger.addHandler(logging.FileHandler("../../log/BasicParser.log"))
+        self.logger.addHandler(logging.FileHandler("../log/BasicParser.log"))
         self.logger.setLevel(logging.INFO)
 
 
