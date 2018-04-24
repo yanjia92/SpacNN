@@ -1,16 +1,18 @@
 # -*- coding:utf-8 -*-
+import copy
+import itertools
+import logging
+import math
+import random
 from collections import OrderedDict
 from functools import reduce
+
+import Module
+import util.MathUtils as MathUtils
+from Module import Constant, Variable
 from State import State
 from Step import Step
-import Module
-import random
-import itertools
-import math
-import util.MathUtils as MathUtils
-import logging
-import copy
-from Module import Constant, Variable
+from util.AnnotationHelper import *
 
 # logger = logging.getLogger("ModulesFile logging")
 # logger.addHandler(logging.StreamHandler())
@@ -22,6 +24,7 @@ failureCnt = 0
 
 class ModelType:
     DTMC, CTMC = range(2)
+
 
 # class represents a DTMC/CTMC model
 class ModulesFile(object):
@@ -78,7 +81,7 @@ class ModulesFile(object):
 
     # module: module instance
     def addModule(self, module):
-        if module == None:
+        if module is None:
             raise Exception("module cannot be None")
         self.modules[module.name] = module
         # add variables
@@ -196,8 +199,10 @@ class ModulesFile(object):
                     holdingTime = MathUtils.randomExpo(
                         exitRate, t=duration, forcing=self.forcing)
                 else:
-                    holdingTime = MathUtils.randomExpo(exitRate)
-                holdingTime = [1, holdingTime][self.modelType]
+                    if self.modelType == ModelType.CTMC:
+                        holdingTime = MathUtils.randomExpo(exitRate)
+                    else:
+                        holdingTime = 1
                 enabledCommand = enabledCommands[index]
                 enabledCommand.execAction()
                 self._updateCurAndPrevState()
@@ -216,11 +221,12 @@ class ModulesFile(object):
     # can be stopped.
     # return (None, path) if cache is not hit
     # else return satisfied(of bool type), path
+    @timeit
     def genRandomPath(self, duration, cachedPrefixes=None):
         # Since when initilize a module, all its local variables
         # have been initilized
         if not self.commPrepared:
-            # self.prepareCommands()
+            self.prepareCommands()
             self.commPrepared = True
         path = list()
         timeSum = 0.0

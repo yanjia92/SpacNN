@@ -1,15 +1,12 @@
 # -*- coding: utf-8 -*-
+
 import ply.yacc as yacc
-from module.ModulesFile import *
 from PRISMLex import MyLexer
+from module.ModulesFile import *
 from module.Module import *
 from removeComment import clear_comment
+from util.LogHelper import LogHelper
 from util.MathUtils import *
-import logging
-from model.ModelFactory import ModelFactory
-from model.ModuleFactory import ModuleFactory
-from config.SPSConfig import SPSConfig
-
 
 def bin_add(x,y):
     '''bin_add'''
@@ -112,7 +109,7 @@ class BasicParser(object):
         # name : func object storage structure for variables and formula
         self.vfmap = {}
         self.logger = logging.getLogger("BasicParser logging")
-        self.logger.addHandler(logging.FileHandler("../log/BasicParser.log"))
+        self.logger.addHandler(logging.FileHandler(LogHelper.get_logging_root() + "BasicParser.log"))
         self.logger.setLevel(logging.INFO)
 
 
@@ -440,17 +437,17 @@ class BasicParser(object):
             myLexer = MyLexer()
             lexer = myLexer.lexer
             for line in lines:
-                tokens = []
-                if line.find("[]") != -1:
-                    lexer.input(line)
-                    for token in lexer:
-                        tokens.append(token)
-                    print tokens
+                # tokens = []
+                # if line.find("[]") != -1:
+                    # lexer.input(line)
+                    # for token in lexer:
+                    #     tokens.append(token)
+                    # print tokens
                 self.parser.parse(line, lexer=lexer)
 
     def build(self):
         self.tokens = MyLexer.tokens
-        self.parser = yacc.yacc(module=self, debug=1)
+        self.parser = yacc.yacc(module=self)
 
 
 class ModelConstructor(object):
@@ -466,10 +463,3 @@ class ModelConstructor(object):
         return ModelConstructor.model
 
 
-def testModelConstruction():
-    constructor = ModelConstructor()
-    parsed = constructor.parseModelFile("../../prism_model/smalltest.prism")
-    built = ModelFactory(ModuleFactory(SPSConfig())).spsmodel()
-
-if __name__ == "__main__":
-    testModelConstruction()

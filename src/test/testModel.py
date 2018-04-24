@@ -14,7 +14,7 @@ logger.setLevel(logging.INFO)
 class Test(unittest.TestCase):
     def setUp(self):
         if not hasattr(self, 'model'):
-            self.model = ModelFactory(ModuleFactory(SPSConfig())).spsmodel()
+            self.model = ModelFactory(ModuleFactory(SPSConfig())).get_built()
         self.paths = 120
         self.length = 730
 

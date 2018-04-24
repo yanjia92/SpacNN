@@ -1,11 +1,14 @@
 from module.ModulesFile import ModulesFile, ModelType
+from compiler.PRISMParser import ModelConstructor
+from model.ModuleFactory import ModuleFactory
+from config.SPSConfig import SPSConfig
 
 
 class ModelFactory(object):
-    def __init__(self, moduleFactory):
-        self.modulefactory = moduleFactory
+    module_factory = ModuleFactory(SPSConfig())
 
-    def spsmodel(self):
+    @classmethod
+    def get_built(cls):
         def failurecondition(vs, cs):
             return vs['sb_status'] == 0 or vs['s3r_status'] == 0 or vs["bcr_status"] == 0 and vs["bdr_status"] == 0
         labels = {}
@@ -16,11 +19,17 @@ class ModelFactory(object):
             failureCondition=failurecondition,
             stopCondition=failurecondition,
             modules=[
-                self.modulefactory.timermodule(),
-                self.modulefactory.s3rmodule(),
-                self.modulefactory.sbmodule(),
-                self.modulefactory.bcrmodule(),
-                self.modulefactory.bdrmodule()],
+                cls.module_factory.timermodule(),
+                cls.module_factory.s3rmodule(),
+                cls.module_factory.sbmodule(),
+                cls.module_factory.bcrmodule(),
+                cls.module_factory.bdrmodule()],
             labels=labels)
-        model.constants['SCREEN_THICKNESS'] = self.modulefactory.config.getParam('SCREEN_THICKNESS')
+        model.constants['SCREEN_THICKNESS'] = cls.module_factory.config.getParam('SCREEN_THICKNESS')
         return model
+
+    @staticmethod
+    def get_parsed():
+        mdl_dir = "../../prism_model/smalltest.prism"
+        return ModelConstructor().parseModelFile(mdl_dir)
+

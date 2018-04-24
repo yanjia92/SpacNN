@@ -37,7 +37,7 @@ class ModuleFactory(object):
         def guard(vs, cs):
             # sb_status and s3r_status must both be 1, e.g. the system has not
             # failed.
-            return vs['timer_turn'] == False and vs['sb_status'] == 1 and vs['s3r_status'] == 1 and vs['bcr_status'] == 1 and vs['bdr_status'] == 1
+            return vs['timer_turn'] is False and vs['sb_status'] == 1 and vs['s3r_status'] == 1 and vs['bcr_status'] == 1 and vs['bdr_status'] == 1
 
         # failure action
         def faction(vs, cs):
@@ -151,7 +151,7 @@ class ModuleFactory(object):
         def guard(vs, cs):
             # the sb_status and s3r_status must both be 1 for this transition
             # to happen
-            return vs['timer_turn'] == False and vs['s3r_status'] == 1 and vs['sb_status'] == 1 and vs['bcr_status'] == 1 and vs['bdr_status'] == 1
+            return vs['timer_turn'] is False and vs['s3r_status'] == 1 and vs['sb_status'] == 1 and vs['bcr_status'] == 1 and vs['bdr_status'] == 1
 
         def faction(vs, cs):
             vs['s3r_status'].setValue(0)
