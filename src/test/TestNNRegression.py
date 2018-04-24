@@ -47,7 +47,7 @@ def testSPS():
     config = SPSConfig.SPSConfig()
     moduleFactory = ModuleFactory(config)
     modelfactory = ModelFactory(moduleFactory)
-    model = modelfactory.spsmodel()
+    model = modelfactory.get_built()
     ltl = ['U[1, {0}]'.format(730), 'T', 'failure'] # 一年之内系统失效
     checker = Checker(model, ltl, duration=730, fb=False)
     wrapper = ExperimentWrapper(checker, samples_per_param=100)

@@ -16,7 +16,7 @@ DURATION = 365*2
 
 def get_built_model():
     config = SPSConfig()
-    return ModelFactory(ModuleFactory(config)).spsmodel()
+    return ModelFactory(ModuleFactory(config)).get_built()
 
 
 def get_parsed_model():
@@ -34,13 +34,13 @@ def check():
 
     rslt1 = []
     rslt2 = []
-    thickness = range(1, 2)
+    thickness = range(4, 5)
     for t in thickness:
         built.setConstant(THICKNESS, t)
         parsed.setConstant(THICKNESS, t)
-        checker1 = get_checker(built, ltl, DURATION)
+        # checker1 = get_checker(built, ltl, DURATION)
         checker2 = get_checker(parsed, ltl, DURATION)
-        rslt1.append(checker1.run())
+        # rslt1.append(checker1.run())
         rslt2.append(checker2.run())
 
     precision = 1e-4

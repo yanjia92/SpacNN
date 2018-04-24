@@ -58,7 +58,7 @@ class Checker(threading.Thread):
         a=1,
         b=1,
         c=0.8,
-        d=0.02,
+        d=0.05,
         duration=1.0,
             checkingType=None,
         fb = False):
@@ -425,7 +425,7 @@ class Checker(threading.Thread):
             else:
                 nspaths.add(str(path))
         postex = self.postEx(n, x)
-
+        self.logger.info("mc2's result={}".format(postex))
         return postex
 
     def intervalUnreliability(self, duration):

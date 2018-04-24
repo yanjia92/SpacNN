@@ -6,7 +6,7 @@ from model.ModuleFactory import ModuleFactory
 
 
 def getBuiltModel():
-    return ModelFactory(ModuleFactory(SPSConfig())).spsmodel()
+    return ModelFactory(ModuleFactory(SPSConfig())).get_built()
 
 
 def timeit(func, *args, **kwargs):
