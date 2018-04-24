@@ -1,16 +1,17 @@
 # -*- coding:utf-8 -*-
+import copy
+import itertools
+import logging
+import math
+import random
 from collections import OrderedDict
 from functools import reduce
+
+import Module
+import util.MathUtils as MathUtils
+from Module import Constant, Variable
 from State import State
 from Step import Step
-import Module
-import random
-import itertools
-import math
-import util.MathUtils as MathUtils
-import logging
-import copy
-from Module import Constant, Variable
 
 # logger = logging.getLogger("ModulesFile logging")
 # logger.addHandler(logging.StreamHandler())
@@ -220,7 +221,7 @@ class ModulesFile(object):
         # Since when initilize a module, all its local variables
         # have been initilized
         if not self.commPrepared:
-            # self.prepareCommands()
+            self.prepareCommands()
             self.commPrepared = True
         path = list()
         timeSum = 0.0
