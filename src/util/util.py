@@ -1,8 +1,10 @@
 # -*- coding:utf-8 -*-
 from math import *
 
+
 def sigmond(x):
     return map(lambda _x: 1.0/(1.0 + exp(-_x)), x)
+
 
 def sigmond_prime(x):
     # 返回sigmond函数的导数

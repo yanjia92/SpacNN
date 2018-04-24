@@ -80,6 +80,10 @@ class Checker(threading.Thread):
         self.fb = fb # specify whether failure biasing is enabled
         self.model.fb = fb
 
+        self.logger = logging.getLogger("Checker logging")
+        self.logger.addHandler(logging.StreamHandler())
+        self.logger.setLevel(logging.INFO)
+
     # Get upper-bound of variance
     def __getVar_m(self, n, a, b):
         x = (n + b - a) / 2.0
@@ -232,7 +236,7 @@ class Checker(threading.Thread):
         elif ltl[ltlRoot][0] == 'U':
             if len(ltl[ltlRoot]) > 1:
                 # interval for until formula is specified
-                nums = re.findall(r'\d+', ltl[ltlRoot])
+                nums = re.findall(r'\d+\.?\d*', ltl[ltlRoot])
                 if len(nums) != 2:
                     logging.error(
                         "Time interval for until formula must contains two values: begin and end.")
@@ -376,7 +380,10 @@ class Checker(threading.Thread):
         spaths = set()  # 满足性质的path集合
         nspaths = set()  # 不满足性质的path集合
         for i in range(sz):
+            begin = time.time()
             satisfied, path = self.getRandomPath()
+            end = time.time()
+            self.logger.info("Generating a length={} path caused {}s".format(len(path), end-begin))
             pathlens.append(len(path))
 
             n += 1
@@ -394,9 +401,10 @@ class Checker(threading.Thread):
                     x += likelihood
 
                 continue
-
+            v1 = time.time()
             verified = self.verify(path)
-
+            v2 = time.time()
+            self.logger.info("Verifing a length={} path caused {}s".format(len(path), v2-v1))
             if verified:
                 spaths.add(str(path))
                 if self.fb:

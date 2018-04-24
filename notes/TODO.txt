@@ -25,14 +25,16 @@
             2. failurecondition UI
             3. stopcondition UI
 
+
     LTL公式的输入 UI
-    ??? 产生的随机路径的长度均为0
-    ?? testChecker.py
+
+
 
 已完成
 如何确保expression的parsing是正确的？ 单元测试成功 testParseExpr.py
 增加label,测试label testLabel.py单元测试成功
 修改command语法规则,增加name解析
+比较了parsed model和built model之间的异同,即check了两个模型在相同的天数下各个模块的损坏概率,结果是相同.
 
 
 不足

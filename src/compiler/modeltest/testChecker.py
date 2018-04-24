@@ -9,6 +9,7 @@ from checker.Checker import Checker
 # 测试构建的模型和解析的模型在checker运行的结果一致
 
 THICKNESS = "SCREEN_THICKNESS"
+ltl = ['U[1, {}]'.format(int(365 * 0.5 * 2)), 'T', 'failure']  # 三年之内系统失效
 
 
 def get_built_model():
@@ -21,8 +22,8 @@ def get_parsed_model():
     return ModelConstructor().parseModelFile(file_path)
 
 
-def get_checker(model, ltl):
-    return Checker(model, ltl)
+def get_checker(model, ltl, duration):
+    return Checker(model, ltl, duration=duration)
 
 
 def check():
@@ -31,15 +32,14 @@ def check():
 
     rslt1 = []
     rslt2 = []
-    thickness = range(1, 10)
-    ltl = ['U[1, {0}]'.format(365*5*2), 'T', 'failure']  # 三年之内系统失效
+    thickness = range(1,2)
     for t in thickness:
         built.setConstant(THICKNESS, t)
         parsed.setConstant(THICKNESS, t)
         checker1 = get_checker(built, ltl)
-        checker2 = get_checker(parsed, ltl)
+        # checker2 = get_checker(parsed, ltl)
         rslt1.append(checker1.run())
-        rslt2.append(checker2.run())
+        # rslt2.append(checker2.run())
 
     precision = 1e-4
     for v1, v2 in zip(rslt1, rslt2):

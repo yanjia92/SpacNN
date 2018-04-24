@@ -11,12 +11,6 @@ from model.ModuleFactory import ModuleFactory
 from config.SPSConfig import SPSConfig
 
 
-logger = logging.getLogger("PRISMParser logging")
-handler = logging.StreamHandler()
-logger.addHandler(handler)
-logger.setLevel(logging.ERROR)
-
-
 def bin_add(x,y):
     '''bin_add'''
     return x+y
@@ -117,6 +111,10 @@ class BasicParser(object):
         self.cmap = {}
         # name : func object storage structure for variables and formula
         self.vfmap = {}
+        self.logger = logging.getLogger("BasicParser logging")
+        self.logger.addHandler(logging.FileHandler("../log/BasicParser.log"))
+        self.logger.setLevel(logging.INFO)
+
 
     def p_statement(self, p):
         '''statement : model_type_statement
@@ -158,7 +156,7 @@ class BasicParser(object):
         obj = Constant(name, value)
         ModelConstructor.model.setConstant(name, obj)
         self.cmap[p[3]] = obj
-        logger.info("Constant added: {} = {}".format(name, value))
+        self.logger.info("Constant added: {} = {}".format(name, value))
 
     def p_const_expression1(self, p):
         '''const_value_statement : CONST INT NAME SEMICOLON
@@ -169,7 +167,7 @@ class BasicParser(object):
         obj = Constant(name)
         ModelConstructor.model.addConstant(name, obj)
         self.cmap[name] = obj
-        logger.info("Unspecified constant added: {}".format(name))
+        self.logger.info("Unspecified constant added: {}".format(name))
 
     def p_const_expression2(self, p):
         '''const_value_statement : CONST INT NAME ASSIGN expr SEMICOLON
@@ -180,7 +178,7 @@ class BasicParser(object):
         obj = Constant(name, value)
         ModelConstructor.model.addConstant(name, obj)
         self.cmap[name] = obj
-        logger.info("Constant added: {} = {}".format(name, value))
+        self.logger.info("Constant added: {} = {}".format(name, value))
 
     def p_module_var_def_statement(self, p):
         '''module_var_def_statement : NAME COLON LB expr COMMA expr RB INIT NUM SEMICOLON'''
@@ -192,11 +190,11 @@ class BasicParser(object):
                        int)  # 目前默认变量的类型是int p[index] index不能是负数
         self.module.addVariable(var)
         self.vfmap[var.getName()] = lambda: ModelConstructor.model.getLocalVar(var.getName())
-        logger.info("Variable_{} added to Module_{}. init={}, range=[{}, {}]".format(var.getName(), str(self.module), var.initVal, var.valRange[0], var.valRange[-1]))
+        self.logger.info("Variable_{} added to Module_{}. init={}, range=[{}, {}]".format(var.getName(), str(self.module), var.initVal, var.valRange[0], var.valRange[-1]))
 
     def p_module_command_statement(self, p):
         '''module_command_statement : LB RB boolean_expression THEN updates SEMICOLON'''
-        print "command.tokens : {}".format(p.slice)
+        self.logger.info("command.tokens : {}".format(p.slice))
 
     def p_updates(self, p):
         '''updates : updates ADD prob_update'''
@@ -213,7 +211,7 @@ class BasicParser(object):
         name = copy.copy(p[2])
         command = Command(name, self.guard, action, self.module, prob)
         self.module.addCommand(command)
-        print "Command_{} added.".format(name)
+        self.logger.info("Command_{} added.".format(name))
 
     def p_actions(self, p):
         '''actions : actions AND assignment'''
@@ -409,7 +407,7 @@ class BasicParser(object):
         slices = copy.copy(p.slice)
         frml_name = slices[2].value
         self.vfmap[frml_name] = slices[4].value
-        logger.info("Formula_{} added.".format(slices[2].value))
+        self.logger.info("Formula_{} added.".format(slices[2].value))
 
     def p_label_statement(self, p):
         '''label_statement : LABEL NAME ASSIGN boolean_expression SEMICOLON'''
@@ -432,7 +430,7 @@ class BasicParser(object):
 
     def parse_model(self, filepath):
         commentremoved = clear_comment(filepath)
-        print "Parsing model file : {}".format(commentremoved)
+        self.logger.info("Parsing model file : {}".format(commentremoved))
         lines = []
 
         with open(commentremoved) as f:
@@ -472,7 +470,6 @@ def testModelConstruction():
     constructor = ModelConstructor()
     parsed = constructor.parseModelFile("../../prism_model/smalltest.prism")
     built = ModelFactory(ModuleFactory(SPSConfig())).spsmodel()
-    print parsed.modules.values()[0].commands
 
 if __name__ == "__main__":
     testModelConstruction()

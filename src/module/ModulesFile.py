@@ -220,7 +220,7 @@ class ModulesFile(object):
         # Since when initilize a module, all its local variables
         # have been initilized
         if not self.commPrepared:
-            self.prepareCommands()
+            # self.prepareCommands()
             self.commPrepared = True
         path = list()
         timeSum = 0.0
