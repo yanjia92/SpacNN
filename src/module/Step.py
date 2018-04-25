@@ -1,4 +1,9 @@
+from util.AnnotationHelper import *
+
+
 class Step(object):
+
+    @timeandcount
     def __init__(
             self,
             stateId,

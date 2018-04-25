@@ -33,6 +33,7 @@
         2. 确保parsed模型和built模型在每一天的损坏概率均相同。CHECKED.(确保了SB模块和S3R模块在相同的天数下，parsed和built模型的相应模块的损坏概率相同)
     还是从另一个角度，不去验证两者的不同，而是直接去跑checker和regressor？
     ??? 为什么parsed和built的模型在生成随机路径的时间不同？
+        测试思路:看看genRandomPath中具体每个函数的调用时间在两种不同模型之间的区别?
 
 已完成
 如何确保expression的parsing是正确的？ 单元测试成功 testParseExpr.py

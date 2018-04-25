@@ -1,11 +1,28 @@
+# -*- coding: utf-8 -*-
 import time
+from collections import defaultdict
+
+# make sure one function only get called once
+already_timed = set()
+countit_map = defaultdict(lambda: 0)
 
 
-def timeit(fn):
+def timeandcount(fn):
+
     def inner(*args, **kwargs):
+        countit_map[fn.__name__] += 1
         begin = time.time()
         result = fn(*args, **kwargs)
         end = time.time()
-        print "Timeit result of func {}: {}".format(fn.__name__, end - begin)
+        if fn.__name__ not in already_timed:
+            print "Timeit result of func {}: {}".format(fn.__name__, end - begin)
+            already_timed.add(fn.__name__)
         return result
+
     return inner
+
+
+def print_stat():
+    for k, v in countit_map.items():
+        print "k={}, v={}".format(k, v)
+
