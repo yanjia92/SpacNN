@@ -7,6 +7,7 @@ from module.Module import *
 from removeComment import clear_comment
 from util.LogHelper import LogHelper
 from util.MathUtils import *
+from collections import defaultdict
 
 def bin_add(x,y):
     '''bin_add'''
@@ -105,12 +106,13 @@ class BasicParser(object):
             'stdcdf': pcf
         }
         # name : value storage structure for constants
-        self.cmap = {}
+        self.cmap = defaultdict(lambda: None)
         # name : func object storage structure for variables and formula
-        self.vfmap = {}
         self.logger = logging.getLogger("BasicParser logging")
         self.logger.addHandler(logging.FileHandler(LogHelper.get_logging_root() + "BasicParser.log"))
         self.logger.setLevel(logging.INFO)
+        self.vcf_map = defaultdict(lambda: None)
+        self.vc_map = defaultdict(lambda: None)
 
 
     def p_statement(self, p):
@@ -152,7 +154,7 @@ class BasicParser(object):
         value = self.resolvetype(p[5], p[2])
         obj = Constant(name, value)
         ModelConstructor.model.setConstant(name, obj)
-        self.cmap[p[3]] = obj
+        self.vcf_map[p[3]] = obj
         self.logger.info("Constant added: {} = {}".format(name, value))
 
     def p_const_expression1(self, p):
@@ -163,7 +165,7 @@ class BasicParser(object):
         name = p[3]
         obj = Constant(name)
         ModelConstructor.model.addConstant(name, obj)
-        self.cmap[name] = obj
+        self.vcf_map[name] = obj
         self.logger.info("Unspecified constant added: {}".format(name))
 
     def p_const_expression2(self, p):
@@ -174,7 +176,7 @@ class BasicParser(object):
         value = self.resolvetype(p[5](), p[2])
         obj = Constant(name, value)
         ModelConstructor.model.addConstant(name, obj)
-        self.cmap[name] = obj
+        self.vcf_map[name] = obj
         self.logger.info("Constant added: {} = {}".format(name, value))
 
     def p_module_var_def_statement(self, p):
@@ -186,7 +188,7 @@ class BasicParser(object):
         var = Variable(p[1], p[len(p) - 2], range(min, max + 1),
                        int)  # 目前默认变量的类型是int p[index] index不能是负数
         self.module.addVariable(var)
-        self.vfmap[var.getName()] = lambda: ModelConstructor.model.getLocalVar(var.getName())
+        self.vcf_map[var.getName()] = var
         self.logger.info("Variable_{} added to Module_{}. init={}, range=[{}, {}]".format(var.getName(), str(self.module), var.initVal, var.valRange[0], var.valRange[-1]))
 
     def p_module_command_statement(self, p):
@@ -254,13 +256,17 @@ class BasicParser(object):
     def p_expr(self, p):
         '''expr : expr ADD term
                 | expr MINUS term'''
-        func = ExpressionHelper.binary_op_map[p[2]]
-        slice_copy = copy.deepcopy(p.slice)
+        slice_copy = copy.copy(p.slice)
+        op = slice_copy[2].value
 
         def f():
             '''binary expression function'''
-            return func(slice_copy[1].value(), slice_copy[3].value())
-        f.func_doc = "func_{}".format(func.func_name)
+            v1 = slice_copy[1].value()
+            v2 = slice_copy[3].value()
+            if op == '-':
+                return v1 - v2
+            else:
+                return v1 + v2
         p[0] = f
 
     def p_expr2(self, p):
@@ -274,12 +280,16 @@ class BasicParser(object):
     def p_term(self, p):
         '''term : term MUL factor
                 | term DIV factor'''
-        func = ExpressionHelper.binary_op_map[p[2]]
-        slice_copy = copy.deepcopy(p.slice)
+        slice_copy = copy.copy(p.slice)
+        op = slice_copy[2].value
 
         def f():
-            return func(slice_copy[1].value(), slice_copy[3].value())
-        f.func_doc = func.__name__
+            v1 = slice_copy[1].value()
+            v2 = slice_copy[3].value()
+            if op == "*":
+                return v1 * v2
+            else:
+                return v1 / v2
         p[0] = f
 
     def p_term1(self, p):
@@ -301,21 +311,18 @@ class BasicParser(object):
         name = slice_cpy[1].value
 
         def f():
-            if name in ModelConstructor.model.localVars.keys():
-                return ModelConstructor.model.getLocalVar(name).getValue()
-            if name in ModelConstructor.model.constants.keys():
-                return ModelConstructor.model.getConstant(name).getValue()
-            # name refers to a formula
-            return self.vfmap[name]()
-        f.func_doc = "return {}".format(name)
+            obj = self.vcf_map[name]
+            if callable(obj):
+                return obj()
+            return obj.getValue()
         p[0] = f
 
     def p_factor2(self, p):
         '''factor : NAME LP expr RP'''
         slice = copy.copy(p.slice)
         func = ExpressionHelper.func_map.get(slice[1].value, None)
-        if not func:
-            raise Exception("Not supported function {}".format(slice[1].value))
+        # if not func:
+        #     raise Exception("Not supported function {}".format(slice[1].value))
 
         def f():
             return func(slice[3].value())
@@ -362,8 +369,8 @@ class BasicParser(object):
         def f(tokens, handler):
             def inner(vs ,cs):
                 var = vs[tokens[1].value]
-                if not var or not isinstance(var, Variable):
-                    raise Exception("invalid variable name")
+                # if not var or not isinstance(var, Variable):
+                #     raise Exception("invalid variable name")
                 left = var.getValue()
                 right = tokens[3]
                 op = tokens[2]
@@ -388,8 +395,8 @@ class BasicParser(object):
             # op)
             def inner(vs, cs):
                 var = vs[t[1].value]
-                if not var or not isinstance(var, Variable):
-                    raise Exception("invalid var name")
+                # if not var or not isinstance(var, Variable):
+                #     raise Exception("invalid var name")
                 left = var.getValue()
                 right = t[3].value()
                 op = t[2].value
@@ -403,7 +410,7 @@ class BasicParser(object):
         '''formula_statement : FORMULA NAME ASSIGN expr SEMICOLON'''
         slices = copy.copy(p.slice)
         frml_name = slices[2].value
-        self.vfmap[frml_name] = slices[4].value
+        self.vcf_map[frml_name] = slices[4].value
         self.logger.info("Formula_{} added.".format(slices[2].value))
 
     def p_label_statement(self, p):

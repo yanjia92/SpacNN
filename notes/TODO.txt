@@ -33,7 +33,40 @@
         2. 确保parsed模型和built模型在每一天的损坏概率均相同。CHECKED.(确保了SB模块和S3R模块在相同的天数下，parsed和built模型的相应模块的损坏概率相同)
     还是从另一个角度，不去验证两者的不同，而是直接去跑checker和regressor？
     ??? 为什么parsed和built的模型在生成随机路径的时间不同？
-        测试思路:看看genRandomPath中具体每个函数的调用时间在两种不同模型之间的区别?
+        通过使用cprofile模块,对parsed和built模型生成随机路径的时间进行了测试,发现前者是后者的两倍,总结,发现是如下代码所致:
+        PRISMParser.py中待优化的代码:
+        '''factor : NAME'''
+        def f():
+            obj = self.vcf_map[name]
+            if callable(obj):
+                return obj()
+            return obj.getValue()
+
+        '''expr : expr ADD/MINUS expr'''
+        def f():
+            '''binary expression function'''
+            v1 = slice_copy[1].value()
+            v2 = slice_copy[3].value()
+            if op == '-':
+                return v1 - v2
+            else:
+                return v1 + v2
+
+        '''NAME LP expr RP'''
+        def f():
+            return func(slice[3].value())
+
+        '''term MUL/DIV factor'''
+        def f():
+            v1 = slice_copy[1].value()
+            v2 = slice_copy[3].value()
+            if op == "*":
+                return v1 * v2
+            else:
+                return v1 / v2
+
+    一种优化策略:
+        1. 提前计算每个day对应的failure probability.
 
 已完成
 如何确保expression的parsing是正确的？ 单元测试成功 testParseExpr.py

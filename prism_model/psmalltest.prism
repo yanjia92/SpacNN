@@ -1,0 +1,72 @@
+dtmc
+
+const int YEAR = 1;
+const double SCREEN_THICKNESS = 4;
+const double S3R_K = 66.8333333333;
+const double SB_K = 0.0039;
+const double e = 2.71828182;
+formula IEL_YEAR= S3R_K / SCREEN_THICKNESS;
+formula NIEL_YEAR = SB_K * SCREEN_THICKNESS;
+
+global t_turn : bool init true;
+
+module Time
+day : [0..YEAR*365] init 0;
+[] t_turn=true&day<=YEAR*365 -> (day'=min(day+1, YEAR*365))&(t_turn'=false);
+endmodule
+
+const double SB_P_THRESHOLD = 0.819;
+const double SB_A_MU = 0.1754;
+const double SB_A_SIGMA = 0.48699609;
+const double SB_B = 1.8;
+const double a1 =  0.254829592;
+const double a2 = -0.284496736;
+const double a3 =  1.421413741;
+const double a4 = -1.453152027;
+const double a5 =  1.061405429;
+const double p  =  0.3275911;
+formula sb_dose = (day / 365.0) * NIEL_YEAR;
+formula sb_cdf_x = (1 - SB_P_THRESHOLD) / log(1 + sb_dose * SB_B, e);
+formula sb_std_cdf_x = (sb_cdf_x - SB_A_MU) / SB_A_SIGMA;
+formula sb_sign = sb_std_cdf_x < 0 ? -1 : 1;
+formula sb_std_cdf_x_2 = sb_sign * sb_std_cdf_x / pow(2.0, 0.5);
+formula sb_t = 1.0/(1.0 + p * sb_std_cdf_x_2);
+formula sb_y = 1.0 - (((((a5*sb_t + a4)*sb_t) + a3)*sb_t + a2)*sb_t + a1)*sb_t*pow(e, -sb_std_cdf_x_2 * sb_std_cdf_x_2);
+formula sb_fail_prob = 1 - 0.5 * (1.0 + sb_sign * sb_y);  // 根据solar battery所受非电离能损剂量计算出的失效概率
+
+module SB
+sb_status: [0..1] init 1;
+[] sb_status=1&t_turn=false -> sb_fail_prob : (sb_status'=0) & (t_turn'=true) + (1.0-sb_fail_prob) : (sb_status'=1) & (t_turn'=true);
+endmodule
+
+const double S3R_DELTAV_THRESHOLD = 10.0;
+const double S3R_B = 0.0007467;
+const double S3R_A_MU = 7420.4;
+const double S3R_A_SIGMA = 1484.362;
+formula s3r_cur_dose = (day / 365.0) * IEL_YEAR;
+formula s3r_cdf_x = S3R_DELTAV_THRESHOLD / (S3R_B * pow(e, S3R_B * s3r_cur_dose));
+formula s3r_std_cdf_x = (s3r_cdf_x - S3R_A_MU) / S3R_A_SIGMA;
+formula s3r_sign = s3r_std_cdf_x < 0 ? -1 : 1;
+formula s3r_std_cdf_x_2 = s3r_sign * s3r_std_cdf_x / pow(2.0, 0.5);
+formula s3r_t = 1.0/(1.0 + p * s3r_std_cdf_x_2);
+formula s3r_y = 1.0 - (((((a5*s3r_t + a4)*s3r_t) + a3)*s3r_t + a2)*s3r_t + a1)*s3r_t*pow(e, -s3r_std_cdf_x_2 * s3r_std_cdf_x_2);
+formula s3r_fail_prob = 1 - 0.5 * (1.0 + s3r_sign * s3r_y);  // 根据s3r所受电离能损剂量计算出的失效概率
+
+
+module S3R
+s3r_status: [0..1] init 1;
+[] s3r_status=1&t_turn=false -> s3r_fail_prob:(s3r_status'=0)&(t_turn'=true) + (1 - s3r_fail_prob):(s3r_status'=1)&(t_turn'=false);
+endmodule
+
+module BCR
+bcr_status: [0..1] init 1;
+[] bcr_status=1&t_turn=false -> s3r_fail_prob:(bcr_status'=0)&(t_turn'=true) + (1 - s3r_fail_prob):(bcr_status'=1)&(t_turn'=true);
+endmodule
+
+module BDR
+bdr_status: [0..1] init 1;
+[] bdr_status=1&t_turn=false -> s3r_fail_prob:(bdr_status'=0)&(t_turn'=true) + (1 - s3r_fail_prob):(bdr_status'=1)&(t_turn'=true);
+endmodule
+
+label "failure" = sb_status = 0 | s3r_status = 0 | bcr_status = 0 | bdr_status = 0;
+label "up" = sb_status = 1 & s3r_status = 1 & bcr_status = 1 & bdr_status = 1;

@@ -57,8 +57,8 @@ class Checker(threading.Thread):
         ltl=None,
         a=1,
         b=1,
-        c=0.8,
-        d=0.05,
+        c=0.67,
+        d=0.015,
         duration=1.0,
             checkingType=None,
         fb = False):
@@ -98,7 +98,7 @@ class Checker(threading.Thread):
         return d1 / d2
 
     def getSampleSize(self):
-        sz =  int(1.0 / ((1 - self.c) * 4 * self.d *
+        sz = int(1.0 / ((1 - self.c) * 4 * self.d *
                           self.d) - self.a - self.b - 1)
         self.logger.info("Checker is going to generates {} paths".format(sz))
         return sz
@@ -381,16 +381,18 @@ class Checker(threading.Thread):
         pathlens = []
         spaths = set()  # 满足性质的path集合
         nspaths = set()  # 不满足性质的path集合
+        begin = time.time()
         for i in range(sz):
-            begin = time.time()
+            # begin = time.time()
             satisfied, path = self.getRandomPath()
-            end = time.time()
-            self.logger.info("Generating a length={} path caused {}s".format(len(path), end-begin))
+            # end = time.time()
+            # self.logger.info("Generating a length={} path caused {}s".format(len(path), end-begin))
             pathlens.append(len(path))
 
             n += 1
-            if n & 1023 == 0:
+            if n & 511 == 0:
                 t2 = time.time()
+                self.logger.info("Verifying {} paths, causing {}s".format(n, t2 - begin))
             if isinstance(satisfied, bool):
                 hitTimes += 1
                 if satisfied:
@@ -403,10 +405,10 @@ class Checker(threading.Thread):
                     x += likelihood
 
                 continue
-            v1 = time.time()
+            # v1 = time.time()
             verified = self.verify(path)
-            v2 = time.time()
-            self.logger.info("Verifing a length={} path caused {}s".format(len(path), v2-v1))
+            # v2 = time.time()
+            # self.logger.info("Verifying a length={} path caused {}s".format(len(path), v2-v1))
             if verified:
                 spaths.add(str(path))
                 if self.fb:

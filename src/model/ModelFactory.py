@@ -2,6 +2,7 @@ from module.ModulesFile import ModulesFile, ModelType
 from compiler.PRISMParser import ModelConstructor
 from model.ModuleFactory import ModuleFactory
 from config.SPSConfig import SPSConfig
+from PathHelper import get_proj_dir, get_sep
 
 
 class ModelFactory(object):
@@ -30,6 +31,7 @@ class ModelFactory(object):
 
     @staticmethod
     def get_parsed():
-        mdl_dir = "../../prism_model/smalltest.prism"
+        sep = get_sep()
+        mdl_dir = sep.join((get_proj_dir(), 'prism_model', 'smalltest.prism'))
         return ModelConstructor().parseModelFile(mdl_dir)
 

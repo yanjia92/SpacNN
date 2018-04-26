@@ -1,0 +1,61 @@
+         165029 function calls in 0.154 seconds
+
+   Ordered by: cumulative time
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.010    0.010    0.154    0.154 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/ModulesFile.py:224(genRandomPath)
+      730    0.009    0.000    0.134    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/ModulesFile.py:164(nextState)
+     1460    0.013    0.000    0.043    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/model/ModuleFactory.py:233(inner)
+     1460    0.013    0.000    0.041    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/model/ModuleFactory.py:302(inner)
+      730    0.002    0.000    0.024    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/Module.py:120(execAction)
+      730    0.001    0.000    0.022    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/model/ModuleFactory.py:247(inner)
+      730    0.001    0.000    0.021    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/model/ModuleFactory.py:315(inner)
+    20440    0.015    0.000    0.020    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/config/SPSConfig.py:21(getParam)
+     1460    0.019    0.000    0.019    0.000 {dir}
+      730    0.002    0.000    0.012    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/ModulesFile.py:141(_updateCurAndPrevState)
+      731    0.002    0.000    0.010    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/State.py:21(updateAPs)
+     5840    0.005    0.000    0.009    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/Module.py:264(__mul__)
+    27381    0.008    0.000    0.008    0.000 {isinstance}
+     5840    0.005    0.000    0.008    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/Module.py:288(__div__)
+     2920    0.005    0.000    0.008    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/Module.py:296(__neg__)
+     2920    0.006    0.000    0.007    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/util/MathUtils.py:20(pcf)
+     7307    0.005    0.000    0.005    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/Module.py:214(__eq__)
+     2920    0.003    0.000    0.004    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/Module.py:272(__add__)
+    20440    0.004    0.000    0.004    0.000 {method 'keys' of 'dict' objects}
+      731    0.003    0.000    0.004    0.000 /System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/collections.py:113(items)
+      731    0.002    0.000    0.004    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/model/ModelFactory.py:15(<lambda>)
+      731    0.002    0.000    0.003    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/model/ModelFactory.py:16(<lambda>)
+      730    0.002    0.000    0.003    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/model/ModelFactory.py:12(failurecondition)
+     8760    0.002    0.000    0.002    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/Module.py:257(getValue)
+     3650    0.002    0.000    0.002    0.000 {hasattr}
+      365    0.001    0.000    0.002    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/model/ModuleFactory.py:119(action)
+     7671    0.002    0.000    0.002    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/Module.py:189(getValue)
+     2920    0.001    0.000    0.001    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/Module.py:244(__init__)
+     5117    0.001    0.000    0.001    0.000 /System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/collections.py:78(__iter__)
+      730    0.001    0.000    0.001    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/Step.py:2(__init__)
+     1101    0.001    0.000    0.001    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/Module.py:183(setValue)
+     2920    0.001    0.000    0.001    0.000 {math.pow}
+     2920    0.001    0.000    0.001    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/Module.py:254(getName)
+     1460    0.001    0.000    0.001    0.000 {method 'copy' of 'set' objects}
+     2920    0.001    0.000    0.001    0.000 {math.sqrt}
+      184    0.000    0.000    0.001    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/model/ModuleFactory.py:298(naction)
+     2920    0.001    0.000    0.001    0.000 {math.exp}
+     2555    0.000    0.000    0.000    0.000 {method 'append' of 'list' objects}
+     2920    0.000    0.000    0.000    0.000 {math.fabs}
+     2920    0.000    0.000    0.000    0.000 {len}
+      730    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/model/ModuleFactory.py:232(f)
+      181    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/model/ModuleFactory.py:229(naction)
+      730    0.000    0.000    0.000    0.000 {method 'join' of 'str' objects}
+      731    0.000    0.000    0.000    0.000 {method 'items' of 'dict' objects}
+      730    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/model/ModuleFactory.py:301(f)
+      731    0.000    0.000    0.000    0.000 {method 'add' of 'set' objects}
+      730    0.000    0.000    0.000    0.000 {method 'random' of '_random.Random' objects}
+      733    0.000    0.000    0.000    0.000 {method 'clear' of 'set' objects}
+        1    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/ModulesFile.py:327(restoreSystem)
+        1    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/ModulesFile.py:315(restoreVars)
+        1    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/ModulesFile.py:148(_initStateAPSetAndStateId)
+        1    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/ModulesFile.py:319(restoreStates)
+        2    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/State.py:27(clearAPSet)
+        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+
+

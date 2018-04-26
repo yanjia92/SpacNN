@@ -138,7 +138,6 @@ class ModulesFile(object):
 
     # update self.curState's and self.prevState's apset and stateId
     # according to the system's current state
-    @timeandcount
     def _updateCurAndPrevState(self):
         self.prevState.apSet = self.curState.apSet.copy()
         self.prevState.stateId = self.curState.stateId
@@ -162,7 +161,6 @@ class ModulesFile(object):
     # in initial state, it equals to the Checker.duration(5 years for example)
     # in other allUp state(not initial states), it equals to
     # duration-passedTime.
-    @timeandcount
     def nextState(self, enabledCommands, duration=0.0):
         if not self.stateInited:
             self.stateInited = True
@@ -173,7 +171,7 @@ class ModulesFile(object):
 
         exitRate = 0.0
         for comm in enabledCommands:
-            if hasattr(comm.prob, '__call__'):
+            if callable(comm.prob):
                 exitRate += comm.prob()
             else:
                 exitRate += comm.prob
@@ -223,7 +221,6 @@ class ModulesFile(object):
     # can be stopped.
     # return (None, path) if cache is not hit
     # else return satisfied(of bool type), path
-    @timeandcount
     def genRandomPath(self, duration, cachedPrefixes=None):
         # Since when initilize a module, all its local variables
         # have been initilized
@@ -327,7 +324,6 @@ class ModulesFile(object):
         self.prevState.clearAPSet()
         self.stateInited = False
 
-    @timeandcount
     def restoreSystem(self):
         self.restoreVars()
         self.restoreStates()
