@@ -366,19 +366,30 @@ class BasicParser(object):
         # 解析单个变量与某个常量进行比较
         tokens = copy.copy(p.slice)
 
-        def f(tokens, handler):
+        def f(tokens):
             def inner(vs ,cs):
                 var = vs[tokens[1].value]
                 # if not var or not isinstance(var, Variable):
                 #     raise Exception("invalid variable name")
-                left = var.getValue()
-                right = tokens[3]
+                val1 = var.getValue()
+                val2 = tokens[3]
                 op = tokens[2]
-                return handler(left, right, op)
+                if '<' == op:
+                    return val1 < val2
+                if '>' == op:
+                    return val1 > val2
+                if '>=' == op:
+                    return val1 >= val2
+                if '<=' == op:
+                    return val1 <= val2
+                if '==' == op:
+                    return val1 == val2
+                if '!=' == op:
+                    return val1 != val2
 
             return inner
 
-        p[0] = f(tokens, ExpressionHelper.resolve_boolean_expression)
+        p[0] = f(tokens)
 
     def p_boolean_expression_unit1(self, p):
         '''boolean_expression_unit : NAME GT expr
@@ -390,21 +401,31 @@ class BasicParser(object):
         # 解析某个变量与一个表达式进行比较
         tokens = copy.copy(p.slice)
 
-        def f(t, handler):
+        def f(t):
             # handler is a boolean_expression_resolver : handler(val1, val2,
             # op)
             def inner(vs, cs):
                 var = vs[t[1].value]
                 # if not var or not isinstance(var, Variable):
                 #     raise Exception("invalid var name")
-                left = var.getValue()
-                right = t[3].value()
+                val1 = var.getValue()
+                val2 = t[3].value()
                 op = t[2].value
-                return handler(left, right, op)
-
+                if '<' == op:
+                    return val1 < val2
+                if '>' == op:
+                    return val1 > val2
+                if '>=' == op:
+                    return val1 >= val2
+                if '<=' == op:
+                    return val1 <= val2
+                if '==' == op:
+                    return val1 == val2
+                if '!=' == op:
+                    return val1 != val2
             return inner
 
-        p[0] = f(tokens, ExpressionHelper.resolve_boolean_expression)
+        p[0] = f(tokens)
 
     def p_formula_statement(self, p):
         '''formula_statement : FORMULA NAME ASSIGN expr SEMICOLON'''

@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import time
 from collections import defaultdict
+from threading import Thread
+
 
 # make sure one function only get called once
 already_timed = set()
@@ -9,7 +11,6 @@ countit_map = defaultdict(lambda: 0)
 
 
 def timeandcount(fn):
-
     def inner(*args, **kwargs):
         countit_map[fn.__name__] += 1
         begin = time.time()
@@ -38,4 +39,12 @@ def clear_stat():
     already_timed.clear()
     timeit_map.clear()
     countit_map.clear()
+
+
+def async(fn):
+    def wrapper(*args, **kwargs):
+        thrd = Thread(target=fn, args=args, kwargs=kwargs)
+        thrd.start()
+    return wrapper
+
 

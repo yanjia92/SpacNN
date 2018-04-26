@@ -14,9 +14,11 @@ from State import State
 from Step import Step
 from util.AnnotationHelper import *
 
-# logger = logging.getLogger("ModulesFile logging")
-# logger.addHandler(logging.StreamHandler())
-# logger.setLevel(logging.INFO)
+import traceback
+
+logger = logging.getLogger("ModulesFile logging")
+logger.addHandler(logging.StreamHandler())
+logger.setLevel(logging.INFO)
 
 allUpCnt = 0
 failureCnt = 0
@@ -47,8 +49,7 @@ class ModulesFile(object):
         self.labels = dict()
         self.constants = dict()
         self.modelType = modeltype
-        # store all enabled commands for each state
-        self.scDict = OrderedDict()
+        self.scDict = OrderedDict()  # {sstate: [(comm, prob)]}
         self.curState = State(self._stateId, set())
         self.prevState = State(self._stateId, set())
         self.commPrepared = False
@@ -156,12 +157,12 @@ class ModulesFile(object):
     # (e.g. the transition already happened)
     # store original state's info(localVars) in self.prevState
     # return (transitionname, holdingtime)
-    # enabledCommands: the enabled commands of current state
+    # cmd_probs: [(cmd, cmd_prob)]
     # duration: the time duration before which the transition must occur
     # in initial state, it equals to the Checker.duration(5 years for example)
     # in other allUp state(not initial states), it equals to
     # duration-passedTime.
-    def nextState(self, enabledCommands, duration=0.0):
+    def nextState(self, cmd_probs, duration=0.0):
         if not self.stateInited:
             self.stateInited = True
             self._initStateAPSetAndStateId()
@@ -170,25 +171,17 @@ class ModulesFile(object):
         # exit rate依旧是每个command下的prob(在CTMC模型中,prob表示rate)之和
 
         exitRate = 0.0
-        for comm in enabledCommands:
-            if callable(comm.prob):
-                exitRate += comm.prob()
-            else:
-                exitRate += comm.prob
+        for _, prob in cmd_probs:
+            exitRate += prob
         if self.fb:
             biasingExitRate = sum(
-            [command.biasingRate for command in enabledCommands])
+            [command.biasingRate for command in map(lambda t:t[0], cmd_probs)])
             probs = [
                 command.biasingRate /
-                float(biasingExitRate) for command in enabledCommands]
+                float(biasingExitRate) for command in map(lambda t: t[0], cmd_probs)]
         else:
             biasingExitRate = None
-            probs = []
-            for comm in enabledCommands:
-                if hasattr(comm.prob, '__call__'):
-                    probs.append(comm.prob()/exitRate)
-                else:
-                    probs.append(comm.prob/exitRate)
+            probs = map(lambda p: p/float(exitRate), map(lambda t: t[1], cmd_probs))
 
         rnd = random.random()  # random number in [0,1)
         probSum = 0.0
@@ -203,7 +196,7 @@ class ModulesFile(object):
                         holdingTime = MathUtils.randomExpo(exitRate)
                     else:
                         holdingTime = 1
-                enabledCommand = enabledCommands[index]
+                enabledCommand = cmd_probs[index][0]
                 enabledCommand.execAction()
                 self._updateCurAndPrevState()
                 return (
@@ -237,17 +230,17 @@ class ModulesFile(object):
             if len(self.scDict) == 0:
                 # 由于存在unbounded变量,无法提前判断所有的变量组合的enabled commands
                 # 因此需要手工判断
-                enabledCommands = []
+                cmd_probs = []
                 for _,module in self.modules.items():
                     for _,comm in module.allCommands().items():
                         if comm.guard(self.localVars, self.constants):
-                            enabledCommands.append(comm)
+                            cmd_probs.append((comm, comm.prob()))
             else:
-                enabledCommands = self.scDict[varsStr]
-            if len(enabledCommands) == 0:
+                cmd_probs = self.scDict[varsStr]
+            if len(cmd_probs) == 0:
                 break
             transition, holdingTime, rate, biasingRate, exitRate, biasingExitRate = self.nextState(
-                enabledCommands, duration=duration - timeSum)
+                cmd_probs, duration=duration - timeSum)
             timeSum += holdingTime
             if len(path) == 0 and holdingTime > duration:
                 # The first transition is not possible to happen within the given duration
@@ -410,17 +403,24 @@ class ModulesFile(object):
                 *[v.allVarsList() for _, v in self.localVars.items()]):
             for v in vsList:
                 self.localVars[v.getName()].setValue(v.getValue())
-            enabledCommands = list()
+            cmd_probs = list() # [(cmd, prob)]
             for _, module in self.modules.items():
                 for _, command in module.commands.items():
                     if command.evalGuard():
                         # make a copy of Command instance
                         # in failure biasing situation when command's rate
                         # needs to be modified.
-                        enabledCommands.append(copy.copy(command))
+                        p = None
+                        if callable(command.prob):
+                            p = command.prob()
+                        if p is None:
+                            msg = traceback.format_exc()
+                            logger.error("command's prob must be callable")
+                            logger.error(msg)
+                        cmd_probs.append((copy.copy(command), p))
             varTuple = tuple([item[1].getValue() for item in self.localVars.items()])
             varsStr = ''.join([str(v) for v in varTuple])
-            self.scDict[varsStr] = enabledCommands
+            self.scDict[varsStr] = cmd_probs
         self.restoreSystem()
         self.commPrepared = True
 

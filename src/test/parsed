@@ -1,53 +1,43 @@
-         385883 function calls (263239 primitive calls) in 0.280 seconds
+         60295 function calls (57371 primitive calls) in 0.076 seconds
 
    Ordered by: cumulative time
 
    ncalls  tottime  percall  cumtime  percall filename:lineno(function)
-        1    0.011    0.011    0.280    0.280 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/ModulesFile.py:224(genRandomPath)
-      730    0.014    0.000    0.260    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/ModulesFile.py:164(nextState)
-17885/6205    0.021    0.000    0.180    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/compiler/PRISMParser.py:262(f)
-74825/6205    0.066    0.000    0.178    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/compiler/PRISMParser.py:313(f)
-11680/5840    0.012    0.000    0.164    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/compiler/PRISMParser.py:327(f)
-39420/5840    0.043    0.000    0.136    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/compiler/PRISMParser.py:286(f)
-      730    0.003    0.000    0.034    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/Module.py:120(execAction)
-      730    0.003    0.000    0.027    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/ModulesFile.py:141(_updateCurAndPrevState)
-      731    0.003    0.000    0.024    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/State.py:21(updateAPs)
-     1460    0.023    0.000    0.023    0.000 {dir}
-     5848    0.011    0.000    0.016    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/compiler/PRISMParser.py:396(inner)
-     5840    0.012    0.000    0.015    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/util/MathUtils.py:20(pcf)
- 2193/731    0.003    0.000    0.011    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/compiler/PRISMParser.py:347(f)
- 2193/731    0.002    0.000    0.010    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/compiler/PRISMParser.py:344(f)
-    39420    0.008    0.000    0.008    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/Module.py:257(getValue)
-    74825    0.008    0.000    0.008    0.000 {callable}
-      730    0.001    0.000    0.007    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/compiler/PRISMParser.py:220(f)
-     1460    0.003    0.000    0.007    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/compiler/PRISMParser.py:248(f)
-      731    0.003    0.000    0.005    0.000 /System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/collections.py:113(items)
-    25558    0.004    0.000    0.004    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/compiler/PRISMParser.py:303(f)
-     4380    0.002    0.000    0.004    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/util/MathUtils.py:38(powe)
-    16439    0.004    0.000    0.004    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/Module.py:189(getValue)
-     5848    0.003    0.000    0.003    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/compiler/PRISMParser.py:59(resolve_boolean_expression)
-     6570    0.002    0.000    0.002    0.000 {hasattr}
-     5117    0.002    0.000    0.002    0.000 /System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/collections.py:78(__iter__)
-     1466    0.001    0.000    0.002    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/Module.py:183(setValue)
-     4380    0.001    0.000    0.001    0.000 {math.pow}
+        1    0.010    0.010    0.078    0.078 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/ModulesFile.py:217(genRandomPath)
+      730    0.005    0.000    0.060    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/ModulesFile.py:165(nextState)
+      730    0.002    0.000    0.028    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/Module.py:120(execAction)
+      730    0.002    0.000    0.021    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/ModulesFile.py:142(_updateCurAndPrevState)
+     1460    0.020    0.000    0.020    0.000 {dir}
+      731    0.002    0.000    0.018    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/State.py:21(updateAPs)
+     5848    0.009    0.000    0.011    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/compiler/PRISMParser.py:407(inner)
+ 2193/731    0.002    0.000    0.008    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/compiler/PRISMParser.py:347(f)
+ 2193/731    0.002    0.000    0.008    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/compiler/PRISMParser.py:344(f)
+      730    0.001    0.000    0.006    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/compiler/PRISMParser.py:220(f)
+     1460    0.003    0.000    0.006    0.000 {map}
+     1460    0.003    0.000    0.005    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/compiler/PRISMParser.py:248(f)
+      731    0.003    0.000    0.004    0.000 /System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/collections.py:113(items)
+    10599    0.002    0.000    0.002    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/Module.py:189(getValue)
+     5117    0.001    0.000    0.001    0.000 /System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/collections.py:78(__iter__)
+     7308    0.001    0.000    0.001    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/compiler/PRISMParser.py:303(f)
+     1466    0.001    0.000    0.001    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/Module.py:183(setValue)
+      365    0.000    0.000    0.001    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/compiler/PRISMParser.py:262(f)
       730    0.001    0.000    0.001    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/Step.py:2(__init__)
-     5840    0.001    0.000    0.001    0.000 {math.exp}
-     5840    0.001    0.000    0.001    0.000 {math.fabs}
-     4015    0.001    0.000    0.001    0.000 {method 'append' of 'list' objects}
-     5840    0.001    0.000    0.001    0.000 {math.sqrt}
+      365    0.001    0.000    0.001    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/compiler/PRISMParser.py:313(f)
+     3285    0.001    0.000    0.001    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/ModulesFile.py:184(<lambda>)
      1460    0.001    0.000    0.001    0.000 {method 'copy' of 'set' objects}
-     2926    0.001    0.000    0.001    0.000 {isinstance}
-     2920    0.001    0.000    0.001    0.000 {len}
-     1460    0.001    0.000    0.001    0.000 {math.log}
-      731    0.000    0.000    0.000    0.000 {method 'items' of 'dict' objects}
+     2920    0.000    0.000    0.000    0.000 {len}
+     2926    0.000    0.000    0.000    0.000 {isinstance}
       730    0.000    0.000    0.000    0.000 {method 'join' of 'str' objects}
+      731    0.000    0.000    0.000    0.000 {method 'items' of 'dict' objects}
       731    0.000    0.000    0.000    0.000 {method 'add' of 'set' objects}
+      730    0.000    0.000    0.000    0.000 {method 'append' of 'list' objects}
       730    0.000    0.000    0.000    0.000 {method 'random' of '_random.Random' objects}
       733    0.000    0.000    0.000    0.000 {method 'clear' of 'set' objects}
-        1    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/ModulesFile.py:148(_initStateAPSetAndStateId)
-        1    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/ModulesFile.py:327(restoreSystem)
-        1    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/ModulesFile.py:315(restoreVars)
-        1    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/ModulesFile.py:319(restoreStates)
+      365    0.000    0.000    0.000    0.000 {callable}
+        1    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/ModulesFile.py:149(_initStateAPSetAndStateId)
+        1    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/ModulesFile.py:320(restoreSystem)
+        1    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/ModulesFile.py:308(restoreVars)
+        1    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/ModulesFile.py:312(restoreStates)
         2    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/State.py:27(clearAPSet)
         1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
 

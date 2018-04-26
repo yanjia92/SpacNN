@@ -5,8 +5,12 @@ from config.SPSConfig import SPSConfig
 from model.ModuleFactory import ModuleFactory
 
 
+def getParsedModel():
+    return ModelFactory.get_parsed()
+
+
 def getBuiltModel():
-    return ModelFactory(ModuleFactory(SPSConfig())).get_built()
+    return ModelFactory.get_built()
 
 
 def timeit(func, *args, **kwargs):
@@ -17,7 +21,8 @@ def timeit(func, *args, **kwargs):
 
 
 def test():
-    model = getBuiltModel()
+    # model = getBuiltModel()
+    model = getParsedModel()
     timeit(model.prepareCommands)
 
 

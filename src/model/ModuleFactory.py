@@ -125,7 +125,7 @@ class ModuleFactory(object):
                 guard,
                 action,
                 module,
-                1.0
+                lambda: 1.0
             )
         )
         return module
