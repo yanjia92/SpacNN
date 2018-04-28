@@ -52,4 +52,3 @@ bdr_status: [0, 1] init 1;
 endmodule
 
 label failure = sb_status == 0 | s3r_status == 0 | bcr_status == 0 | bdr_status == 0;
-label up = sb_status == 1 & s3r_status == 1 & bcr_status == 1 & bdr_status == 1;

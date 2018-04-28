@@ -171,8 +171,7 @@ class ModulesFile(object):
         # exit rate依旧是每个command下的prob(在CTMC模型中,prob表示rate)之和
 
         exitRate = 0.0
-        for _, prob in cmd_probs:
-            exitRate += prob
+        exitRate = sum(map(lambda t: t[1], cmd_probs))
         if self.fb:
             biasingExitRate = sum(
             [command.biasingRate for command in map(lambda t:t[0], cmd_probs)])
@@ -188,9 +187,9 @@ class ModulesFile(object):
         for index, prob in enumerate(probs):
             probSum += prob
             if probSum >= rnd:
-                if self.initCondition and self.initCondition(self.localVars, self.constants):
+                if self.forcing and self.curState.stateId == 0:
                     holdingTime = MathUtils.randomExpo(
-                        exitRate, t=duration, forcing=self.forcing)
+                        exitRate, t=duration)
                 else:
                     if self.modelType == ModelType.CTMC:
                         holdingTime = MathUtils.randomExpo(exitRate)
@@ -420,6 +419,8 @@ class ModulesFile(object):
                         cmd_probs.append((copy.copy(command), p))
             varTuple = tuple([item[1].getValue() for item in self.localVars.items()])
             varsStr = ''.join([str(v) for v in varTuple])
+            # sort cmd_probs by prob desc to accerate speed of ModulesFile@nextState
+            cmd_probs.sort(key=lambda t: t[1], reverse=True)
             self.scDict[varsStr] = cmd_probs
         self.restoreSystem()
         self.commPrepared = True

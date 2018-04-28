@@ -112,16 +112,18 @@ class Command(object):
         # print "Guard is None ? : " + str(self.guard is None)
 
     def evalGuard(self):
-        if 'cs' in dir(self) and 'vs' in dir(self):
-            return self.guard(self.vs, self.cs)
-        else:
-            logging.info('vs,cs not exist in Module %s' % self.module.name)
+        return self.guard(self.vs, self.cs)
+        # if 'cs' in dir(self) and 'vs' in dir(self):
+        #     return self.guard(self.vs, self.cs)
+        # else:
+        #     logging.info('vs,cs not exist in Module %s' % self.module.name)
 
     def execAction(self):
-        if 'vs' in dir(self) and 'cs' in dir(self):
-            self.action(self.vs, self.cs)
-        else:
-            logging.info('vs,cs not exist in Module %s' % self.module.name)
+        self.action(self.vs, self.cs)
+        # if 'vs' in dir(self) and 'cs' in dir(self):
+        #     self.action(self.vs, self.cs)
+        # else:
+        #     logging.info('vs,cs not exist in Module %s' % self.module.name)
 
     def __str__(self):
         return 'comm %s of module %s' % (self.name, self.module.name)

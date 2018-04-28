@@ -20,6 +20,11 @@ def get_proj_dir():
     return src_dir[:src_dir.rfind(path_sep)]
 
 
+def get_log_dir():
+    src_dir = get_src_dir()
+    path_sep = get_sep()
+    return src_dir + path_sep + "log"
+
 def test():
     print get_src_dir()
     print get_proj_dir()

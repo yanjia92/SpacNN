@@ -13,8 +13,7 @@ class ModelFactory(object):
         def failurecondition(vs, cs):
             return vs['sb_status'] == 0 or vs['s3r_status'] == 0 or vs["bcr_status"] == 0 and vs["bdr_status"] == 0
         labels = {}
-        labels['up'] = lambda vs, cs: vs['s3r_status'] == 1 and vs['sb_status'] == 1 and vs["bcr_status"] == 1 and vs["bdr_status"] == 1
-        labels['failure'] = lambda vs, cs: vs['s3r_status'] == 0 or vs['sb_status'] == 0 or vs["bcr_status"] == 0 and vs["bdr_status"] == 0
+        labels['failure'] = failurecondition
         model = ModulesFile(
             ModelType.DTMC,
             failureCondition=failurecondition,

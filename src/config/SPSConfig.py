@@ -15,7 +15,7 @@ class SPSConfig():
         self.params['S3R_A_MU'] = Constant('S3R_A_MU', 570.8 * 18 - 570.8 * 5)
         self.params['S3R_A_SIGMA'] = Constant('S3R_A_SIGMA', 6.7471 * 220)
         self.params['S3R_B'] = Constant('S3R_B', 0.0131*0.57 * 0.1)
-        self.params['SCREEN_THICKNESS'] = Constant('SCREEN_THICKNESS', 1)
+        self.params['SCREEN_THICKNESS'] = Constant('SCREEN_THICKNESS', 4)
         self.params['DURATION_IN_DAY'] = Constant('DURATION_IN_DAY', 365*2)
 
     def getParam(self, name):
@@ -25,7 +25,12 @@ class SPSConfig():
             raise Exception('no parameter found: {0}'.format(name))
 
     def setParam(self, name, value):
-        self.params[name].value = value
+        if name not in self.params.keys():
+            print "not correct constant name {} in calling SPSConfig.setParam".format(name)
+        if isinstance(value, Constant):
+            self.params[name].value = value
+            return
+        self.params[name].setValue(value)
 
     def export2prism(self, prismfileaddr):
         """
@@ -62,7 +67,7 @@ class SPSConfig():
 
 def export_2_smalltest():
     config = SPSConfig()
-    config.export2prism("../../prism_model/smalltest.prism")
+    config.export2prism("../../prism_model/psmalltest.prism")
 
 
 if __name__ == "__main__":

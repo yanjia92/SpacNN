@@ -36,5 +36,5 @@ def test_built():
     print s.getvalue()
 
 
-test_parsed()
-# test_built()
+# test_parsed()
+test_built()

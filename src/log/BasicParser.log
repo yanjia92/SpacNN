@@ -3856,3 +3856,1422 @@ Variable_bdr_status added to Module_BDR. init=1, range=[0, 1]
 Command_bdr_fail_cmd added.
 Command_bdr_nrl_cmd added.
 command.tokens : [module_command_statement, LexToken(LB,'[',51,0), LexToken(RB,']',51,1), boolean_expression, LexToken(THEN,'->',51,27), updates, LexToken(SEMICOLON,';',51,146)]
+Parsing model file : /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/prism_model/smalltest_temp.prism
+Constant added: YEAR = 5
+Constant added: SCREEN_THICKNESS = 4.0
+Constant added: S3R_K = 66.8333333333
+Constant added: SB_K = 0.0039
+Formula_IEL_YEAR added.
+Formula_NIEL_YEAR added.
+Variable_t_turn added to Module_Time. init=1, range=[0, 1]
+Variable_day added to Module_Time. init=1, range=[1, 1825]
+Command_inc_day_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',13,0), LexToken(RB,']',13,1), boolean_expression, LexToken(THEN,'->',13,27), updates, LexToken(SEMICOLON,';',13,72)]
+Constant added: SB_P_THRESHOLD = 0.819
+Constant added: SB_A_MU = 0.1754
+Constant added: SB_A_SIGMA = 0.48699609
+Constant added: SB_B = 1.8
+Formula_sb_dose added.
+Formula_sb_cdf_x added.
+Formula_sb_std_cdf_x added.
+Formula_sb_fail_prob added.
+Variable_sb_status added to Module_SB. init=1, range=[0, 1]
+Command_sb_fail_cmd added.
+Command_sb_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',27,0), LexToken(RB,']',27,1), boolean_expression, LexToken(THEN,'->',27,26), updates, LexToken(SEMICOLON,';',27,147)]
+Constant added: S3R_DELTAV_THRESHOLD = 10.0
+Constant added: S3R_B = 0.0007467
+Constant added: S3R_A_MU = 7420.4
+Constant added: S3R_A_SIGMA = 1484.362
+Formula_s3r_cur_dose added.
+Formula_s3r_cdf_x added.
+Formula_s3r_std_cdf_x added.
+Formula_s3r_fail_prob added.
+Variable_s3r_status added to Module_S3R. init=1, range=[0, 1]
+Command_s3r_fail_cmd added.
+Command_s3r_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',41,0), LexToken(RB,']',41,1), boolean_expression, LexToken(THEN,'->',41,27), updates, LexToken(SEMICOLON,';',41,146)]
+Variable_bcr_status added to Module_BCR. init=1, range=[0, 1]
+Command_bcr_fail_cmd added.
+Command_bcr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',46,0), LexToken(RB,']',46,1), boolean_expression, LexToken(THEN,'->',46,27), updates, LexToken(SEMICOLON,';',46,146)]
+Variable_bdr_status added to Module_BDR. init=1, range=[0, 1]
+Command_bdr_fail_cmd added.
+Command_bdr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',51,0), LexToken(RB,']',51,1), boolean_expression, LexToken(THEN,'->',51,27), updates, LexToken(SEMICOLON,';',51,146)]
+Parsing model file : /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/prism_model/smalltest_temp.prism
+Constant added: YEAR = 5
+Constant added: SCREEN_THICKNESS = 4.0
+Constant added: S3R_K = 66.8333333333
+Constant added: SB_K = 0.0039
+Formula_IEL_YEAR added.
+Formula_NIEL_YEAR added.
+Variable_t_turn added to Module_Time. init=1, range=[0, 1]
+Variable_day added to Module_Time. init=1, range=[1, 1825]
+Command_inc_day_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',13,0), LexToken(RB,']',13,1), boolean_expression, LexToken(THEN,'->',13,27), updates, LexToken(SEMICOLON,';',13,72)]
+Constant added: SB_P_THRESHOLD = 0.819
+Constant added: SB_A_MU = 0.1754
+Constant added: SB_A_SIGMA = 0.48699609
+Constant added: SB_B = 1.8
+Formula_sb_dose added.
+Formula_sb_cdf_x added.
+Formula_sb_std_cdf_x added.
+Formula_sb_fail_prob added.
+Variable_sb_status added to Module_SB. init=1, range=[0, 1]
+Command_sb_fail_cmd added.
+Command_sb_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',27,0), LexToken(RB,']',27,1), boolean_expression, LexToken(THEN,'->',27,26), updates, LexToken(SEMICOLON,';',27,147)]
+Constant added: S3R_DELTAV_THRESHOLD = 10.0
+Constant added: S3R_B = 0.0007467
+Constant added: S3R_A_MU = 7420.4
+Constant added: S3R_A_SIGMA = 1484.362
+Formula_s3r_cur_dose added.
+Formula_s3r_cdf_x added.
+Formula_s3r_std_cdf_x added.
+Formula_s3r_fail_prob added.
+Variable_s3r_status added to Module_S3R. init=1, range=[0, 1]
+Command_s3r_fail_cmd added.
+Command_s3r_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',41,0), LexToken(RB,']',41,1), boolean_expression, LexToken(THEN,'->',41,27), updates, LexToken(SEMICOLON,';',41,146)]
+Variable_bcr_status added to Module_BCR. init=1, range=[0, 1]
+Command_bcr_fail_cmd added.
+Command_bcr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',46,0), LexToken(RB,']',46,1), boolean_expression, LexToken(THEN,'->',46,27), updates, LexToken(SEMICOLON,';',46,146)]
+Variable_bdr_status added to Module_BDR. init=1, range=[0, 1]
+Command_bdr_fail_cmd added.
+Command_bdr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',51,0), LexToken(RB,']',51,1), boolean_expression, LexToken(THEN,'->',51,27), updates, LexToken(SEMICOLON,';',51,146)]
+Parsing model file : /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/prism_model/smalltest_temp.prism
+Constant added: YEAR = 5
+Constant added: SCREEN_THICKNESS = 4.0
+Constant added: S3R_K = 66.8333333333
+Constant added: SB_K = 0.0039
+Formula_IEL_YEAR added.
+Formula_NIEL_YEAR added.
+Variable_t_turn added to Module_Time. init=1, range=[0, 1]
+Variable_day added to Module_Time. init=1, range=[1, 1825]
+Command_inc_day_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',13,0), LexToken(RB,']',13,1), boolean_expression, LexToken(THEN,'->',13,27), updates, LexToken(SEMICOLON,';',13,72)]
+Constant added: SB_P_THRESHOLD = 0.819
+Constant added: SB_A_MU = 0.1754
+Constant added: SB_A_SIGMA = 0.48699609
+Constant added: SB_B = 1.8
+Formula_sb_dose added.
+Formula_sb_cdf_x added.
+Formula_sb_std_cdf_x added.
+Formula_sb_fail_prob added.
+Variable_sb_status added to Module_SB. init=1, range=[0, 1]
+Command_sb_fail_cmd added.
+Command_sb_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',27,0), LexToken(RB,']',27,1), boolean_expression, LexToken(THEN,'->',27,26), updates, LexToken(SEMICOLON,';',27,147)]
+Constant added: S3R_DELTAV_THRESHOLD = 10.0
+Constant added: S3R_B = 0.0007467
+Constant added: S3R_A_MU = 7420.4
+Constant added: S3R_A_SIGMA = 1484.362
+Formula_s3r_cur_dose added.
+Formula_s3r_cdf_x added.
+Formula_s3r_std_cdf_x added.
+Formula_s3r_fail_prob added.
+Variable_s3r_status added to Module_S3R. init=1, range=[0, 1]
+Command_s3r_fail_cmd added.
+Command_s3r_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',41,0), LexToken(RB,']',41,1), boolean_expression, LexToken(THEN,'->',41,27), updates, LexToken(SEMICOLON,';',41,146)]
+Variable_bcr_status added to Module_BCR. init=1, range=[0, 1]
+Command_bcr_fail_cmd added.
+Command_bcr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',46,0), LexToken(RB,']',46,1), boolean_expression, LexToken(THEN,'->',46,27), updates, LexToken(SEMICOLON,';',46,146)]
+Variable_bdr_status added to Module_BDR. init=1, range=[0, 1]
+Command_bdr_fail_cmd added.
+Command_bdr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',51,0), LexToken(RB,']',51,1), boolean_expression, LexToken(THEN,'->',51,27), updates, LexToken(SEMICOLON,';',51,146)]
+Parsing model file : /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/prism_model/smalltest_temp.prism
+Constant added: YEAR = 5
+Constant added: SCREEN_THICKNESS = 4.0
+Constant added: S3R_K = 66.8333333333
+Constant added: SB_K = 0.0039
+Formula_IEL_YEAR added.
+Formula_NIEL_YEAR added.
+Variable_t_turn added to Module_Time. init=1, range=[0, 1]
+Variable_day added to Module_Time. init=1, range=[1, 1825]
+Command_inc_day_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',13,0), LexToken(RB,']',13,1), boolean_expression, LexToken(THEN,'->',13,27), updates, LexToken(SEMICOLON,';',13,72)]
+Constant added: SB_P_THRESHOLD = 0.819
+Constant added: SB_A_MU = 0.1754
+Constant added: SB_A_SIGMA = 0.48699609
+Constant added: SB_B = 1.8
+Formula_sb_dose added.
+Formula_sb_cdf_x added.
+Formula_sb_std_cdf_x added.
+Formula_sb_fail_prob added.
+Variable_sb_status added to Module_SB. init=1, range=[0, 1]
+Command_sb_fail_cmd added.
+Command_sb_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',27,0), LexToken(RB,']',27,1), boolean_expression, LexToken(THEN,'->',27,26), updates, LexToken(SEMICOLON,';',27,147)]
+Constant added: S3R_DELTAV_THRESHOLD = 10.0
+Constant added: S3R_B = 0.0007467
+Constant added: S3R_A_MU = 7420.4
+Constant added: S3R_A_SIGMA = 1484.362
+Formula_s3r_cur_dose added.
+Formula_s3r_cdf_x added.
+Formula_s3r_std_cdf_x added.
+Formula_s3r_fail_prob added.
+Variable_s3r_status added to Module_S3R. init=1, range=[0, 1]
+Command_s3r_fail_cmd added.
+Command_s3r_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',41,0), LexToken(RB,']',41,1), boolean_expression, LexToken(THEN,'->',41,27), updates, LexToken(SEMICOLON,';',41,146)]
+Variable_bcr_status added to Module_BCR. init=1, range=[0, 1]
+Command_bcr_fail_cmd added.
+Command_bcr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',46,0), LexToken(RB,']',46,1), boolean_expression, LexToken(THEN,'->',46,27), updates, LexToken(SEMICOLON,';',46,146)]
+Variable_bdr_status added to Module_BDR. init=1, range=[0, 1]
+Command_bdr_fail_cmd added.
+Command_bdr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',51,0), LexToken(RB,']',51,1), boolean_expression, LexToken(THEN,'->',51,27), updates, LexToken(SEMICOLON,';',51,146)]
+Parsing model file : /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/prism_model/smalltest_temp.prism
+Constant added: YEAR = 5
+Constant added: SCREEN_THICKNESS = 4.0
+Constant added: S3R_K = 66.8333333333
+Constant added: SB_K = 0.0039
+Formula_IEL_YEAR added.
+Formula_NIEL_YEAR added.
+Variable_t_turn added to Module_Time. init=1, range=[0, 1]
+Variable_day added to Module_Time. init=1, range=[1, 1825]
+Command_inc_day_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',13,0), LexToken(RB,']',13,1), boolean_expression, LexToken(THEN,'->',13,27), updates, LexToken(SEMICOLON,';',13,72)]
+Constant added: SB_P_THRESHOLD = 0.819
+Constant added: SB_A_MU = 0.1754
+Constant added: SB_A_SIGMA = 0.48699609
+Constant added: SB_B = 1.8
+Formula_sb_dose added.
+Formula_sb_cdf_x added.
+Formula_sb_std_cdf_x added.
+Formula_sb_fail_prob added.
+Variable_sb_status added to Module_SB. init=1, range=[0, 1]
+Command_sb_fail_cmd added.
+Command_sb_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',27,0), LexToken(RB,']',27,1), boolean_expression, LexToken(THEN,'->',27,26), updates, LexToken(SEMICOLON,';',27,147)]
+Constant added: S3R_DELTAV_THRESHOLD = 10.0
+Constant added: S3R_B = 0.0007467
+Constant added: S3R_A_MU = 7420.4
+Constant added: S3R_A_SIGMA = 1484.362
+Formula_s3r_cur_dose added.
+Formula_s3r_cdf_x added.
+Formula_s3r_std_cdf_x added.
+Formula_s3r_fail_prob added.
+Variable_s3r_status added to Module_S3R. init=1, range=[0, 1]
+Command_s3r_fail_cmd added.
+Command_s3r_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',41,0), LexToken(RB,']',41,1), boolean_expression, LexToken(THEN,'->',41,27), updates, LexToken(SEMICOLON,';',41,146)]
+Variable_bcr_status added to Module_BCR. init=1, range=[0, 1]
+Command_bcr_fail_cmd added.
+Command_bcr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',46,0), LexToken(RB,']',46,1), boolean_expression, LexToken(THEN,'->',46,27), updates, LexToken(SEMICOLON,';',46,146)]
+Variable_bdr_status added to Module_BDR. init=1, range=[0, 1]
+Command_bdr_fail_cmd added.
+Command_bdr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',51,0), LexToken(RB,']',51,1), boolean_expression, LexToken(THEN,'->',51,27), updates, LexToken(SEMICOLON,';',51,146)]
+Parsing model file : /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/prism_model/smalltest_temp.prism
+Constant added: YEAR = 5
+Constant added: SCREEN_THICKNESS = 4.0
+Constant added: S3R_K = 66.8333333333
+Constant added: SB_K = 0.0039
+Formula_IEL_YEAR added.
+Formula_NIEL_YEAR added.
+Variable_t_turn added to Module_Time. init=1, range=[0, 1]
+Variable_day added to Module_Time. init=1, range=[1, 1825]
+Command_inc_day_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',13,0), LexToken(RB,']',13,1), boolean_expression, LexToken(THEN,'->',13,27), updates, LexToken(SEMICOLON,';',13,72)]
+Constant added: SB_P_THRESHOLD = 0.819
+Constant added: SB_A_MU = 0.1754
+Constant added: SB_A_SIGMA = 0.48699609
+Constant added: SB_B = 1.8
+Formula_sb_dose added.
+Formula_sb_cdf_x added.
+Formula_sb_std_cdf_x added.
+Formula_sb_fail_prob added.
+Variable_sb_status added to Module_SB. init=1, range=[0, 1]
+Command_sb_fail_cmd added.
+Command_sb_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',27,0), LexToken(RB,']',27,1), boolean_expression, LexToken(THEN,'->',27,26), updates, LexToken(SEMICOLON,';',27,147)]
+Constant added: S3R_DELTAV_THRESHOLD = 10.0
+Constant added: S3R_B = 0.0007467
+Constant added: S3R_A_MU = 7420.4
+Constant added: S3R_A_SIGMA = 1484.362
+Formula_s3r_cur_dose added.
+Formula_s3r_cdf_x added.
+Formula_s3r_std_cdf_x added.
+Formula_s3r_fail_prob added.
+Variable_s3r_status added to Module_S3R. init=1, range=[0, 1]
+Command_s3r_fail_cmd added.
+Command_s3r_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',41,0), LexToken(RB,']',41,1), boolean_expression, LexToken(THEN,'->',41,27), updates, LexToken(SEMICOLON,';',41,146)]
+Variable_bcr_status added to Module_BCR. init=1, range=[0, 1]
+Command_bcr_fail_cmd added.
+Command_bcr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',46,0), LexToken(RB,']',46,1), boolean_expression, LexToken(THEN,'->',46,27), updates, LexToken(SEMICOLON,';',46,146)]
+Variable_bdr_status added to Module_BDR. init=1, range=[0, 1]
+Command_bdr_fail_cmd added.
+Command_bdr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',51,0), LexToken(RB,']',51,1), boolean_expression, LexToken(THEN,'->',51,27), updates, LexToken(SEMICOLON,';',51,146)]
+Parsing model file : /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/prism_model/smalltest_temp.prism
+Constant added: YEAR = 5
+Constant added: SCREEN_THICKNESS = 4.0
+Constant added: S3R_K = 66.8333333333
+Constant added: SB_K = 0.0039
+Formula_IEL_YEAR added.
+Formula_NIEL_YEAR added.
+Variable_t_turn added to Module_Time. init=1, range=[0, 1]
+Variable_day added to Module_Time. init=1, range=[1, 1825]
+Command_inc_day_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',13,0), LexToken(RB,']',13,1), boolean_expression, LexToken(THEN,'->',13,27), updates, LexToken(SEMICOLON,';',13,72)]
+Constant added: SB_P_THRESHOLD = 0.819
+Constant added: SB_A_MU = 0.1754
+Constant added: SB_A_SIGMA = 0.48699609
+Constant added: SB_B = 1.8
+Formula_sb_dose added.
+Formula_sb_cdf_x added.
+Formula_sb_std_cdf_x added.
+Formula_sb_fail_prob added.
+Variable_sb_status added to Module_SB. init=1, range=[0, 1]
+Command_sb_fail_cmd added.
+Command_sb_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',27,0), LexToken(RB,']',27,1), boolean_expression, LexToken(THEN,'->',27,26), updates, LexToken(SEMICOLON,';',27,147)]
+Constant added: S3R_DELTAV_THRESHOLD = 10.0
+Constant added: S3R_B = 0.0007467
+Constant added: S3R_A_MU = 7420.4
+Constant added: S3R_A_SIGMA = 1484.362
+Formula_s3r_cur_dose added.
+Formula_s3r_cdf_x added.
+Formula_s3r_std_cdf_x added.
+Formula_s3r_fail_prob added.
+Variable_s3r_status added to Module_S3R. init=1, range=[0, 1]
+Command_s3r_fail_cmd added.
+Command_s3r_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',41,0), LexToken(RB,']',41,1), boolean_expression, LexToken(THEN,'->',41,27), updates, LexToken(SEMICOLON,';',41,146)]
+Variable_bcr_status added to Module_BCR. init=1, range=[0, 1]
+Command_bcr_fail_cmd added.
+Command_bcr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',46,0), LexToken(RB,']',46,1), boolean_expression, LexToken(THEN,'->',46,27), updates, LexToken(SEMICOLON,';',46,146)]
+Variable_bdr_status added to Module_BDR. init=1, range=[0, 1]
+Command_bdr_fail_cmd added.
+Command_bdr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',51,0), LexToken(RB,']',51,1), boolean_expression, LexToken(THEN,'->',51,27), updates, LexToken(SEMICOLON,';',51,146)]
+Parsing model file : /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/prism_model/smalltest_temp.prism
+Constant added: YEAR = 5
+Constant added: SCREEN_THICKNESS = 4.0
+Constant added: S3R_K = 66.8333333333
+Constant added: SB_K = 0.0039
+Formula_IEL_YEAR added.
+Formula_NIEL_YEAR added.
+Variable_t_turn added to Module_Time. init=1, range=[0, 1]
+Variable_day added to Module_Time. init=1, range=[1, 1825]
+Command_inc_day_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',13,0), LexToken(RB,']',13,1), boolean_expression, LexToken(THEN,'->',13,27), updates, LexToken(SEMICOLON,';',13,72)]
+Constant added: SB_P_THRESHOLD = 0.819
+Constant added: SB_A_MU = 0.1754
+Constant added: SB_A_SIGMA = 0.48699609
+Constant added: SB_B = 1.8
+Formula_sb_dose added.
+Formula_sb_cdf_x added.
+Formula_sb_std_cdf_x added.
+Formula_sb_fail_prob added.
+Variable_sb_status added to Module_SB. init=1, range=[0, 1]
+Command_sb_fail_cmd added.
+Command_sb_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',27,0), LexToken(RB,']',27,1), boolean_expression, LexToken(THEN,'->',27,26), updates, LexToken(SEMICOLON,';',27,147)]
+Constant added: S3R_DELTAV_THRESHOLD = 10.0
+Constant added: S3R_B = 0.0007467
+Constant added: S3R_A_MU = 7420.4
+Constant added: S3R_A_SIGMA = 1484.362
+Formula_s3r_cur_dose added.
+Formula_s3r_cdf_x added.
+Formula_s3r_std_cdf_x added.
+Formula_s3r_fail_prob added.
+Variable_s3r_status added to Module_S3R. init=1, range=[0, 1]
+Command_s3r_fail_cmd added.
+Command_s3r_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',41,0), LexToken(RB,']',41,1), boolean_expression, LexToken(THEN,'->',41,27), updates, LexToken(SEMICOLON,';',41,146)]
+Variable_bcr_status added to Module_BCR. init=1, range=[0, 1]
+Command_bcr_fail_cmd added.
+Command_bcr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',46,0), LexToken(RB,']',46,1), boolean_expression, LexToken(THEN,'->',46,27), updates, LexToken(SEMICOLON,';',46,146)]
+Variable_bdr_status added to Module_BDR. init=1, range=[0, 1]
+Command_bdr_fail_cmd added.
+Command_bdr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',51,0), LexToken(RB,']',51,1), boolean_expression, LexToken(THEN,'->',51,27), updates, LexToken(SEMICOLON,';',51,146)]
+Parsing model file : /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/prism_model/smalltest_temp.prism
+Constant added: YEAR = 5
+Constant added: SCREEN_THICKNESS = 4.0
+Constant added: S3R_K = 66.8333333333
+Constant added: SB_K = 0.0039
+Formula_IEL_YEAR added.
+Formula_NIEL_YEAR added.
+Variable_t_turn added to Module_Time. init=1, range=[0, 1]
+Variable_day added to Module_Time. init=1, range=[1, 1825]
+Command_inc_day_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',13,0), LexToken(RB,']',13,1), boolean_expression, LexToken(THEN,'->',13,27), updates, LexToken(SEMICOLON,';',13,72)]
+Constant added: SB_P_THRESHOLD = 0.819
+Constant added: SB_A_MU = 0.1754
+Constant added: SB_A_SIGMA = 0.48699609
+Constant added: SB_B = 1.8
+Formula_sb_dose added.
+Formula_sb_cdf_x added.
+Formula_sb_std_cdf_x added.
+Formula_sb_fail_prob added.
+Variable_sb_status added to Module_SB. init=1, range=[0, 1]
+Command_sb_fail_cmd added.
+Command_sb_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',27,0), LexToken(RB,']',27,1), boolean_expression, LexToken(THEN,'->',27,26), updates, LexToken(SEMICOLON,';',27,147)]
+Constant added: S3R_DELTAV_THRESHOLD = 10.0
+Constant added: S3R_B = 0.0007467
+Constant added: S3R_A_MU = 7420.4
+Constant added: S3R_A_SIGMA = 1484.362
+Formula_s3r_cur_dose added.
+Formula_s3r_cdf_x added.
+Formula_s3r_std_cdf_x added.
+Formula_s3r_fail_prob added.
+Variable_s3r_status added to Module_S3R. init=1, range=[0, 1]
+Command_s3r_fail_cmd added.
+Command_s3r_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',41,0), LexToken(RB,']',41,1), boolean_expression, LexToken(THEN,'->',41,27), updates, LexToken(SEMICOLON,';',41,146)]
+Variable_bcr_status added to Module_BCR. init=1, range=[0, 1]
+Command_bcr_fail_cmd added.
+Command_bcr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',46,0), LexToken(RB,']',46,1), boolean_expression, LexToken(THEN,'->',46,27), updates, LexToken(SEMICOLON,';',46,146)]
+Variable_bdr_status added to Module_BDR. init=1, range=[0, 1]
+Command_bdr_fail_cmd added.
+Command_bdr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',51,0), LexToken(RB,']',51,1), boolean_expression, LexToken(THEN,'->',51,27), updates, LexToken(SEMICOLON,';',51,146)]
+Parsing model file : /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/prism_model/smalltest_temp.prism
+Constant added: YEAR = 5
+Constant added: SCREEN_THICKNESS = 4.0
+Constant added: S3R_K = 66.8333333333
+Constant added: SB_K = 0.0039
+Formula_IEL_YEAR added.
+Formula_NIEL_YEAR added.
+Variable_t_turn added to Module_Time. init=1, range=[0, 1]
+Variable_day added to Module_Time. init=1, range=[1, 1825]
+Command_inc_day_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',13,0), LexToken(RB,']',13,1), boolean_expression, LexToken(THEN,'->',13,27), updates, LexToken(SEMICOLON,';',13,72)]
+Constant added: SB_P_THRESHOLD = 0.819
+Constant added: SB_A_MU = 0.1754
+Constant added: SB_A_SIGMA = 0.48699609
+Constant added: SB_B = 1.8
+Formula_sb_dose added.
+Formula_sb_cdf_x added.
+Formula_sb_std_cdf_x added.
+Formula_sb_fail_prob added.
+Variable_sb_status added to Module_SB. init=1, range=[0, 1]
+Command_sb_fail_cmd added.
+Command_sb_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',27,0), LexToken(RB,']',27,1), boolean_expression, LexToken(THEN,'->',27,26), updates, LexToken(SEMICOLON,';',27,147)]
+Constant added: S3R_DELTAV_THRESHOLD = 10.0
+Constant added: S3R_B = 0.0007467
+Constant added: S3R_A_MU = 7420.4
+Constant added: S3R_A_SIGMA = 1484.362
+Formula_s3r_cur_dose added.
+Formula_s3r_cdf_x added.
+Formula_s3r_std_cdf_x added.
+Formula_s3r_fail_prob added.
+Variable_s3r_status added to Module_S3R. init=1, range=[0, 1]
+Command_s3r_fail_cmd added.
+Command_s3r_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',41,0), LexToken(RB,']',41,1), boolean_expression, LexToken(THEN,'->',41,27), updates, LexToken(SEMICOLON,';',41,146)]
+Variable_bcr_status added to Module_BCR. init=1, range=[0, 1]
+Command_bcr_fail_cmd added.
+Command_bcr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',46,0), LexToken(RB,']',46,1), boolean_expression, LexToken(THEN,'->',46,27), updates, LexToken(SEMICOLON,';',46,146)]
+Variable_bdr_status added to Module_BDR. init=1, range=[0, 1]
+Command_bdr_fail_cmd added.
+Command_bdr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',51,0), LexToken(RB,']',51,1), boolean_expression, LexToken(THEN,'->',51,27), updates, LexToken(SEMICOLON,';',51,146)]
+Parsing model file : /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/prism_model/smalltest_temp.prism
+Constant added: YEAR = 5
+Constant added: SCREEN_THICKNESS = 4.0
+Constant added: S3R_K = 66.8333333333
+Constant added: SB_K = 0.0039
+Formula_IEL_YEAR added.
+Formula_NIEL_YEAR added.
+Variable_t_turn added to Module_Time. init=1, range=[0, 1]
+Variable_day added to Module_Time. init=1, range=[1, 1825]
+Command_inc_day_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',13,0), LexToken(RB,']',13,1), boolean_expression, LexToken(THEN,'->',13,27), updates, LexToken(SEMICOLON,';',13,72)]
+Constant added: SB_P_THRESHOLD = 0.819
+Constant added: SB_A_MU = 0.1754
+Constant added: SB_A_SIGMA = 0.48699609
+Constant added: SB_B = 1.8
+Formula_sb_dose added.
+Formula_sb_cdf_x added.
+Formula_sb_std_cdf_x added.
+Formula_sb_fail_prob added.
+Variable_sb_status added to Module_SB. init=1, range=[0, 1]
+Command_sb_fail_cmd added.
+Command_sb_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',27,0), LexToken(RB,']',27,1), boolean_expression, LexToken(THEN,'->',27,26), updates, LexToken(SEMICOLON,';',27,147)]
+Constant added: S3R_DELTAV_THRESHOLD = 10.0
+Constant added: S3R_B = 0.0007467
+Constant added: S3R_A_MU = 7420.4
+Constant added: S3R_A_SIGMA = 1484.362
+Formula_s3r_cur_dose added.
+Formula_s3r_cdf_x added.
+Formula_s3r_std_cdf_x added.
+Formula_s3r_fail_prob added.
+Variable_s3r_status added to Module_S3R. init=1, range=[0, 1]
+Command_s3r_fail_cmd added.
+Command_s3r_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',41,0), LexToken(RB,']',41,1), boolean_expression, LexToken(THEN,'->',41,27), updates, LexToken(SEMICOLON,';',41,146)]
+Variable_bcr_status added to Module_BCR. init=1, range=[0, 1]
+Command_bcr_fail_cmd added.
+Command_bcr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',46,0), LexToken(RB,']',46,1), boolean_expression, LexToken(THEN,'->',46,27), updates, LexToken(SEMICOLON,';',46,146)]
+Variable_bdr_status added to Module_BDR. init=1, range=[0, 1]
+Command_bdr_fail_cmd added.
+Command_bdr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',51,0), LexToken(RB,']',51,1), boolean_expression, LexToken(THEN,'->',51,27), updates, LexToken(SEMICOLON,';',51,146)]
+Parsing model file : /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/prism_model/smalltest_temp.prism
+Constant added: YEAR = 5
+Constant added: SCREEN_THICKNESS = 4.0
+Constant added: S3R_K = 66.8333333333
+Constant added: SB_K = 0.0039
+Formula_IEL_YEAR added.
+Formula_NIEL_YEAR added.
+Variable_t_turn added to Module_Time. init=1, range=[0, 1]
+Variable_day added to Module_Time. init=1, range=[1, 1825]
+Command_inc_day_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',13,0), LexToken(RB,']',13,1), boolean_expression, LexToken(THEN,'->',13,27), updates, LexToken(SEMICOLON,';',13,72)]
+Constant added: SB_P_THRESHOLD = 0.819
+Constant added: SB_A_MU = 0.1754
+Constant added: SB_A_SIGMA = 0.48699609
+Constant added: SB_B = 1.8
+Formula_sb_dose added.
+Formula_sb_cdf_x added.
+Formula_sb_std_cdf_x added.
+Formula_sb_fail_prob added.
+Variable_sb_status added to Module_SB. init=1, range=[0, 1]
+Command_sb_fail_cmd added.
+Command_sb_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',27,0), LexToken(RB,']',27,1), boolean_expression, LexToken(THEN,'->',27,26), updates, LexToken(SEMICOLON,';',27,147)]
+Constant added: S3R_DELTAV_THRESHOLD = 10.0
+Constant added: S3R_B = 0.0007467
+Constant added: S3R_A_MU = 7420.4
+Constant added: S3R_A_SIGMA = 1484.362
+Formula_s3r_cur_dose added.
+Formula_s3r_cdf_x added.
+Formula_s3r_std_cdf_x added.
+Formula_s3r_fail_prob added.
+Variable_s3r_status added to Module_S3R. init=1, range=[0, 1]
+Command_s3r_fail_cmd added.
+Command_s3r_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',41,0), LexToken(RB,']',41,1), boolean_expression, LexToken(THEN,'->',41,27), updates, LexToken(SEMICOLON,';',41,146)]
+Variable_bcr_status added to Module_BCR. init=1, range=[0, 1]
+Command_bcr_fail_cmd added.
+Command_bcr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',46,0), LexToken(RB,']',46,1), boolean_expression, LexToken(THEN,'->',46,27), updates, LexToken(SEMICOLON,';',46,146)]
+Variable_bdr_status added to Module_BDR. init=1, range=[0, 1]
+Command_bdr_fail_cmd added.
+Command_bdr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',51,0), LexToken(RB,']',51,1), boolean_expression, LexToken(THEN,'->',51,27), updates, LexToken(SEMICOLON,';',51,146)]
+Parsing model file : /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/prism_model/smalltest_temp.prism
+Constant added: YEAR = 5
+Constant added: SCREEN_THICKNESS = 4.0
+Constant added: S3R_K = 66.8333333333
+Constant added: SB_K = 0.0039
+Formula_IEL_YEAR added.
+Formula_NIEL_YEAR added.
+Variable_t_turn added to Module_Time. init=1, range=[0, 1]
+Variable_day added to Module_Time. init=1, range=[1, 1825]
+Command_inc_day_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',13,0), LexToken(RB,']',13,1), boolean_expression, LexToken(THEN,'->',13,27), updates, LexToken(SEMICOLON,';',13,72)]
+Constant added: SB_P_THRESHOLD = 0.819
+Constant added: SB_A_MU = 0.1754
+Constant added: SB_A_SIGMA = 0.48699609
+Constant added: SB_B = 1.8
+Formula_sb_dose added.
+Formula_sb_cdf_x added.
+Formula_sb_std_cdf_x added.
+Formula_sb_fail_prob added.
+Variable_sb_status added to Module_SB. init=1, range=[0, 1]
+Command_sb_fail_cmd added.
+Command_sb_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',27,0), LexToken(RB,']',27,1), boolean_expression, LexToken(THEN,'->',27,26), updates, LexToken(SEMICOLON,';',27,147)]
+Constant added: S3R_DELTAV_THRESHOLD = 10.0
+Constant added: S3R_B = 0.0007467
+Constant added: S3R_A_MU = 7420.4
+Constant added: S3R_A_SIGMA = 1484.362
+Formula_s3r_cur_dose added.
+Formula_s3r_cdf_x added.
+Formula_s3r_std_cdf_x added.
+Formula_s3r_fail_prob added.
+Variable_s3r_status added to Module_S3R. init=1, range=[0, 1]
+Command_s3r_fail_cmd added.
+Command_s3r_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',41,0), LexToken(RB,']',41,1), boolean_expression, LexToken(THEN,'->',41,27), updates, LexToken(SEMICOLON,';',41,146)]
+Variable_bcr_status added to Module_BCR. init=1, range=[0, 1]
+Command_bcr_fail_cmd added.
+Command_bcr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',46,0), LexToken(RB,']',46,1), boolean_expression, LexToken(THEN,'->',46,27), updates, LexToken(SEMICOLON,';',46,146)]
+Variable_bdr_status added to Module_BDR. init=1, range=[0, 1]
+Command_bdr_fail_cmd added.
+Command_bdr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',51,0), LexToken(RB,']',51,1), boolean_expression, LexToken(THEN,'->',51,27), updates, LexToken(SEMICOLON,';',51,146)]
+Parsing model file : /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/prism_model/smalltest_temp.prism
+Constant added: YEAR = 5
+Constant added: SCREEN_THICKNESS = 4.0
+Constant added: S3R_K = 66.8333333333
+Constant added: SB_K = 0.0039
+Formula_IEL_YEAR added.
+Formula_NIEL_YEAR added.
+Variable_t_turn added to Module_Time. init=1, range=[0, 1]
+Variable_day added to Module_Time. init=1, range=[1, 1825]
+Command_inc_day_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',13,0), LexToken(RB,']',13,1), boolean_expression, LexToken(THEN,'->',13,27), updates, LexToken(SEMICOLON,';',13,72)]
+Constant added: SB_P_THRESHOLD = 0.819
+Constant added: SB_A_MU = 0.1754
+Constant added: SB_A_SIGMA = 0.48699609
+Constant added: SB_B = 1.8
+Formula_sb_dose added.
+Formula_sb_cdf_x added.
+Formula_sb_std_cdf_x added.
+Formula_sb_fail_prob added.
+Variable_sb_status added to Module_SB. init=1, range=[0, 1]
+Command_sb_fail_cmd added.
+Command_sb_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',27,0), LexToken(RB,']',27,1), boolean_expression, LexToken(THEN,'->',27,26), updates, LexToken(SEMICOLON,';',27,147)]
+Constant added: S3R_DELTAV_THRESHOLD = 10.0
+Constant added: S3R_B = 0.0007467
+Constant added: S3R_A_MU = 7420.4
+Constant added: S3R_A_SIGMA = 1484.362
+Formula_s3r_cur_dose added.
+Formula_s3r_cdf_x added.
+Formula_s3r_std_cdf_x added.
+Formula_s3r_fail_prob added.
+Variable_s3r_status added to Module_S3R. init=1, range=[0, 1]
+Command_s3r_fail_cmd added.
+Command_s3r_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',41,0), LexToken(RB,']',41,1), boolean_expression, LexToken(THEN,'->',41,27), updates, LexToken(SEMICOLON,';',41,146)]
+Variable_bcr_status added to Module_BCR. init=1, range=[0, 1]
+Command_bcr_fail_cmd added.
+Command_bcr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',46,0), LexToken(RB,']',46,1), boolean_expression, LexToken(THEN,'->',46,27), updates, LexToken(SEMICOLON,';',46,146)]
+Variable_bdr_status added to Module_BDR. init=1, range=[0, 1]
+Command_bdr_fail_cmd added.
+Command_bdr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',51,0), LexToken(RB,']',51,1), boolean_expression, LexToken(THEN,'->',51,27), updates, LexToken(SEMICOLON,';',51,146)]
+Parsing model file : /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/prism_model/smalltest_temp.prism
+Constant added: YEAR = 5
+Constant added: SCREEN_THICKNESS = 4.0
+Constant added: S3R_K = 66.8333333333
+Constant added: SB_K = 0.0039
+Formula_IEL_YEAR added.
+Formula_NIEL_YEAR added.
+Variable_t_turn added to Module_Time. init=1, range=[0, 1]
+Variable_day added to Module_Time. init=1, range=[1, 1825]
+Command_inc_day_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',13,0), LexToken(RB,']',13,1), boolean_expression, LexToken(THEN,'->',13,27), updates, LexToken(SEMICOLON,';',13,72)]
+Constant added: SB_P_THRESHOLD = 0.819
+Constant added: SB_A_MU = 0.1754
+Constant added: SB_A_SIGMA = 0.48699609
+Constant added: SB_B = 1.8
+Formula_sb_dose added.
+Formula_sb_cdf_x added.
+Formula_sb_std_cdf_x added.
+Formula_sb_fail_prob added.
+Variable_sb_status added to Module_SB. init=1, range=[0, 1]
+Command_sb_fail_cmd added.
+Command_sb_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',27,0), LexToken(RB,']',27,1), boolean_expression, LexToken(THEN,'->',27,26), updates, LexToken(SEMICOLON,';',27,147)]
+Constant added: S3R_DELTAV_THRESHOLD = 10.0
+Constant added: S3R_B = 0.0007467
+Constant added: S3R_A_MU = 7420.4
+Constant added: S3R_A_SIGMA = 1484.362
+Formula_s3r_cur_dose added.
+Formula_s3r_cdf_x added.
+Formula_s3r_std_cdf_x added.
+Formula_s3r_fail_prob added.
+Variable_s3r_status added to Module_S3R. init=1, range=[0, 1]
+Command_s3r_fail_cmd added.
+Command_s3r_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',41,0), LexToken(RB,']',41,1), boolean_expression, LexToken(THEN,'->',41,27), updates, LexToken(SEMICOLON,';',41,146)]
+Variable_bcr_status added to Module_BCR. init=1, range=[0, 1]
+Command_bcr_fail_cmd added.
+Command_bcr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',46,0), LexToken(RB,']',46,1), boolean_expression, LexToken(THEN,'->',46,27), updates, LexToken(SEMICOLON,';',46,146)]
+Variable_bdr_status added to Module_BDR. init=1, range=[0, 1]
+Command_bdr_fail_cmd added.
+Command_bdr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',51,0), LexToken(RB,']',51,1), boolean_expression, LexToken(THEN,'->',51,27), updates, LexToken(SEMICOLON,';',51,146)]
+Parsing model file : /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/prism_model/smalltest_temp.prism
+Constant added: YEAR = 5
+Constant added: SCREEN_THICKNESS = 4.0
+Constant added: S3R_K = 66.8333333333
+Constant added: SB_K = 0.0039
+Formula_IEL_YEAR added.
+Formula_NIEL_YEAR added.
+Variable_t_turn added to Module_Time. init=1, range=[0, 1]
+Variable_day added to Module_Time. init=1, range=[1, 1825]
+Command_inc_day_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',13,0), LexToken(RB,']',13,1), boolean_expression, LexToken(THEN,'->',13,27), updates, LexToken(SEMICOLON,';',13,72)]
+Constant added: SB_P_THRESHOLD = 0.819
+Constant added: SB_A_MU = 0.1754
+Constant added: SB_A_SIGMA = 0.48699609
+Constant added: SB_B = 1.8
+Formula_sb_dose added.
+Formula_sb_cdf_x added.
+Formula_sb_std_cdf_x added.
+Formula_sb_fail_prob added.
+Variable_sb_status added to Module_SB. init=1, range=[0, 1]
+Command_sb_fail_cmd added.
+Command_sb_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',27,0), LexToken(RB,']',27,1), boolean_expression, LexToken(THEN,'->',27,26), updates, LexToken(SEMICOLON,';',27,147)]
+Constant added: S3R_DELTAV_THRESHOLD = 10.0
+Constant added: S3R_B = 0.0007467
+Constant added: S3R_A_MU = 7420.4
+Constant added: S3R_A_SIGMA = 1484.362
+Formula_s3r_cur_dose added.
+Formula_s3r_cdf_x added.
+Formula_s3r_std_cdf_x added.
+Formula_s3r_fail_prob added.
+Variable_s3r_status added to Module_S3R. init=1, range=[0, 1]
+Command_s3r_fail_cmd added.
+Command_s3r_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',41,0), LexToken(RB,']',41,1), boolean_expression, LexToken(THEN,'->',41,27), updates, LexToken(SEMICOLON,';',41,146)]
+Variable_bcr_status added to Module_BCR. init=1, range=[0, 1]
+Command_bcr_fail_cmd added.
+Command_bcr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',46,0), LexToken(RB,']',46,1), boolean_expression, LexToken(THEN,'->',46,27), updates, LexToken(SEMICOLON,';',46,146)]
+Variable_bdr_status added to Module_BDR. init=1, range=[0, 1]
+Command_bdr_fail_cmd added.
+Command_bdr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',51,0), LexToken(RB,']',51,1), boolean_expression, LexToken(THEN,'->',51,27), updates, LexToken(SEMICOLON,';',51,146)]
+Parsing model file : /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/prism_model/smalltest_temp.prism
+Constant added: YEAR = 5
+Constant added: SCREEN_THICKNESS = 4.0
+Constant added: S3R_K = 66.8333333333
+Constant added: SB_K = 0.0039
+Formula_IEL_YEAR added.
+Formula_NIEL_YEAR added.
+Variable_t_turn added to Module_Time. init=1, range=[0, 1]
+Variable_day added to Module_Time. init=1, range=[1, 1825]
+Command_inc_day_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',13,0), LexToken(RB,']',13,1), boolean_expression, LexToken(THEN,'->',13,27), updates, LexToken(SEMICOLON,';',13,72)]
+Constant added: SB_P_THRESHOLD = 0.819
+Constant added: SB_A_MU = 0.1754
+Constant added: SB_A_SIGMA = 0.48699609
+Constant added: SB_B = 1.8
+Formula_sb_dose added.
+Formula_sb_cdf_x added.
+Formula_sb_std_cdf_x added.
+Formula_sb_fail_prob added.
+Variable_sb_status added to Module_SB. init=1, range=[0, 1]
+Command_sb_fail_cmd added.
+Command_sb_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',27,0), LexToken(RB,']',27,1), boolean_expression, LexToken(THEN,'->',27,26), updates, LexToken(SEMICOLON,';',27,147)]
+Constant added: S3R_DELTAV_THRESHOLD = 10.0
+Constant added: S3R_B = 0.0007467
+Constant added: S3R_A_MU = 7420.4
+Constant added: S3R_A_SIGMA = 1484.362
+Formula_s3r_cur_dose added.
+Formula_s3r_cdf_x added.
+Formula_s3r_std_cdf_x added.
+Formula_s3r_fail_prob added.
+Variable_s3r_status added to Module_S3R. init=1, range=[0, 1]
+Command_s3r_fail_cmd added.
+Command_s3r_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',41,0), LexToken(RB,']',41,1), boolean_expression, LexToken(THEN,'->',41,27), updates, LexToken(SEMICOLON,';',41,146)]
+Variable_bcr_status added to Module_BCR. init=1, range=[0, 1]
+Command_bcr_fail_cmd added.
+Command_bcr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',46,0), LexToken(RB,']',46,1), boolean_expression, LexToken(THEN,'->',46,27), updates, LexToken(SEMICOLON,';',46,146)]
+Variable_bdr_status added to Module_BDR. init=1, range=[0, 1]
+Command_bdr_fail_cmd added.
+Command_bdr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',51,0), LexToken(RB,']',51,1), boolean_expression, LexToken(THEN,'->',51,27), updates, LexToken(SEMICOLON,';',51,146)]
+Parsing model file : /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/prism_model/smalltest_temp.prism
+Constant added: YEAR = 5
+Constant added: SCREEN_THICKNESS = 4.0
+Constant added: S3R_K = 66.8333333333
+Constant added: SB_K = 0.0039
+Formula_IEL_YEAR added.
+Formula_NIEL_YEAR added.
+Variable_t_turn added to Module_Time. init=1, range=[0, 1]
+Variable_day added to Module_Time. init=1, range=[1, 1825]
+Command_inc_day_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',13,0), LexToken(RB,']',13,1), boolean_expression, LexToken(THEN,'->',13,27), updates, LexToken(SEMICOLON,';',13,72)]
+Constant added: SB_P_THRESHOLD = 0.819
+Constant added: SB_A_MU = 0.1754
+Constant added: SB_A_SIGMA = 0.48699609
+Constant added: SB_B = 1.8
+Formula_sb_dose added.
+Formula_sb_cdf_x added.
+Formula_sb_std_cdf_x added.
+Formula_sb_fail_prob added.
+Variable_sb_status added to Module_SB. init=1, range=[0, 1]
+Command_sb_fail_cmd added.
+Command_sb_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',27,0), LexToken(RB,']',27,1), boolean_expression, LexToken(THEN,'->',27,26), updates, LexToken(SEMICOLON,';',27,147)]
+Constant added: S3R_DELTAV_THRESHOLD = 10.0
+Constant added: S3R_B = 0.0007467
+Constant added: S3R_A_MU = 7420.4
+Constant added: S3R_A_SIGMA = 1484.362
+Formula_s3r_cur_dose added.
+Formula_s3r_cdf_x added.
+Formula_s3r_std_cdf_x added.
+Formula_s3r_fail_prob added.
+Variable_s3r_status added to Module_S3R. init=1, range=[0, 1]
+Command_s3r_fail_cmd added.
+Command_s3r_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',41,0), LexToken(RB,']',41,1), boolean_expression, LexToken(THEN,'->',41,27), updates, LexToken(SEMICOLON,';',41,146)]
+Variable_bcr_status added to Module_BCR. init=1, range=[0, 1]
+Command_bcr_fail_cmd added.
+Command_bcr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',46,0), LexToken(RB,']',46,1), boolean_expression, LexToken(THEN,'->',46,27), updates, LexToken(SEMICOLON,';',46,146)]
+Variable_bdr_status added to Module_BDR. init=1, range=[0, 1]
+Command_bdr_fail_cmd added.
+Command_bdr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',51,0), LexToken(RB,']',51,1), boolean_expression, LexToken(THEN,'->',51,27), updates, LexToken(SEMICOLON,';',51,146)]
+Parsing model file : /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/prism_model/smalltest_temp.prism
+Constant added: YEAR = 5
+Constant added: SCREEN_THICKNESS = 4.0
+Constant added: S3R_K = 66.8333333333
+Constant added: SB_K = 0.0039
+Formula_IEL_YEAR added.
+Formula_NIEL_YEAR added.
+Variable_t_turn added to Module_Time. init=1, range=[0, 1]
+Variable_day added to Module_Time. init=1, range=[1, 1825]
+Command_inc_day_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',13,0), LexToken(RB,']',13,1), boolean_expression, LexToken(THEN,'->',13,27), updates, LexToken(SEMICOLON,';',13,72)]
+Constant added: SB_P_THRESHOLD = 0.819
+Constant added: SB_A_MU = 0.1754
+Constant added: SB_A_SIGMA = 0.48699609
+Constant added: SB_B = 1.8
+Formula_sb_dose added.
+Formula_sb_cdf_x added.
+Formula_sb_std_cdf_x added.
+Formula_sb_fail_prob added.
+Variable_sb_status added to Module_SB. init=1, range=[0, 1]
+Command_sb_fail_cmd added.
+Command_sb_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',27,0), LexToken(RB,']',27,1), boolean_expression, LexToken(THEN,'->',27,26), updates, LexToken(SEMICOLON,';',27,147)]
+Constant added: S3R_DELTAV_THRESHOLD = 10.0
+Constant added: S3R_B = 0.0007467
+Constant added: S3R_A_MU = 7420.4
+Constant added: S3R_A_SIGMA = 1484.362
+Formula_s3r_cur_dose added.
+Formula_s3r_cdf_x added.
+Formula_s3r_std_cdf_x added.
+Formula_s3r_fail_prob added.
+Variable_s3r_status added to Module_S3R. init=1, range=[0, 1]
+Command_s3r_fail_cmd added.
+Command_s3r_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',41,0), LexToken(RB,']',41,1), boolean_expression, LexToken(THEN,'->',41,27), updates, LexToken(SEMICOLON,';',41,146)]
+Variable_bcr_status added to Module_BCR. init=1, range=[0, 1]
+Command_bcr_fail_cmd added.
+Command_bcr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',46,0), LexToken(RB,']',46,1), boolean_expression, LexToken(THEN,'->',46,27), updates, LexToken(SEMICOLON,';',46,146)]
+Variable_bdr_status added to Module_BDR. init=1, range=[0, 1]
+Command_bdr_fail_cmd added.
+Command_bdr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',51,0), LexToken(RB,']',51,1), boolean_expression, LexToken(THEN,'->',51,27), updates, LexToken(SEMICOLON,';',51,146)]
+Parsing model file : /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/prism_model/smalltest_temp.prism
+Constant added: YEAR = 5
+Constant added: SCREEN_THICKNESS = 4.0
+Constant added: S3R_K = 66.8333333333
+Constant added: SB_K = 0.0039
+Formula_IEL_YEAR added.
+Formula_NIEL_YEAR added.
+Variable_t_turn added to Module_Time. init=1, range=[0, 1]
+Variable_day added to Module_Time. init=1, range=[1, 1825]
+Command_inc_day_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',13,0), LexToken(RB,']',13,1), boolean_expression, LexToken(THEN,'->',13,27), updates, LexToken(SEMICOLON,';',13,72)]
+Constant added: SB_P_THRESHOLD = 0.819
+Constant added: SB_A_MU = 0.1754
+Constant added: SB_A_SIGMA = 0.48699609
+Constant added: SB_B = 1.8
+Formula_sb_dose added.
+Formula_sb_cdf_x added.
+Formula_sb_std_cdf_x added.
+Formula_sb_fail_prob added.
+Variable_sb_status added to Module_SB. init=1, range=[0, 1]
+Command_sb_fail_cmd added.
+Command_sb_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',27,0), LexToken(RB,']',27,1), boolean_expression, LexToken(THEN,'->',27,26), updates, LexToken(SEMICOLON,';',27,147)]
+Constant added: S3R_DELTAV_THRESHOLD = 10.0
+Constant added: S3R_B = 0.0007467
+Constant added: S3R_A_MU = 7420.4
+Constant added: S3R_A_SIGMA = 1484.362
+Formula_s3r_cur_dose added.
+Formula_s3r_cdf_x added.
+Formula_s3r_std_cdf_x added.
+Formula_s3r_fail_prob added.
+Variable_s3r_status added to Module_S3R. init=1, range=[0, 1]
+Command_s3r_fail_cmd added.
+Command_s3r_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',41,0), LexToken(RB,']',41,1), boolean_expression, LexToken(THEN,'->',41,27), updates, LexToken(SEMICOLON,';',41,146)]
+Variable_bcr_status added to Module_BCR. init=1, range=[0, 1]
+Command_bcr_fail_cmd added.
+Command_bcr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',46,0), LexToken(RB,']',46,1), boolean_expression, LexToken(THEN,'->',46,27), updates, LexToken(SEMICOLON,';',46,146)]
+Variable_bdr_status added to Module_BDR. init=1, range=[0, 1]
+Command_bdr_fail_cmd added.
+Command_bdr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',51,0), LexToken(RB,']',51,1), boolean_expression, LexToken(THEN,'->',51,27), updates, LexToken(SEMICOLON,';',51,146)]
+Parsing model file : /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/prism_model/smalltest_temp.prism
+Constant added: YEAR = 5
+Constant added: SCREEN_THICKNESS = 4.0
+Constant added: S3R_K = 66.8333333333
+Constant added: SB_K = 0.0039
+Formula_IEL_YEAR added.
+Formula_NIEL_YEAR added.
+Variable_t_turn added to Module_Time. init=1, range=[0, 1]
+Variable_day added to Module_Time. init=1, range=[1, 1825]
+Command_inc_day_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',13,0), LexToken(RB,']',13,1), boolean_expression, LexToken(THEN,'->',13,27), updates, LexToken(SEMICOLON,';',13,72)]
+Constant added: SB_P_THRESHOLD = 0.819
+Constant added: SB_A_MU = 0.1754
+Constant added: SB_A_SIGMA = 0.48699609
+Constant added: SB_B = 1.8
+Formula_sb_dose added.
+Formula_sb_cdf_x added.
+Formula_sb_std_cdf_x added.
+Formula_sb_fail_prob added.
+Variable_sb_status added to Module_SB. init=1, range=[0, 1]
+Command_sb_fail_cmd added.
+Command_sb_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',27,0), LexToken(RB,']',27,1), boolean_expression, LexToken(THEN,'->',27,26), updates, LexToken(SEMICOLON,';',27,147)]
+Constant added: S3R_DELTAV_THRESHOLD = 10.0
+Constant added: S3R_B = 0.0007467
+Constant added: S3R_A_MU = 7420.4
+Constant added: S3R_A_SIGMA = 1484.362
+Formula_s3r_cur_dose added.
+Formula_s3r_cdf_x added.
+Formula_s3r_std_cdf_x added.
+Formula_s3r_fail_prob added.
+Variable_s3r_status added to Module_S3R. init=1, range=[0, 1]
+Command_s3r_fail_cmd added.
+Command_s3r_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',41,0), LexToken(RB,']',41,1), boolean_expression, LexToken(THEN,'->',41,27), updates, LexToken(SEMICOLON,';',41,146)]
+Variable_bcr_status added to Module_BCR. init=1, range=[0, 1]
+Command_bcr_fail_cmd added.
+Command_bcr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',46,0), LexToken(RB,']',46,1), boolean_expression, LexToken(THEN,'->',46,27), updates, LexToken(SEMICOLON,';',46,146)]
+Variable_bdr_status added to Module_BDR. init=1, range=[0, 1]
+Command_bdr_fail_cmd added.
+Command_bdr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',51,0), LexToken(RB,']',51,1), boolean_expression, LexToken(THEN,'->',51,27), updates, LexToken(SEMICOLON,';',51,146)]
+Parsing model file : /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/prism_model/smalltest_temp.prism
+Constant added: YEAR = 5
+Constant added: SCREEN_THICKNESS = 4.0
+Constant added: S3R_K = 66.8333333333
+Constant added: SB_K = 0.0039
+Formula_IEL_YEAR added.
+Formula_NIEL_YEAR added.
+Variable_t_turn added to Module_Time. init=1, range=[0, 1]
+Variable_day added to Module_Time. init=1, range=[1, 1825]
+Command_inc_day_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',13,0), LexToken(RB,']',13,1), boolean_expression, LexToken(THEN,'->',13,27), updates, LexToken(SEMICOLON,';',13,72)]
+Constant added: SB_P_THRESHOLD = 0.819
+Constant added: SB_A_MU = 0.1754
+Constant added: SB_A_SIGMA = 0.48699609
+Constant added: SB_B = 1.8
+Formula_sb_dose added.
+Formula_sb_cdf_x added.
+Formula_sb_std_cdf_x added.
+Formula_sb_fail_prob added.
+Variable_sb_status added to Module_SB. init=1, range=[0, 1]
+Command_sb_fail_cmd added.
+Command_sb_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',27,0), LexToken(RB,']',27,1), boolean_expression, LexToken(THEN,'->',27,26), updates, LexToken(SEMICOLON,';',27,147)]
+Constant added: S3R_DELTAV_THRESHOLD = 10.0
+Constant added: S3R_B = 0.0007467
+Constant added: S3R_A_MU = 7420.4
+Constant added: S3R_A_SIGMA = 1484.362
+Formula_s3r_cur_dose added.
+Formula_s3r_cdf_x added.
+Formula_s3r_std_cdf_x added.
+Formula_s3r_fail_prob added.
+Variable_s3r_status added to Module_S3R. init=1, range=[0, 1]
+Command_s3r_fail_cmd added.
+Command_s3r_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',41,0), LexToken(RB,']',41,1), boolean_expression, LexToken(THEN,'->',41,27), updates, LexToken(SEMICOLON,';',41,146)]
+Variable_bcr_status added to Module_BCR. init=1, range=[0, 1]
+Command_bcr_fail_cmd added.
+Command_bcr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',46,0), LexToken(RB,']',46,1), boolean_expression, LexToken(THEN,'->',46,27), updates, LexToken(SEMICOLON,';',46,146)]
+Variable_bdr_status added to Module_BDR. init=1, range=[0, 1]
+Command_bdr_fail_cmd added.
+Command_bdr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',51,0), LexToken(RB,']',51,1), boolean_expression, LexToken(THEN,'->',51,27), updates, LexToken(SEMICOLON,';',51,146)]
+Parsing model file : /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/prism_model/smalltest_temp.prism
+Constant added: YEAR = 5
+Constant added: SCREEN_THICKNESS = 4.0
+Constant added: S3R_K = 66.8333333333
+Constant added: SB_K = 0.0039
+Formula_IEL_YEAR added.
+Formula_NIEL_YEAR added.
+Variable_t_turn added to Module_Time. init=1, range=[0, 1]
+Variable_day added to Module_Time. init=1, range=[1, 1825]
+Command_inc_day_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',13,0), LexToken(RB,']',13,1), boolean_expression, LexToken(THEN,'->',13,27), updates, LexToken(SEMICOLON,';',13,72)]
+Constant added: SB_P_THRESHOLD = 0.819
+Constant added: SB_A_MU = 0.1754
+Constant added: SB_A_SIGMA = 0.48699609
+Constant added: SB_B = 1.8
+Formula_sb_dose added.
+Formula_sb_cdf_x added.
+Formula_sb_std_cdf_x added.
+Formula_sb_fail_prob added.
+Variable_sb_status added to Module_SB. init=1, range=[0, 1]
+Command_sb_fail_cmd added.
+Command_sb_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',27,0), LexToken(RB,']',27,1), boolean_expression, LexToken(THEN,'->',27,26), updates, LexToken(SEMICOLON,';',27,147)]
+Constant added: S3R_DELTAV_THRESHOLD = 10.0
+Constant added: S3R_B = 0.0007467
+Constant added: S3R_A_MU = 7420.4
+Constant added: S3R_A_SIGMA = 1484.362
+Formula_s3r_cur_dose added.
+Formula_s3r_cdf_x added.
+Formula_s3r_std_cdf_x added.
+Formula_s3r_fail_prob added.
+Variable_s3r_status added to Module_S3R. init=1, range=[0, 1]
+Command_s3r_fail_cmd added.
+Command_s3r_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',41,0), LexToken(RB,']',41,1), boolean_expression, LexToken(THEN,'->',41,27), updates, LexToken(SEMICOLON,';',41,146)]
+Variable_bcr_status added to Module_BCR. init=1, range=[0, 1]
+Command_bcr_fail_cmd added.
+Command_bcr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',46,0), LexToken(RB,']',46,1), boolean_expression, LexToken(THEN,'->',46,27), updates, LexToken(SEMICOLON,';',46,146)]
+Variable_bdr_status added to Module_BDR. init=1, range=[0, 1]
+Command_bdr_fail_cmd added.
+Command_bdr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',51,0), LexToken(RB,']',51,1), boolean_expression, LexToken(THEN,'->',51,27), updates, LexToken(SEMICOLON,';',51,146)]
+Parsing model file : /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/prism_model/smalltest_temp.prism
+Constant added: YEAR = 5
+Constant added: SCREEN_THICKNESS = 4.0
+Constant added: S3R_K = 66.8333333333
+Constant added: SB_K = 0.0039
+Formula_IEL_YEAR added.
+Formula_NIEL_YEAR added.
+Variable_t_turn added to Module_Time. init=1, range=[0, 1]
+Variable_day added to Module_Time. init=1, range=[1, 1825]
+Command_inc_day_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',13,0), LexToken(RB,']',13,1), boolean_expression, LexToken(THEN,'->',13,27), updates, LexToken(SEMICOLON,';',13,72)]
+Constant added: SB_P_THRESHOLD = 0.819
+Constant added: SB_A_MU = 0.1754
+Constant added: SB_A_SIGMA = 0.48699609
+Constant added: SB_B = 1.8
+Formula_sb_dose added.
+Formula_sb_cdf_x added.
+Formula_sb_std_cdf_x added.
+Formula_sb_fail_prob added.
+Variable_sb_status added to Module_SB. init=1, range=[0, 1]
+Command_sb_fail_cmd added.
+Command_sb_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',27,0), LexToken(RB,']',27,1), boolean_expression, LexToken(THEN,'->',27,26), updates, LexToken(SEMICOLON,';',27,147)]
+Constant added: S3R_DELTAV_THRESHOLD = 10.0
+Constant added: S3R_B = 0.0007467
+Constant added: S3R_A_MU = 7420.4
+Constant added: S3R_A_SIGMA = 1484.362
+Formula_s3r_cur_dose added.
+Formula_s3r_cdf_x added.
+Formula_s3r_std_cdf_x added.
+Formula_s3r_fail_prob added.
+Variable_s3r_status added to Module_S3R. init=1, range=[0, 1]
+Command_s3r_fail_cmd added.
+Command_s3r_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',41,0), LexToken(RB,']',41,1), boolean_expression, LexToken(THEN,'->',41,27), updates, LexToken(SEMICOLON,';',41,146)]
+Variable_bcr_status added to Module_BCR. init=1, range=[0, 1]
+Command_bcr_fail_cmd added.
+Command_bcr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',46,0), LexToken(RB,']',46,1), boolean_expression, LexToken(THEN,'->',46,27), updates, LexToken(SEMICOLON,';',46,146)]
+Variable_bdr_status added to Module_BDR. init=1, range=[0, 1]
+Command_bdr_fail_cmd added.
+Command_bdr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',51,0), LexToken(RB,']',51,1), boolean_expression, LexToken(THEN,'->',51,27), updates, LexToken(SEMICOLON,';',51,146)]
+Parsing model file : /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/prism_model/smalltest_temp.prism
+Constant added: YEAR = 5
+Constant added: SCREEN_THICKNESS = 4.0
+Constant added: S3R_K = 66.8333333333
+Constant added: SB_K = 0.0039
+Formula_IEL_YEAR added.
+Formula_NIEL_YEAR added.
+Variable_t_turn added to Module_Time. init=1, range=[0, 1]
+Variable_day added to Module_Time. init=1, range=[1, 1825]
+Command_inc_day_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',13,0), LexToken(RB,']',13,1), boolean_expression, LexToken(THEN,'->',13,27), updates, LexToken(SEMICOLON,';',13,72)]
+Constant added: SB_P_THRESHOLD = 0.819
+Constant added: SB_A_MU = 0.1754
+Constant added: SB_A_SIGMA = 0.48699609
+Constant added: SB_B = 1.8
+Formula_sb_dose added.
+Formula_sb_cdf_x added.
+Formula_sb_std_cdf_x added.
+Formula_sb_fail_prob added.
+Variable_sb_status added to Module_SB. init=1, range=[0, 1]
+Command_sb_fail_cmd added.
+Command_sb_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',27,0), LexToken(RB,']',27,1), boolean_expression, LexToken(THEN,'->',27,26), updates, LexToken(SEMICOLON,';',27,147)]
+Constant added: S3R_DELTAV_THRESHOLD = 10.0
+Constant added: S3R_B = 0.0007467
+Constant added: S3R_A_MU = 7420.4
+Constant added: S3R_A_SIGMA = 1484.362
+Formula_s3r_cur_dose added.
+Formula_s3r_cdf_x added.
+Formula_s3r_std_cdf_x added.
+Formula_s3r_fail_prob added.
+Variable_s3r_status added to Module_S3R. init=1, range=[0, 1]
+Command_s3r_fail_cmd added.
+Command_s3r_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',41,0), LexToken(RB,']',41,1), boolean_expression, LexToken(THEN,'->',41,27), updates, LexToken(SEMICOLON,';',41,146)]
+Variable_bcr_status added to Module_BCR. init=1, range=[0, 1]
+Command_bcr_fail_cmd added.
+Command_bcr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',46,0), LexToken(RB,']',46,1), boolean_expression, LexToken(THEN,'->',46,27), updates, LexToken(SEMICOLON,';',46,146)]
+Variable_bdr_status added to Module_BDR. init=1, range=[0, 1]
+Command_bdr_fail_cmd added.
+Command_bdr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',51,0), LexToken(RB,']',51,1), boolean_expression, LexToken(THEN,'->',51,27), updates, LexToken(SEMICOLON,';',51,146)]
+Parsing model file : /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/prism_model/smalltest_temp.prism
+Constant added: YEAR = 5
+Constant added: SCREEN_THICKNESS = 4.0
+Constant added: S3R_K = 66.8333333333
+Constant added: SB_K = 0.0039
+Formula_IEL_YEAR added.
+Formula_NIEL_YEAR added.
+Variable_t_turn added to Module_Time. init=1, range=[0, 1]
+Variable_day added to Module_Time. init=1, range=[1, 1825]
+Command_inc_day_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',13,0), LexToken(RB,']',13,1), boolean_expression, LexToken(THEN,'->',13,27), updates, LexToken(SEMICOLON,';',13,72)]
+Constant added: SB_P_THRESHOLD = 0.819
+Constant added: SB_A_MU = 0.1754
+Constant added: SB_A_SIGMA = 0.48699609
+Constant added: SB_B = 1.8
+Formula_sb_dose added.
+Formula_sb_cdf_x added.
+Formula_sb_std_cdf_x added.
+Formula_sb_fail_prob added.
+Variable_sb_status added to Module_SB. init=1, range=[0, 1]
+Command_sb_fail_cmd added.
+Command_sb_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',27,0), LexToken(RB,']',27,1), boolean_expression, LexToken(THEN,'->',27,26), updates, LexToken(SEMICOLON,';',27,147)]
+Constant added: S3R_DELTAV_THRESHOLD = 10.0
+Constant added: S3R_B = 0.0007467
+Constant added: S3R_A_MU = 7420.4
+Constant added: S3R_A_SIGMA = 1484.362
+Formula_s3r_cur_dose added.
+Formula_s3r_cdf_x added.
+Formula_s3r_std_cdf_x added.
+Formula_s3r_fail_prob added.
+Variable_s3r_status added to Module_S3R. init=1, range=[0, 1]
+Command_s3r_fail_cmd added.
+Command_s3r_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',41,0), LexToken(RB,']',41,1), boolean_expression, LexToken(THEN,'->',41,27), updates, LexToken(SEMICOLON,';',41,146)]
+Variable_bcr_status added to Module_BCR. init=1, range=[0, 1]
+Command_bcr_fail_cmd added.
+Command_bcr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',46,0), LexToken(RB,']',46,1), boolean_expression, LexToken(THEN,'->',46,27), updates, LexToken(SEMICOLON,';',46,146)]
+Variable_bdr_status added to Module_BDR. init=1, range=[0, 1]
+Command_bdr_fail_cmd added.
+Command_bdr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',51,0), LexToken(RB,']',51,1), boolean_expression, LexToken(THEN,'->',51,27), updates, LexToken(SEMICOLON,';',51,146)]
+Parsing model file : /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/prism_model/smalltest_temp.prism
+Constant added: YEAR = 5
+Constant added: SCREEN_THICKNESS = 4.0
+Constant added: S3R_K = 66.8333333333
+Constant added: SB_K = 0.0039
+Formula_IEL_YEAR added.
+Formula_NIEL_YEAR added.
+Variable_t_turn added to Module_Time. init=1, range=[0, 1]
+Variable_day added to Module_Time. init=1, range=[1, 1825]
+Command_inc_day_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',13,0), LexToken(RB,']',13,1), boolean_expression, LexToken(THEN,'->',13,27), updates, LexToken(SEMICOLON,';',13,72)]
+Constant added: SB_P_THRESHOLD = 0.819
+Constant added: SB_A_MU = 0.1754
+Constant added: SB_A_SIGMA = 0.48699609
+Constant added: SB_B = 1.8
+Formula_sb_dose added.
+Formula_sb_cdf_x added.
+Formula_sb_std_cdf_x added.
+Formula_sb_fail_prob added.
+Variable_sb_status added to Module_SB. init=1, range=[0, 1]
+Command_sb_fail_cmd added.
+Command_sb_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',27,0), LexToken(RB,']',27,1), boolean_expression, LexToken(THEN,'->',27,26), updates, LexToken(SEMICOLON,';',27,147)]
+Constant added: S3R_DELTAV_THRESHOLD = 10.0
+Constant added: S3R_B = 0.0007467
+Constant added: S3R_A_MU = 7420.4
+Constant added: S3R_A_SIGMA = 1484.362
+Formula_s3r_cur_dose added.
+Formula_s3r_cdf_x added.
+Formula_s3r_std_cdf_x added.
+Formula_s3r_fail_prob added.
+Variable_s3r_status added to Module_S3R. init=1, range=[0, 1]
+Command_s3r_fail_cmd added.
+Command_s3r_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',41,0), LexToken(RB,']',41,1), boolean_expression, LexToken(THEN,'->',41,27), updates, LexToken(SEMICOLON,';',41,146)]
+Variable_bcr_status added to Module_BCR. init=1, range=[0, 1]
+Command_bcr_fail_cmd added.
+Command_bcr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',46,0), LexToken(RB,']',46,1), boolean_expression, LexToken(THEN,'->',46,27), updates, LexToken(SEMICOLON,';',46,146)]
+Variable_bdr_status added to Module_BDR. init=1, range=[0, 1]
+Command_bdr_fail_cmd added.
+Command_bdr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',51,0), LexToken(RB,']',51,1), boolean_expression, LexToken(THEN,'->',51,27), updates, LexToken(SEMICOLON,';',51,146)]
+Parsing model file : /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/prism_model/smalltest_temp.prism
+Constant added: YEAR = 5
+Constant added: SCREEN_THICKNESS = 4.0
+Constant added: S3R_K = 66.8333333333
+Constant added: SB_K = 0.0039
+Formula_IEL_YEAR added.
+Formula_NIEL_YEAR added.
+Variable_t_turn added to Module_Time. init=1, range=[0, 1]
+Variable_day added to Module_Time. init=1, range=[1, 1825]
+Command_inc_day_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',13,0), LexToken(RB,']',13,1), boolean_expression, LexToken(THEN,'->',13,27), updates, LexToken(SEMICOLON,';',13,72)]
+Constant added: SB_P_THRESHOLD = 0.819
+Constant added: SB_A_MU = 0.1754
+Constant added: SB_A_SIGMA = 0.48699609
+Constant added: SB_B = 1.8
+Formula_sb_dose added.
+Formula_sb_cdf_x added.
+Formula_sb_std_cdf_x added.
+Formula_sb_fail_prob added.
+Variable_sb_status added to Module_SB. init=1, range=[0, 1]
+Command_sb_fail_cmd added.
+Command_sb_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',27,0), LexToken(RB,']',27,1), boolean_expression, LexToken(THEN,'->',27,26), updates, LexToken(SEMICOLON,';',27,147)]
+Constant added: S3R_DELTAV_THRESHOLD = 10.0
+Constant added: S3R_B = 0.0007467
+Constant added: S3R_A_MU = 7420.4
+Constant added: S3R_A_SIGMA = 1484.362
+Formula_s3r_cur_dose added.
+Formula_s3r_cdf_x added.
+Formula_s3r_std_cdf_x added.
+Formula_s3r_fail_prob added.
+Variable_s3r_status added to Module_S3R. init=1, range=[0, 1]
+Command_s3r_fail_cmd added.
+Command_s3r_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',41,0), LexToken(RB,']',41,1), boolean_expression, LexToken(THEN,'->',41,27), updates, LexToken(SEMICOLON,';',41,146)]
+Variable_bcr_status added to Module_BCR. init=1, range=[0, 1]
+Command_bcr_fail_cmd added.
+Command_bcr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',46,0), LexToken(RB,']',46,1), boolean_expression, LexToken(THEN,'->',46,27), updates, LexToken(SEMICOLON,';',46,146)]
+Variable_bdr_status added to Module_BDR. init=1, range=[0, 1]
+Command_bdr_fail_cmd added.
+Command_bdr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',51,0), LexToken(RB,']',51,1), boolean_expression, LexToken(THEN,'->',51,27), updates, LexToken(SEMICOLON,';',51,146)]
+Parsing model file : /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/prism_model/smalltest_temp.prism
+Constant added: YEAR = 5
+Constant added: SCREEN_THICKNESS = 4.0
+Constant added: S3R_K = 66.8333333333
+Constant added: SB_K = 0.0039
+Formula_IEL_YEAR added.
+Formula_NIEL_YEAR added.
+Variable_t_turn added to Module_Time. init=1, range=[0, 1]
+Variable_day added to Module_Time. init=1, range=[1, 1825]
+Command_inc_day_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',13,0), LexToken(RB,']',13,1), boolean_expression, LexToken(THEN,'->',13,27), updates, LexToken(SEMICOLON,';',13,72)]
+Constant added: SB_P_THRESHOLD = 0.819
+Constant added: SB_A_MU = 0.1754
+Constant added: SB_A_SIGMA = 0.48699609
+Constant added: SB_B = 1.8
+Formula_sb_dose added.
+Formula_sb_cdf_x added.
+Formula_sb_std_cdf_x added.
+Formula_sb_fail_prob added.
+Variable_sb_status added to Module_SB. init=1, range=[0, 1]
+Command_sb_fail_cmd added.
+Command_sb_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',27,0), LexToken(RB,']',27,1), boolean_expression, LexToken(THEN,'->',27,26), updates, LexToken(SEMICOLON,';',27,147)]
+Constant added: S3R_DELTAV_THRESHOLD = 10.0
+Constant added: S3R_B = 0.0007467
+Constant added: S3R_A_MU = 7420.4
+Constant added: S3R_A_SIGMA = 1484.362
+Formula_s3r_cur_dose added.
+Formula_s3r_cdf_x added.
+Formula_s3r_std_cdf_x added.
+Formula_s3r_fail_prob added.
+Variable_s3r_status added to Module_S3R. init=1, range=[0, 1]
+Command_s3r_fail_cmd added.
+Command_s3r_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',41,0), LexToken(RB,']',41,1), boolean_expression, LexToken(THEN,'->',41,27), updates, LexToken(SEMICOLON,';',41,146)]
+Variable_bcr_status added to Module_BCR. init=1, range=[0, 1]
+Command_bcr_fail_cmd added.
+Command_bcr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',46,0), LexToken(RB,']',46,1), boolean_expression, LexToken(THEN,'->',46,27), updates, LexToken(SEMICOLON,';',46,146)]
+Variable_bdr_status added to Module_BDR. init=1, range=[0, 1]
+Command_bdr_fail_cmd added.
+Command_bdr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',51,0), LexToken(RB,']',51,1), boolean_expression, LexToken(THEN,'->',51,27), updates, LexToken(SEMICOLON,';',51,146)]
+Parsing model file : /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/prism_model/smalltest_temp.prism
+Constant added: YEAR = 5
+Constant added: SCREEN_THICKNESS = 4.0
+Constant added: S3R_K = 66.8333333333
+Constant added: SB_K = 0.0039
+Formula_IEL_YEAR added.
+Formula_NIEL_YEAR added.
+Variable_t_turn added to Module_Time. init=1, range=[0, 1]
+Variable_day added to Module_Time. init=1, range=[1, 1825]
+Command_inc_day_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',13,0), LexToken(RB,']',13,1), boolean_expression, LexToken(THEN,'->',13,27), updates, LexToken(SEMICOLON,';',13,72)]
+Constant added: SB_P_THRESHOLD = 0.819
+Constant added: SB_A_MU = 0.1754
+Constant added: SB_A_SIGMA = 0.48699609
+Constant added: SB_B = 1.8
+Formula_sb_dose added.
+Formula_sb_cdf_x added.
+Formula_sb_std_cdf_x added.
+Formula_sb_fail_prob added.
+Variable_sb_status added to Module_SB. init=1, range=[0, 1]
+Command_sb_fail_cmd added.
+Command_sb_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',27,0), LexToken(RB,']',27,1), boolean_expression, LexToken(THEN,'->',27,26), updates, LexToken(SEMICOLON,';',27,147)]
+Constant added: S3R_DELTAV_THRESHOLD = 10.0
+Constant added: S3R_B = 0.0007467
+Constant added: S3R_A_MU = 7420.4
+Constant added: S3R_A_SIGMA = 1484.362
+Formula_s3r_cur_dose added.
+Formula_s3r_cdf_x added.
+Formula_s3r_std_cdf_x added.
+Formula_s3r_fail_prob added.
+Variable_s3r_status added to Module_S3R. init=1, range=[0, 1]
+Command_s3r_fail_cmd added.
+Command_s3r_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',41,0), LexToken(RB,']',41,1), boolean_expression, LexToken(THEN,'->',41,27), updates, LexToken(SEMICOLON,';',41,146)]
+Variable_bcr_status added to Module_BCR. init=1, range=[0, 1]
+Command_bcr_fail_cmd added.
+Command_bcr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',46,0), LexToken(RB,']',46,1), boolean_expression, LexToken(THEN,'->',46,27), updates, LexToken(SEMICOLON,';',46,146)]
+Variable_bdr_status added to Module_BDR. init=1, range=[0, 1]
+Command_bdr_fail_cmd added.
+Command_bdr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',51,0), LexToken(RB,']',51,1), boolean_expression, LexToken(THEN,'->',51,27), updates, LexToken(SEMICOLON,';',51,146)]
+Parsing model file : /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/prism_model/smalltest_temp.prism
+Constant added: YEAR = 5
+Constant added: SCREEN_THICKNESS = 4.0
+Constant added: S3R_K = 66.8333333333
+Constant added: SB_K = 0.0039
+Formula_IEL_YEAR added.
+Formula_NIEL_YEAR added.
+Variable_t_turn added to Module_Time. init=1, range=[0, 1]
+Variable_day added to Module_Time. init=1, range=[1, 1825]
+Command_inc_day_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',13,0), LexToken(RB,']',13,1), boolean_expression, LexToken(THEN,'->',13,27), updates, LexToken(SEMICOLON,';',13,72)]
+Constant added: SB_P_THRESHOLD = 0.819
+Constant added: SB_A_MU = 0.1754
+Constant added: SB_A_SIGMA = 0.48699609
+Constant added: SB_B = 1.8
+Formula_sb_dose added.
+Formula_sb_cdf_x added.
+Formula_sb_std_cdf_x added.
+Formula_sb_fail_prob added.
+Variable_sb_status added to Module_SB. init=1, range=[0, 1]
+Command_sb_fail_cmd added.
+Command_sb_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',27,0), LexToken(RB,']',27,1), boolean_expression, LexToken(THEN,'->',27,26), updates, LexToken(SEMICOLON,';',27,147)]
+Constant added: S3R_DELTAV_THRESHOLD = 10.0
+Constant added: S3R_B = 0.0007467
+Constant added: S3R_A_MU = 7420.4
+Constant added: S3R_A_SIGMA = 1484.362
+Formula_s3r_cur_dose added.
+Formula_s3r_cdf_x added.
+Formula_s3r_std_cdf_x added.
+Formula_s3r_fail_prob added.
+Variable_s3r_status added to Module_S3R. init=1, range=[0, 1]
+Command_s3r_fail_cmd added.
+Command_s3r_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',41,0), LexToken(RB,']',41,1), boolean_expression, LexToken(THEN,'->',41,27), updates, LexToken(SEMICOLON,';',41,146)]
+Variable_bcr_status added to Module_BCR. init=1, range=[0, 1]
+Command_bcr_fail_cmd added.
+Command_bcr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',46,0), LexToken(RB,']',46,1), boolean_expression, LexToken(THEN,'->',46,27), updates, LexToken(SEMICOLON,';',46,146)]
+Variable_bdr_status added to Module_BDR. init=1, range=[0, 1]
+Command_bdr_fail_cmd added.
+Command_bdr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',51,0), LexToken(RB,']',51,1), boolean_expression, LexToken(THEN,'->',51,27), updates, LexToken(SEMICOLON,';',51,146)]
+Parsing model file : /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/prism_model/smalltest_temp.prism
+Constant added: YEAR = 5
+Constant added: SCREEN_THICKNESS = 4.0
+Constant added: S3R_K = 66.8333333333
+Constant added: SB_K = 0.0039
+Formula_IEL_YEAR added.
+Formula_NIEL_YEAR added.
+Variable_t_turn added to Module_Time. init=1, range=[0, 1]
+Variable_day added to Module_Time. init=1, range=[1, 1825]
+Command_inc_day_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',13,0), LexToken(RB,']',13,1), boolean_expression, LexToken(THEN,'->',13,27), updates, LexToken(SEMICOLON,';',13,72)]
+Constant added: SB_P_THRESHOLD = 0.819
+Constant added: SB_A_MU = 0.1754
+Constant added: SB_A_SIGMA = 0.48699609
+Constant added: SB_B = 1.8
+Formula_sb_dose added.
+Formula_sb_cdf_x added.
+Formula_sb_std_cdf_x added.
+Formula_sb_fail_prob added.
+Variable_sb_status added to Module_SB. init=1, range=[0, 1]
+Command_sb_fail_cmd added.
+Command_sb_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',27,0), LexToken(RB,']',27,1), boolean_expression, LexToken(THEN,'->',27,26), updates, LexToken(SEMICOLON,';',27,147)]
+Constant added: S3R_DELTAV_THRESHOLD = 10.0
+Constant added: S3R_B = 0.0007467
+Constant added: S3R_A_MU = 7420.4
+Constant added: S3R_A_SIGMA = 1484.362
+Formula_s3r_cur_dose added.
+Formula_s3r_cdf_x added.
+Formula_s3r_std_cdf_x added.
+Formula_s3r_fail_prob added.
+Variable_s3r_status added to Module_S3R. init=1, range=[0, 1]
+Command_s3r_fail_cmd added.
+Command_s3r_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',41,0), LexToken(RB,']',41,1), boolean_expression, LexToken(THEN,'->',41,27), updates, LexToken(SEMICOLON,';',41,146)]
+Variable_bcr_status added to Module_BCR. init=1, range=[0, 1]
+Command_bcr_fail_cmd added.
+Command_bcr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',46,0), LexToken(RB,']',46,1), boolean_expression, LexToken(THEN,'->',46,27), updates, LexToken(SEMICOLON,';',46,146)]
+Variable_bdr_status added to Module_BDR. init=1, range=[0, 1]
+Command_bdr_fail_cmd added.
+Command_bdr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',51,0), LexToken(RB,']',51,1), boolean_expression, LexToken(THEN,'->',51,27), updates, LexToken(SEMICOLON,';',51,146)]
+Parsing model file : /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/prism_model/smalltest_temp.prism
+Constant added: YEAR = 5
+Constant added: SCREEN_THICKNESS = 4.0
+Constant added: S3R_K = 66.8333333333
+Constant added: SB_K = 0.0039
+Formula_IEL_YEAR added.
+Formula_NIEL_YEAR added.
+Variable_t_turn added to Module_Time. init=1, range=[0, 1]
+Variable_day added to Module_Time. init=1, range=[1, 1825]
+Command_inc_day_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',13,0), LexToken(RB,']',13,1), boolean_expression, LexToken(THEN,'->',13,27), updates, LexToken(SEMICOLON,';',13,72)]
+Constant added: SB_P_THRESHOLD = 0.819
+Constant added: SB_A_MU = 0.1754
+Constant added: SB_A_SIGMA = 0.48699609
+Constant added: SB_B = 1.8
+Formula_sb_dose added.
+Formula_sb_cdf_x added.
+Formula_sb_std_cdf_x added.
+Formula_sb_fail_prob added.
+Variable_sb_status added to Module_SB. init=1, range=[0, 1]
+Command_sb_fail_cmd added.
+Command_sb_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',27,0), LexToken(RB,']',27,1), boolean_expression, LexToken(THEN,'->',27,26), updates, LexToken(SEMICOLON,';',27,147)]
+Constant added: S3R_DELTAV_THRESHOLD = 10.0
+Constant added: S3R_B = 0.0007467
+Constant added: S3R_A_MU = 7420.4
+Constant added: S3R_A_SIGMA = 1484.362
+Formula_s3r_cur_dose added.
+Formula_s3r_cdf_x added.
+Formula_s3r_std_cdf_x added.
+Formula_s3r_fail_prob added.
+Variable_s3r_status added to Module_S3R. init=1, range=[0, 1]
+Command_s3r_fail_cmd added.
+Command_s3r_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',41,0), LexToken(RB,']',41,1), boolean_expression, LexToken(THEN,'->',41,27), updates, LexToken(SEMICOLON,';',41,146)]
+Variable_bcr_status added to Module_BCR. init=1, range=[0, 1]
+Command_bcr_fail_cmd added.
+Command_bcr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',46,0), LexToken(RB,']',46,1), boolean_expression, LexToken(THEN,'->',46,27), updates, LexToken(SEMICOLON,';',46,146)]
+Variable_bdr_status added to Module_BDR. init=1, range=[0, 1]
+Command_bdr_fail_cmd added.
+Command_bdr_nrl_cmd added.
+command.tokens : [module_command_statement, LexToken(LB,'[',51,0), LexToken(RB,']',51,1), boolean_expression, LexToken(THEN,'->',51,27), updates, LexToken(SEMICOLON,';',51,146)]

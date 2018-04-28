@@ -6,6 +6,7 @@ import math
 import re
 import threading
 import time
+from PathHelper import *
 
 
 # class represent an interval in DTMC/CTMC
@@ -57,8 +58,8 @@ class Checker(threading.Thread):
         ltl=None,
         a=1,
         b=1,
-        c=0.67,
-        d=0.015,
+        c=0.7,
+        d=0.02,
         duration=1.0,
             checkingType=None,
         fb = False):
@@ -81,7 +82,7 @@ class Checker(threading.Thread):
         self.model.fb = fb
 
         self.logger = logging.getLogger("Checker logging")
-        self.logger.addHandler(logging.StreamHandler())
+        self.logger.addHandler(logging.FileHandler(get_log_dir() + get_sep() + "checker.log", "w"))
         self.logger.setLevel(logging.INFO)
 
     # Get upper-bound of variance
@@ -410,6 +411,8 @@ class Checker(threading.Thread):
             # v2 = time.time()
             # self.logger.info("Verifying a length={} path caused {}s".format(len(path), v2-v1))
             if verified:
+                self.logger.info("path:{}".format(str(path)))
+                self.logger.info("satisfied:{}".format(verified))
                 spaths.add(str(path))
                 if self.fb:
                     satisfying += 1
