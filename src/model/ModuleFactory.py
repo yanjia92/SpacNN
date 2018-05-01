@@ -18,7 +18,7 @@ class ModuleFactory(object):
 
     def _sbmodule(self):
         config = self.config
-        module = Module('sb module')
+        module = Module('SB')
         module.addConstant(config.getParam('SB_K'))
         module.addConstant(config.getParam('SB_A_MU'))
         module.addConstant(config.getParam('SB_A_SIGMA'))
@@ -71,7 +71,7 @@ class ModuleFactory(object):
 
         module.addCommand(
             Command(
-                'sb failure',
+                'sb_fail_cmd',
                 guard,
                 faction,
                 module,
@@ -81,7 +81,7 @@ class ModuleFactory(object):
 
         module.addCommand(
             Command(
-                'sb normal',
+                'sb_nrl_cmd',
                 guard,
                 naction,
                 module,
@@ -92,7 +92,7 @@ class ModuleFactory(object):
 
     def _timermodule(self):
         config = self.config
-        module = Module('timer module')
+        module = Module('TIME')
         module.addVariable(
             Variable(
                 'day',
@@ -132,7 +132,7 @@ class ModuleFactory(object):
 
     def _s3rmodule(self):
         config = self.config
-        module = Module('s3r module')
+        module = Module('S3R')
         module.addConstant(config.getParam('S3R_K'))
         module.addConstant(config.getParam('S3R_A_MU'))
         module.addConstant(config.getParam('S3R_A_SIGMA'))
@@ -185,7 +185,7 @@ class ModuleFactory(object):
 
         module.addCommand(
             Command(
-                's3r failure',
+                's3r_fail_cmd',
                 guard,
                 faction,
                 module,
@@ -195,7 +195,7 @@ class ModuleFactory(object):
 
         module.addCommand(
             Command(
-                's3r normal',
+                's3r_nrl_cmd',
                 guard,
                 naction,
                 module,
@@ -206,7 +206,7 @@ class ModuleFactory(object):
 
     def _bcrmodule(self):
         config = self.config
-        module = Module('bcr module')
+        module = Module('BCR')
 
         module.addVariable(
             Variable(
@@ -254,7 +254,7 @@ class ModuleFactory(object):
 
         module.addCommand(
             Command(
-                'bcr failure',
+                'bcr_fail_cmd',
                 guard,
                 faction,
                 module,
@@ -264,7 +264,7 @@ class ModuleFactory(object):
 
         module.addCommand(
             Command(
-                'bcr normal',
+                'bcr_nrl_cmd',
                 guard,
                 naction,
                 module,
@@ -275,7 +275,7 @@ class ModuleFactory(object):
 
     def _bdrmodule(self):
         config = self.config
-        module = Module('bdr module')
+        module = Module('BDR')
 
         module.addVariable(
             Variable(
@@ -322,7 +322,7 @@ class ModuleFactory(object):
 
         module.addCommand(
             Command(
-                'bdr failure',
+                'bdr_fail_cmd',
                 guard,
                 faction,
                 module,
@@ -332,7 +332,7 @@ class ModuleFactory(object):
 
         module.addCommand(
             Command(
-                'bdr normal',
+                'bdr_nrl_cmd',
                 guard,
                 naction,
                 module,

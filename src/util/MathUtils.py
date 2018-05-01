@@ -16,6 +16,19 @@ def randomExpo(lamda, t=None, forcing=True):
         return math.log(1-rnd)/(-1*lamda)
 
 
+# const double a1 =  0.254829592;
+# const double a2 = -0.284496736;
+# const double a3 =  1.421413741;
+# const double a4 = -1.453152027;
+# const double a5 =  1.061405429;
+# const double p  =  0.3275911;
+# formula s3r_sign = s3r_std_cdf_x < 0 ? -1 : 1;
+# formula s3r_std_cdf_x_2 = s3r_sign * s3r_std_cdf_x / pow(2.0, 0.5);
+# formula s3r_t = 1.0/(1.0 + p * s3r_std_cdf_x_2);
+# formula s3r_y = 1.0 - (((((a5*s3r_t + a4)*s3r_t) + a3)*s3r_t + a2)*s3r_t + a1)*s3r_t*pow(e, -s3r_std_cdf_x_2 * s3r_std_cdf_x_2);
+# formula s3r_fail_prob = 1 - 0.5 * (1.0 + s3r_sign * s3r_y);  // 根据s3r所受电离能损剂量计算出的失效概率
+
+
 # 计算标准正态分布的累积分布函数
 def pcf(x):
     a1 = 0.254829592
@@ -37,3 +50,13 @@ def pcf(x):
 
 def powe(x):
     return pow(e, x)
+
+
+
+def test():
+    vals = [4.02297694402]
+    print pcf(vals[0])
+
+
+if __name__ == "__main__":
+    test()

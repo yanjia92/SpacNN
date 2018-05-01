@@ -28,9 +28,10 @@
 
     LTL公式的输入 UI
     ???Running checker on built model produces different result with PRISM
-    优化built model path generation(use FB to reduce length of random path)
-
-
+    如何解决这个问题：
+        1. check生成的模型（in PRISM and in Checker）是否完全相同(testModelSame.py) YES!
+            testModelSame.py
+        2. check验证的算法(mc2)是否正确(testCheckingAlgo.py)
 
 
 已完成

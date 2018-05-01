@@ -1,14 +1,14 @@
 dtmc
 
 const int YEAR = 1;
-const double SCREEN_THICKNESS = 4;
+const double SCREEN_THICKNESS = 6;
 const double S3R_K = 66.8333333333;
 const double SB_K = 0.0039;
 const double e = 2.718281828459045;
 formula IEL_YEAR= S3R_K / SCREEN_THICKNESS;
 formula NIEL_YEAR = SB_K * SCREEN_THICKNESS;
 
-global t_turn : bool init true;
+global t_turn : bool init false;
 
 module Time
 day : [1..YEAR*365] init 1;
@@ -46,6 +46,7 @@ const double S3R_A_SIGMA = 1484.362;
 formula s3r_cur_dose = (day / 365.0) * IEL_YEAR;
 formula s3r_cdf_x = S3R_DELTAV_THRESHOLD / (S3R_B * pow(e, S3R_B * s3r_cur_dose));
 formula s3r_std_cdf_x = (s3r_cdf_x - S3R_A_MU) / S3R_A_SIGMA;
+// formula s3r_std_cdf_x = 4.02297694402;
 formula s3r_sign = s3r_std_cdf_x < 0 ? -1 : 1;
 formula s3r_std_cdf_x_2 = s3r_sign * s3r_std_cdf_x / pow(2.0, 0.5);
 formula s3r_t = 1.0/(1.0 + p * s3r_std_cdf_x_2);
@@ -55,7 +56,7 @@ formula s3r_fail_prob = 1 - 0.5 * (1.0 + s3r_sign * s3r_y);  // 根据s3r所受�
 
 module S3R
 s3r_status: [0..1] init 1;
-[] s3r_status=1&t_turn=false -> s3r_fail_prob:(s3r_status'=0)&(t_turn'=true) + (1 - s3r_fail_prob):(s3r_status'=1)&(t_turn'=false);
+[] s3r_status=1&t_turn=false -> s3r_fail_prob:(s3r_status'=0)&(t_turn'=true) + (1 - s3r_fail_prob):(s3r_status'=1)&(t_turn'=true);
 endmodule
 
 module BCR
