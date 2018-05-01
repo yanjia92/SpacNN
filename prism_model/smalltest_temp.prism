@@ -7,7 +7,7 @@ const double SB_K = 0.0039;
 formula IEL_YEAR= S3R_K / SCREEN_THICKNESS;
 formula NIEL_YEAR = SB_K * SCREEN_THICKNESS;
 
-module Time
+module TIME
 t_turn : [0, 1] init 1;
 day: [1, YEAR*365] init 1;
 [] t_turn==1&day<=YEAR*365 -> "inc_day_cmd" 1.0 : (day=day+1)&(t_turn=0);

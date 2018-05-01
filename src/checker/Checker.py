@@ -58,8 +58,8 @@ class Checker(threading.Thread):
         ltl=None,
         a=1,
         b=1,
-        c=0.7,
-        d=0.02,
+        c=0.5,
+        d=0.004,
         duration=1.0,
             checkingType=None,
         fb = False):
@@ -409,10 +409,9 @@ class Checker(threading.Thread):
             # v1 = time.time()
             verified = self.verify(path)
             # v2 = time.time()
-            # self.logger.info("Verifying a length={} path caused {}s".format(len(path), v2-v1))
+            # self.logger.info("Verifying a length={} path caused {}s".format(len(path), v2-v1))            # self.logger.info("path:{}".format(str(path)))
+            # self.logger.info("satisfied:{}".format(verified))
             if verified:
-                self.logger.info("path:{}".format(str(path)))
-                self.logger.info("satisfied:{}".format(verified))
                 spaths.add(str(path))
                 if self.fb:
                     satisfying += 1
@@ -428,7 +427,14 @@ class Checker(threading.Thread):
                 else:
                     x += 1
             else:
-                nspaths.add(str(path))
+                # nspaths.add(str(path))
+                failed = filter(lambda apset: "failure" in apset, map(lambda step: step.apSet, path))
+                if failed:
+                    self.logger.info("fail ap in apset, but verified not failed. path={}".format(str(path)))
+                else:
+                    # self.logger.info("not failed")
+                    pass
+
         postex = self.postEx(n, x)
         self.logger.info("mc2's result={}".format(postex))
         return postex
