@@ -39,7 +39,7 @@ def poission_model():
 
 def test_run():
     model = poission_model()
-    _, steps = model.genRandomPath(1.0)
+    _, steps = model.gen_random_path(1.0)
     model.exportPathTo(steps, OUTPUT_DIR + "path.txt")
 
 

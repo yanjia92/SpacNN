@@ -3,7 +3,7 @@
    Ordered by: cumulative time
 
    ncalls  tottime  percall  cumtime  percall filename:lineno(function)
-        1    0.010    0.010    0.078    0.078 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/ModulesFile.py:217(genRandomPath)
+        1    0.010    0.010    0.078    0.078 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/ModulesFile.py:217(gen_random_path)
       730    0.005    0.000    0.060    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/ModulesFile.py:165(nextState)
       730    0.002    0.000    0.028    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/Module.py:120(execAction)
       730    0.002    0.000    0.021    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/ModulesFile.py:142(_updateCurAndPrevState)

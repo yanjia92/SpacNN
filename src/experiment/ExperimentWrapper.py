@@ -69,7 +69,7 @@ class ExperimentWrapper(object):
             count = 0  # 成功计数
             for i in range(self.samples_per_param):
                 # 获取随机路径
-                _, path = self.checker.getRandomPath()
+                _, path = self.checker.gen_random_path()
                 # logger.info("path: {}".format(str(path)))
                 # 验证ltl公式
                 success = self.checker.verify(path)

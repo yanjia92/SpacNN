@@ -4,4 +4,4 @@ class Simulator(object):
         self.model = model
 
     def genPath(self, duration):
-        return self.model.genRandomPath(duration)
+        return self.model.gen_random_path(duration)

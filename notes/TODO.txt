@@ -27,12 +27,7 @@
 
 
     LTL公式的输入 UI
-    ???Running checker on built model produces different result with PRISM
-    如何解决这个问题：
-        1. check生成的模型（in PRISM and in Checker）是否完全相同(testModelSame.py) YES!
-            testModelSame.py主要验证:验证每一天每个模块的损坏概率相同
-        2. check验证的算法(mc2)是否正确(testCheckingAlgo.py)
-
+    
 
 已完成
 如何确保expression的parsing是正确的？ 单元测试成功 testParseExpr.py
@@ -40,6 +35,7 @@
 修改command语法规则,增加name解析
 比较了parsed model和built model之间的异同,即check了两个模型在相同的天数下各个模块的损坏概率,结果是相同.
 提前计算每个day对应的failure probability.(在prepareCommands中进行计算,异步计算)：发现可以提高效率，parsed model和built model模型产生随机路径时间基本相同，大约为0.06s.
+Fix "Running checker on built model produces different result with PRISM" bug
 
 
 不足

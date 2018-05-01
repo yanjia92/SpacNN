@@ -11,7 +11,8 @@ class ModelFactory(object):
     @classmethod
     def get_built(cls):
         def failurecondition(vs, cs):
-            return vs['sb_status'] == 0 or vs['s3r_status'] == 0 or vs["bcr_status"] == 0 and vs["bdr_status"] == 0
+            result = vs['sb_status'] == 0 or vs['s3r_status'] == 0 or vs["bcr_status"] == 0 or vs["bdr_status"] == 0
+            return result
 
         def upcondition(vs, cs):
             return not failurecondition(vs, cs)

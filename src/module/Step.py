@@ -3,13 +3,13 @@ class Step(object):
             self,
             stateId,
             apSet,
-            holdingTime,
-            passedTime,
-            transition,
-            rate,
-            biasingRate,
-            exitRate,
-            biasingExitRate):
+            holdingTime=None,
+            passedTime=None,
+            transition=None,
+            rate=None,
+            biasingRate=None,
+            exitRate=None,
+            biasingExitRate=None):
         # current state's stateId before transition happen
         self.stateId = stateId
         # current state's apSet of State before transition happen

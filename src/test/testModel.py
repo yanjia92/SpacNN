@@ -25,7 +25,7 @@ class Test(unittest.TestCase):
             length = self.length
             # 生成paths条时间长度为length的随机路径
             for _ in range(paths):
-                _, path = self.model.genRandomPath(length)
+                _, path = self.model.gen_random_path(length)
                 logger.info('{0}, {1}'.format(thickness, path))
 
 

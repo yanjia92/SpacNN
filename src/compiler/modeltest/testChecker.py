@@ -32,16 +32,16 @@ def check():
     parsed = get_parsed_model()
     rslt1 = []
     rslt2 = []
-    thickness = range(4, 5)
+    thickness = range(1,10,4)
     for t in thickness:
         config.setParam(THICKNESS, Constant(THICKNESS, t))
-        # parsed.setConstant(THICKNESS, t)
+        parsed.setConstant(THICKNESS, t)
         checker1 = get_checker(built, ltl, DURATION)
-        #checker2 = get_checker(parsed, ltl, DURATION)
+        checker2 = get_checker(parsed, ltl, DURATION)
         rslt1.append(checker1.run())
-        # rslt2.append(checker2.run())
+        rslt2.append(checker2.run())
 
-    precision = 1e-4
+    precision = 2e-2
     for v1, v2 in zip(rslt1, rslt2):
         assert fabs(v1 - v2) < precision, "v1:{}, v2:{}".format(v1, v2)
 

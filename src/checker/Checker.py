@@ -58,8 +58,8 @@ class Checker(threading.Thread):
         ltl=None,
         a=1,
         b=1,
-        c=0.5,
-        d=0.004,
+        c=0.7,
+        d=0.02,
         duration=1.0,
             checkingType=None,
         fb = False):
@@ -189,8 +189,8 @@ class Checker(threading.Thread):
 
     # returned (result, path e.g. list of Step instance)
     # using cachedPrefixes to check the path's checking result beforehand
-    def getRandomPath(self):
-        return self.model.genRandomPath(self.duration, self.cachedPrefixes)
+    def gen_random_path(self):
+        return self.model.gen_random_path(self.duration, self.cachedPrefixes)
 
     # path: list of Step
     # step: current Step instance
@@ -344,7 +344,7 @@ class Checker(threading.Thread):
         x, n = 0.0, 0.0
         postex = 0.0
         for i in range(sz):
-            satisfied, path = s.getRandomPath(self.decided_prefixes)
+            satisfied, path = s.gen_random_path(self.decided_prefixes)
             n += 1
             if s.verify([p.ap for p in path], s.ltl, s.pts):
                 x += 1
@@ -385,7 +385,7 @@ class Checker(threading.Thread):
         begin = time.time()
         for i in range(sz):
             # begin = time.time()
-            satisfied, path = self.getRandomPath()
+            satisfied, path = self.gen_random_path()
             # end = time.time()
             # self.logger.info("Generating a length={} path caused {}s".format(len(path), end-begin))
             pathlens.append(len(path))
@@ -406,11 +406,7 @@ class Checker(threading.Thread):
                     x += likelihood
 
                 continue
-            # v1 = time.time()
             verified = self.verify(path)
-            # v2 = time.time()
-            # self.logger.info("Verifying a length={} path caused {}s".format(len(path), v2-v1))            # self.logger.info("path:{}".format(str(path)))
-            # self.logger.info("satisfied:{}".format(verified))
             if verified:
                 spaths.add(str(path))
                 if self.fb:
@@ -455,7 +451,7 @@ class Checker(threading.Thread):
                 if i & 2**10-1 == 0:
                     pass
                     # logging.info("%d of %d. " % (i, sampleSize))
-                result, path = self.getRandomPath()
+                result, path = self.gen_random_path()
                 if type(result) == bool and result:
                     # cache hit
                     pass
