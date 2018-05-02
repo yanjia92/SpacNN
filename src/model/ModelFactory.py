@@ -34,6 +34,14 @@ class ModelFactory(object):
         model.constants['SCREEN_THICKNESS'] = cls.module_factory.config.getParam('SCREEN_THICKNESS')
         return model
 
+
+    @classmethod
+    def setParam(cls, name, value):
+        if name not in cls.module_factory.config.params.keys():
+            return
+        cls.module_factory.config.setParam(name, value)
+
+
     @staticmethod
     def get_parsed():
         sep = get_sep()

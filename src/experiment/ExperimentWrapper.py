@@ -6,19 +6,21 @@ from checker import Checker
 from collections import OrderedDict
 
 logger = logging.getLogger("ExperimentWrapper logging")
-file_handler = logging.FileHandler("../log/expe.log")
+file_handler = logging.FileHandler("../log/expe.log", "w")
 logger.addHandler(file_handler)
-logger.setLevel(logging.ERROR)
+logger.setLevel(logging.INFO)
 
 # 使用simulation的方法对模型进行experiment
 # 为模型中的未定参数设定一组值,并进行simulation验证实验,返回多次simulation的期望值(平均值)
 
 class ExperimentWrapper(object):
-    def __init__(self, checker):
+    def __init__(self, checker, samples_per_param=None):
         # checker: Checker typed instance
         self.checker = checker
         self._constants = OrderedDict()  # key: cons_name, value: [value]
-        self.samples_per_param = self.checker.get_sample_size() # 使用checker的随机路径样本数
+        self.samples_per_param = samples_per_param
+        if not self.samples_per_param:
+            self.samples_per_param = self.checker.get_sample_size() # 使用checker的随机路径样本数
 
     # 将实验值存储在ExperimentWrapper中,避免了直接修改ModulesFile.py
     # constants中的常量必须是同一个常量的不同值
@@ -64,9 +66,6 @@ class ExperimentWrapper(object):
                 # logger.info("path: {}".format(str(path)))
                 # 验证ltl公式
                 success = self.checker.verify(path)
-                # 验证checker返回的正确性
-                predict = sum(map(lambda step: int('failure' in step.apSet), path)) > 0
-                assert success == predict
                 # logger.info("verification: {}".format(str(success)))
                 count += int(success)
                 # logger.info("==============")

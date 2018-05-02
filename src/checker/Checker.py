@@ -7,6 +7,7 @@ import re
 import threading
 import time
 from PathHelper import *
+import sys
 
 
 # class represent an interval in DTMC/CTMC
@@ -58,8 +59,8 @@ class Checker(threading.Thread):
         ltl=None,
         a=1,
         b=1,
-        c=0.7,
-        d=0.02,
+        c=0.6,
+        d=0.005,
         duration=1.0,
             checkingType=None,
         fb = False):
@@ -83,6 +84,7 @@ class Checker(threading.Thread):
 
         self.logger = logging.getLogger("Checker logging")
         self.logger.addHandler(logging.FileHandler(get_log_dir() + get_sep() + "checker.log", "w"))
+        self.logger.addHandler(logging.StreamHandler(sys.stdout))
         self.logger.setLevel(logging.INFO)
 
     # Get upper-bound of variance

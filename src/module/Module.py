@@ -259,6 +259,12 @@ class Constant(object):
     def getValue(self):
         return self.value
 
+    def setValue(self, value):
+        if isinstance(value, Constant) and self.name == value.name:
+            self.value = value.value
+        else:
+            self.value = value
+
     def update(self, constant):
         if self.getName() == constant.getName():
             self.value = constant.getValue()

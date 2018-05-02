@@ -4,6 +4,10 @@ from checker.Checker import Checker
 import logging
 from PathHelper import get_sep, get_log_dir
 
+
+DURATION = 1*365*2
+
+
 def get_logger():
     logger = logging.getLogger("testCheckingAlgo logging")
     logger.addHandler(logging.FileHandler(get_log_dir() + get_sep() + "testCheckingAlgo.log", "w"))
@@ -11,12 +15,16 @@ def get_logger():
     return logger
 
 
-def t1():
-    '''测试生成的随机路径要么长度达到最长(duration)，要么包含failure ap'''
+def get_checker():
     built = ModelFactory.get_built()
-    DURATION = 1*365*2
     ltl = ["U[1, {}]".format(int(DURATION)), "T", "failure"]
     checker = Checker(model=built, ltl=ltl, duration=DURATION)
+    return checker
+
+
+def t1():
+    '''测试生成的随机路径要么长度达到最长(duration)，要么包含failure ap'''
+    checker = get_checker()
     PATH_CNT = 3000
     logger = get_logger()
     for _ in range(PATH_CNT):
@@ -26,7 +34,17 @@ def t1():
             logger.info("path:{}".format(str(path)))
 
 
+def t2():
+    '''测试built模型运行checker的结果与PRISM中运行的一致'''
+    checker = get_checker()
+    thickness = range(5, 6)
+    probs = []
+    for t in thickness:
+        ModelFactory.setParam("SCREEN_THICKNESS", t)
+        probs.append(checker.run())
+    print probs
+
 if __name__ == "__main__":
-    t1()
+    t2()
 
 

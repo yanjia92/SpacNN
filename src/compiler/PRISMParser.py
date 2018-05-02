@@ -110,7 +110,7 @@ class BasicParser(object):
         # name : func object storage structure for variables and formula
         self.logger = logging.getLogger("BasicParser logging")
         self.logger.addHandler(logging.FileHandler(LogHelper.get_logging_root() + "BasicParser.log"))
-        self.logger.setLevel(logging.INFO)
+        self.logger.setLevel(logging.ERROR)
         self.vcf_map = defaultdict(lambda: None)
         self.vc_map = defaultdict(lambda: None)
 
