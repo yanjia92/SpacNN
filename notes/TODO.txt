@@ -1,29 +1,11 @@
 未完成
-    测试parsed model的正确性.在NNRegressor中测试以及checker中测试.
-        要验证的方面:比较parsed model和ModelFactory生成的model之间的异同.
-        ModelFactory返回的model: labels + modules + stop_condition
-        ModelFactory_model:
-            repeated Module modules;
-            repeated Label label;
-            optional Label stop_condition;
-        Module:
-            string name;
-            repeated Constant constants;
-            repeated Variable variables;
-            repeated Command commands;
-        Label:
-            string name;
-            function bool_expr;
+    验证parsed model在regressor中的正确性
+        1. 对built model和parsed model分别回归分析，绘制出图片，对比两者。
 
-        Thus, comparison step in step:
-            1. all constants name value 
-            2. variables valrange init_value 
-            3. commands guard prob action 
-
-        comparison result:
-            1. _F, _U in model solution: call model._fillinstate()
-            2. failurecondition UI
-            3. stopcondition UI
+    comparison result:
+        1. _F, _U in model solution: call model._fillinstate()
+        2. failurecondition UI
+        3. stopcondition UI
 
 
     LTL公式的输入 UI

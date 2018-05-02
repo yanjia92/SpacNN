@@ -6,18 +6,9 @@ from checker import Checker
 from collections import OrderedDict
 
 logger = logging.getLogger("ExperimentWrapper logging")
-
-# 文件日志
 file_handler = logging.FileHandler("../log/expe.log")
-
-# 文件日志
-stream_handler = logging.StreamHandler(sys.stdout)
-
-# 为logger添加日志处理器
 logger.addHandler(file_handler)
-logger.addHandler(stream_handler)
-
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.ERROR)
 
 # 使用simulation的方法对模型进行experiment
 # 为模型中的未定参数设定一组值,并进行simulation验证实验,返回多次simulation的期望值(平均值)
@@ -48,7 +39,7 @@ class ExperimentWrapper(object):
     # 根据wrapper设置的多组参数进行实验
     # 返回每组参数的验证结果
     # return: [(paramvalues, prob)]
-    def experiment(self):
+    def do_expe(self):
         cnstnames = []
         cnstvalueslist = []
         for name, values in self._constants.items():
@@ -116,7 +107,7 @@ def main():
     for value in interval(0.5, 5, 0.1):
         constants.append(Constant('r', value))
     wrapper.setconstants([constants])
-    # results = wrapper.experiment()
+    # results = wrapper.do_expe()
     wrapper.modelcheck()
 
 
@@ -131,7 +122,7 @@ def executepoissionexpe(params):
     checker = Checker.Checker(model, ltl)
     wrapper = ExperimentWrapper(checker)
     wrapper.setconstants(params)
-    results = wrapper.experiment()
+    results = wrapper.do_expe()
     return results
 
 # 根据给定的参数进行模型检验

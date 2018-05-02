@@ -46,7 +46,7 @@ class Module(object):
         # return a OrderedDict with the command name as key and command as value
         return self.commands
 
-    # a value is not needed when executing an experiment over this constant
+    # a value is not needed when executing an do_expe over this constant
     # constant is no longer a primitive value, but a Constant typed instance
     def addConstant(self, constant):
         self.constants[constant.getName()] = constant
@@ -56,7 +56,7 @@ class Module(object):
             return self.constants[name]
         return None
 
-    # exist for now in the case of experiment
+    # exist for now in the case of do_expe
     def setConstant(self, constant):
         name = constant.getName()
         if name in self.constants.keys():

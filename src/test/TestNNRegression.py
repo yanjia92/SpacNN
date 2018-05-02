@@ -55,7 +55,7 @@ def testSPS():
     testx = interval(1, 10, 0.1)
     thickness_params = [Constant('SCREEN_THICKNESS', st) for st in trainx]
     wrapper.setconstants([thickness_params])
-    result = wrapper.experiment()
+    result = wrapper.do_expe()
     cases = map(lambda tuple: tuple[0], result)
     labels = map(lambda tuple: tuple[1], result)
 

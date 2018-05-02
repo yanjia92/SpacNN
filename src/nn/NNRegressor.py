@@ -3,27 +3,7 @@ import math
 import random
 import util
 import matplotlib.pyplot as plt
-
-random.seed(0)
-
-
-def rand(a, b):
-    return (b - a) * random.random() + a
-
-
-def make_matrix(m, n, fill=0.0):
-    mat = []
-    for i in range(m):
-        mat.append([fill] * n)
-    return mat
-
-
-def sigmoid(x):
-    return 1.0 / (1.0 + math.exp(-x))
-
-
-def sigmoid_derivative(x):
-    return x * (1 - x)
+from util.MathUtils import *
 
 
 class BPNeuralNetwork:

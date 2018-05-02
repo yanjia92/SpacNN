@@ -1,6 +1,6 @@
 class Simulator(object):
     def __init__(self, model):
-        # model : instance of type ModulesFile
+        # model : instance of ModulesFile
         self.model = model
 
     def genPath(self, duration):

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from math import *
-
+import random
 
 # generate random variable from a exponential distribution
 # given that it's less than t.
@@ -8,12 +8,11 @@ from math import *
 # if forcing is False, return normal random variable from the exponential distribution
 # of the rate parameter set to be lambda.
 def randomExpo(lamda, t=None, forcing=True):
-    import random, math
     rnd = random.uniform(0, 1)
     if forcing and t:
-        return math.log(1-rnd*(1-math.exp(-1*lamda*t)))/(-1*lamda)
+        return log(1-rnd*(1-math.exp(-1*lamda*t)))/(-1*lamda)
     else:
-        return math.log(1-rnd)/(-1*lamda)
+        return log(1-rnd)/(-1*lamda)
 
 
 # const double a1 =  0.254829592;
@@ -52,11 +51,20 @@ def powe(x):
     return pow(e, x)
 
 
-
-def test():
-    vals = [4.02297694402]
-    print pcf(vals[0])
+def rand(a, b):
+    return (b - a) * random.random() + a
 
 
-if __name__ == "__main__":
-    test()
+def make_matrix(m, n, fill=0.0):
+    mat = []
+    for i in range(m):
+        mat.append([fill] * n)
+    return mat
+
+
+def sigmoid(x):
+    return 1.0 / (1.0 + exp(-x))
+
+
+def sigmoid_derivative(x):
+    return x * (1 - x)
