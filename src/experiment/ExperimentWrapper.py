@@ -14,11 +14,11 @@ logger.setLevel(logging.ERROR)
 # 为模型中的未定参数设定一组值,并进行simulation验证实验,返回多次simulation的期望值(平均值)
 
 class ExperimentWrapper(object):
-    def __init__(self, checker, samples_per_param=10):
+    def __init__(self, checker):
         # checker: Checker typed instance
         self.checker = checker
         self._constants = OrderedDict()  # key: cons_name, value: [value]
-        self.samples_per_param = samples_per_param
+        self.samples_per_param = self.checker.get_sample_size() # 使用checker的随机路径样本数
 
     # 将实验值存储在ExperimentWrapper中,避免了直接修改ModulesFile.py
     # constants中的常量必须是同一个常量的不同值

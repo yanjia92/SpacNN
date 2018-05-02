@@ -5,7 +5,12 @@ from checker.Checker import Checker
 from module.Module import Constant
 from nn.NNRegressor import BPNeuralNetwork as BPNN
 from util.PlotHelper import plot_multi
-from PathHelper import get_prism_model_dir, get_sep
+from PathHelper import get_prism_model_dir, get_sep, get_log_dir
+import logging
+
+logger = logging.getLogger("test parsed regressor log")
+logger.addHandler(logging.FileHandler(get_log_dir() + get_sep() + "testparsedregre.log", "w"))
+logger.setLevel(logging.INFO)
 
 
 def get_expr_result_prism():
@@ -13,7 +18,7 @@ def get_expr_result_prism():
     获取prism中进行experiment的数据
     返回：test_x, test_y
     '''
-    filename = "YEAR1_T_1_5_1"
+    filename = "YEAR1_T_1_10_05"
     x = []
     y = []
     with open(get_prism_model_dir() + get_sep() + filename, "r") as f:
@@ -81,6 +86,14 @@ def test():
         ty2.append(y)
     network2 = get_network(tx2, ty2)
     pred_y2 = map(lambda test_x: network2.predict(test_x), TEST_DATA_X)
+
+    logger.info("built")
+    logger.info("x={}".format(TEST_DATA_X))
+    logger.info("y={}".format(pred_y1))
+    logger.info("parsed")
+    logger.info("y={}".format(pred_y2))
+    logger.info("prism")
+    logger.info("y={}".format(TEST_DATA_Y))
 
     line_datas = [
         (TEST_DATA_X, pred_y1, "built"),
