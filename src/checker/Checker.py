@@ -98,7 +98,7 @@ class Checker(threading.Thread):
         d2 = p * p * (p + 1.0)
         return d1 / d2
 
-    def getSampleSize(self):
+    def get_sample_size(self):
         sz = int(1.0 / ((1 - self.c) * 4 * self.d *
                           self.d) - self.a - self.b - 1)
         self.logger.info("Checker is going to generates {} paths".format(sz))
@@ -334,7 +334,7 @@ class Checker(threading.Thread):
         # event = self.FinishEventClass(output='Starting to verify...')
         # wx.PostEvent(self.frame, event)
 
-        sz = int(s.getSampleSize())
+        sz = int(s.get_sample_size())
         # event = self.FinishEventClass(output='The upper bound of sample size is '+str(sz))
         # wx.PostEvent(self.frame, event)
 
@@ -375,7 +375,7 @@ class Checker(threading.Thread):
 
     # Estiamte the probability of property holding
     def mc2(self):
-        sz = self.getSampleSize()
+        sz = self.get_sample_size()
         x, n = 0, 0
         hitTimes = 0
         satisfying = 0
@@ -444,7 +444,7 @@ class Checker(threading.Thread):
 
             # first extimate the probability that reaching a failure state is earlier than reaching a allUp state
             # using BFB only can get a bounded relative error according to Corollary1 of 1993_0060.pdf
-            sampleSize = self.getSampleSize()
+            sampleSize = self.get_sample_size()
             logging.info("samping size: %d." % sampleSize)
             satisfied = 0.0
             for i in range(sampleSize):
