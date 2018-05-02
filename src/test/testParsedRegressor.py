@@ -32,21 +32,22 @@ TIME_LIMIT_IN_DAYS = 365
 ltl = ["U[1, {}]".format(int(TIME_LIMIT_IN_DAYS * 2)), "T", "failure"]
 TEST_DATA_X, TEST_DATA_Y = get_expr_result_prism()
 thickness_cnsts = map(lambda v: Constant("SCREEN_THICKNESS", v), TEST_DATA_X)
+samples_per_param = 100
 
 
-def get_train_data_built():
+def do_expr_built():
     model = ModelFactory.get_built()
     checker = Checker(model=model, ltl=ltl, duration=TIME_LIMIT_IN_DAYS*2)
-    wrapper = ExperimentWrapper(checker)
+    wrapper = ExperimentWrapper(checker, samples_per_param=samples_per_param)
     wrapper.setconstants([thickness_cnsts,])
     result = wrapper.do_expe()
     return result
 
 
-def get_train_data_parsed():
+def do_expr_parsed():
     model = ModelFactory.get_parsed()
     checker = Checker(model=model, ltl=ltl, duration=TIME_LIMIT_IN_DAYS*2)
-    wrapper = ExperimentWrapper(checker)
+    wrapper = ExperimentWrapper(checker, samples_per_param=samples_per_param)
     wrapper.setconstants([thickness_cnsts,])
     result = wrapper.do_expe()
     return result
@@ -64,7 +65,7 @@ def test():
     '''生成built and parsed model
        对两个模型进行回归分析，拟合出曲线，绘制在同一幅图中
        并在同一幅图中绘制出真实的由model checker绘制出的曲线,并返回误差'''
-    result1 = get_train_data_built()
+    result1 = do_expr_built()
     tx1 = []
     ty1 = []
     for x,y in result1:
@@ -73,7 +74,7 @@ def test():
     network1 = get_network(tx1, ty1)
     pred_y1 = map(lambda test_x: network1.predict(test_x), TEST_DATA_X)
 
-    result2 = get_train_data_parsed()
+    result2 = do_expr_parsed()
     tx2 = []
     ty2 = []
     for x,y in result2:
