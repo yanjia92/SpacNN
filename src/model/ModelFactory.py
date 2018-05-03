@@ -11,14 +11,14 @@ class ModelFactory(object):
     @classmethod
     def get_built(cls):
         def failurecondition(vs, cs):
-            result = vs['sb_status'] == 0 or vs['s3r_status'] == 0 or vs["bcr_status"] == 0 or vs["bdr_status"] == 0
-            return result
+            sb_status = vs['sb_status'].getValue()
+            s3r_status = vs['s3r_status'].getValue()
+            bcr_status = vs['bcr_status'].getValue()
+            bdr_status = vs['bdr_status'].getValue()
+            return (sb_status+s3r_status+bcr_status+bdr_status) < 4
 
-        def upcondition(vs, cs):
-            return not failurecondition(vs, cs)
         labels = {}
         labels['failure'] = failurecondition
-        labels['up'] = upcondition
         
         model = ModulesFile(
             ModelType.DTMC,

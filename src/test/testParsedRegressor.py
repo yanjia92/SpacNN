@@ -43,7 +43,8 @@ SAMPLES_PER_PARAM = 400
 def get_train_data_built():
     model = ModelFactory.get_built()
     checker = Checker(model=model, ltl=ltl, duration=TIME_LIMIT_IN_DAYS*2)
-    wrapper = ExperimentWrapper(checker, samples_per_param=SAMPLES_PER_PARAM)
+    # wrapper = ExperimentWrapper(checker, samples_per_param=SAMPLES_PER_PARAM)
+    wrapper = ExperimentWrapper(checker)
     wrapper.setconstants([thickness_cnsts,])
     logger.info("Built model expr began.")
     result = wrapper.do_expe()
@@ -54,7 +55,8 @@ def get_train_data_built():
 def get_train_data_parsed():
     model = ModelFactory.get_parsed()
     checker = Checker(model=model, ltl=ltl, duration=TIME_LIMIT_IN_DAYS*2)
-    wrapper = ExperimentWrapper(checker, samples_per_param=SAMPLES_PER_PARAM)
+    # wrapper = ExperimentWrapper(checker, samples_per_param=SAMPLES_PER_PARAM)
+    wrapper = ExperimentWrapper(checker)
     wrapper.setconstants([thickness_cnsts,])
     logger.info("Parsed model expr began.")
     result = wrapper.do_expe()

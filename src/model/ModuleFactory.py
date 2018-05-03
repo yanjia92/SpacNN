@@ -14,7 +14,7 @@ class ModuleFactory(object):
         self.sb = self._sbmodule()
         self.s3r = self._s3rmodule()
         self.bcr = self._bcrmodule()
-        self.bdr = self._bdrmodule()
+        self.bdr = self._bdrmodule()    
 
     def _sbmodule(self):
         config = self.config
@@ -32,14 +32,16 @@ class ModuleFactory(object):
                 range(2),
                 int
             )
-        )
+        )   
 
-        def guard(vs, cs):
-            # sb_status and s3r_status must both be 1, e.g. the system has not
-            # failed.
-            return vs['timer_turn'] == False and vs['sb_status'] == 1 and vs['s3r_status'] == 1 and vs['bcr_status'] == 1 and vs['bdr_status'] == 1
+        def _module_action_guard(vs, cs):
+            timer_turn = vs['timer_turn'].getValue()
+            sb_status = vs['sb_status'].getValue()
+            s3r_status = vs['s3r_status'].getValue()
+            bcr_status = vs['bcr_status'].getValue()
+            bdr_status = vs['bdr_status'].getValue()
+            return timer_turn == False and sb_status == 1 and s3r_status == 1 and bcr_status == 1 and bdr_status == 1
 
-        # failure action
         def faction(vs, cs):
             vs['sb_status'].setValue(0)
             vs['timer_turn'].setValue(True)
@@ -72,7 +74,7 @@ class ModuleFactory(object):
         module.addCommand(
             Command(
                 'sb_fail_cmd',
-                guard,
+                _module_action_guard,
                 faction,
                 module,
                 f(self.timer.getVariable('day'))
@@ -82,7 +84,7 @@ class ModuleFactory(object):
         module.addCommand(
             Command(
                 'sb_nrl_cmd',
-                guard,
+                _module_action_guard,
                 naction,
                 module,
                 n(self.timer.getVariable('day'))
@@ -110,19 +112,20 @@ class ModuleFactory(object):
             )
         )
 
-        def guard(vs, cs):
+        def _timer_action_guard(vs, cs):
             day_val = vs['day'].getValue()
             DAY_MAX = self.config.getParam("DURATION_IN_DAY")
             t_turn = vs['timer_turn'].getValue()
-            return day_val < DAY_MAX and t_turn is True
+            return day_val < DAY_MAX and t_turn == True
 
         def action(vs, cs):
             vs['day'].setValue(vs['day'].getValue() + 1)
             vs['timer_turn'].setValue(False)
+
         module.addCommand(
             Command(
                 'inc day',
-                guard,
+                _timer_action_guard,
                 action,
                 module,
                 lambda: 1.0
@@ -148,10 +151,13 @@ class ModuleFactory(object):
             )
         )
 
-        def guard(vs, cs):
-            # the sb_status and s3r_status must both be 1 for this transition
-            # to happen
-            return vs['timer_turn'] == False and vs['s3r_status'] == 1 and vs['sb_status'] == 1 and vs['bcr_status'] == 1 and vs['bdr_status'] == 1
+        def _module_action_guard(vs, cs):
+            timer_turn = vs['timer_turn'].getValue()
+            sb_status = vs['sb_status'].getValue()
+            s3r_status = vs['s3r_status'].getValue()
+            bcr_status = vs['bcr_status'].getValue()
+            bdr_status = vs['bdr_status'].getValue()
+            return timer_turn == False and sb_status == 1 and s3r_status == 1 and bcr_status == 1 and bdr_status == 1
 
         def faction(vs, cs):
             vs['s3r_status'].setValue(0)
@@ -186,7 +192,7 @@ class ModuleFactory(object):
         module.addCommand(
             Command(
                 's3r_fail_cmd',
-                guard,
+                _module_action_guard,
                 faction,
                 module,
                 f(self.timer.getVariable('day'))
@@ -196,7 +202,7 @@ class ModuleFactory(object):
         module.addCommand(
             Command(
                 's3r_nrl_cmd',
-                guard,
+                _module_action_guard,
                 naction,
                 module,
                 n(self.timer.getVariable('day'))
@@ -217,10 +223,13 @@ class ModuleFactory(object):
             )
         )
 
-        def guard(vs, cs):
-            # the sb_status and s3r_status must both be 1 for this transition
-            # to happen
-            return vs['timer_turn'] == False and vs['bcr_status'] == 1 and vs['sb_status'] == 1 and vs['bdr_status'] == 1 and vs['s3r_status'] == 1
+        def _module_action_guard(vs, cs):
+            timer_turn = vs['timer_turn'].getValue()
+            sb_status = vs['sb_status'].getValue()
+            s3r_status = vs['s3r_status'].getValue()
+            bcr_status = vs['bcr_status'].getValue()
+            bdr_status = vs['bdr_status'].getValue()
+            return timer_turn == False and sb_status == 1 and s3r_status == 1 and bcr_status == 1 and bdr_status == 1
 
         def faction(vs, cs):
             vs['bcr_status'].setValue(0)
@@ -255,7 +264,7 @@ class ModuleFactory(object):
         module.addCommand(
             Command(
                 'bcr_fail_cmd',
-                guard,
+                _module_action_guard,
                 faction,
                 module,
                 f(self.timer.getVariable('day'))
@@ -265,7 +274,7 @@ class ModuleFactory(object):
         module.addCommand(
             Command(
                 'bcr_nrl_cmd',
-                guard,
+                _module_action_guard,
                 naction,
                 module,
                 n(self.timer.getVariable('day'))
@@ -285,11 +294,13 @@ class ModuleFactory(object):
                 int
             )
         )
-
-        def guard(vs, cs):
-            # the sb_status and s3r_status must both be 1 for this transition
-            # to happen
-            return vs['timer_turn'] == False and vs['bdr_status'] == 1 and vs['sb_status'] == 1 and vs['bcr_status'] == 1 and vs['s3r_status'] == 1
+        def _module_action_guard(vs, cs):
+            timer_turn = vs['timer_turn'].getValue()
+            sb_status = vs['sb_status'].getValue()
+            s3r_status = vs['s3r_status'].getValue()
+            bcr_status = vs['bcr_status'].getValue()
+            bdr_status = vs['bdr_status'].getValue()
+            return timer_turn == False and sb_status == 1 and s3r_status == 1 and bcr_status == 1 and bdr_status == 1
 
         def faction(vs, cs):
             vs['bdr_status'].setValue(0)
@@ -323,7 +334,7 @@ class ModuleFactory(object):
         module.addCommand(
             Command(
                 'bdr_fail_cmd',
-                guard,
+                _module_action_guard,
                 faction,
                 module,
                 f(self.timer.getVariable('day'))
@@ -333,7 +344,7 @@ class ModuleFactory(object):
         module.addCommand(
             Command(
                 'bdr_nrl_cmd',
-                guard,
+                _module_action_guard,
                 naction,
                 module,
                 n(self.timer.getVariable('day'))

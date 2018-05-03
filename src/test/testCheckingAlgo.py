@@ -18,7 +18,7 @@ def get_logger():
 def get_checker():
     built = ModelFactory.get_built()
     ltl = ["U[1, {}]".format(int(DURATION)), "T", "failure"]
-    checker = Checker(model=built, ltl=ltl, duration=DURATION)
+    checker = Checker(model=built, ltl=ltl, duration=DURATION, c=0.7, d=0.01)
     return checker
 
 
@@ -37,7 +37,7 @@ def t1():
 def t2():
     '''测试built模型运行checker的结果与PRISM中运行的一致'''
     checker = get_checker()
-    thickness = range(5, 6)
+    thickness = range(1, 6)
     probs = []
     for t in thickness:
         ModelFactory.setParam("SCREEN_THICKNESS", t)

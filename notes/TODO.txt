@@ -1,6 +1,7 @@
 未完成
     验证parsed model在regressor中的正确性
         0. 测试checker的运行结果和prism的运行结果是否一致 testChecker.py
+            原因是checker设置的随机路径取样数太小所致。
         1. 对built model和parsed model分别回归分析，绘制出图片，对比两者。
 
     comparison result:
