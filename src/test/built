@@ -1,43 +1,41 @@
-         40558 function calls in 0.051 seconds
+         36179 function calls in 0.033 seconds
 
    Ordered by: cumulative time
 
    ncalls  tottime  percall  cumtime  percall filename:lineno(function)
-        1    0.012    0.012    0.052    0.052 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/ModulesFile.py:218(gen_random_path)
-      730    0.006    0.000    0.028    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/ModulesFile.py:165(nextState)
-     2190    0.007    0.000    0.010    0.000 {map}
-      730    0.002    0.000    0.008    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/ModulesFile.py:142(_updateCurAndPrevState)
-      731    0.001    0.000    0.006    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/State.py:21(updateAPs)
-      731    0.003    0.000    0.005    0.000 /System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/collections.py:113(items)
-      731    0.002    0.000    0.004    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/model/ModelFactory.py:17(<lambda>)
-      730    0.002    0.000    0.004    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/model/ModelFactory.py:13(failurecondition)
-     4383    0.004    0.000    0.004    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/Module.py:216(__eq__)
-      730    0.001    0.000    0.004    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/Module.py:121(execAction)
-      730    0.002    0.000    0.002    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/Step.py:2(__init__)
-      365    0.001    0.000    0.002    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/model/ModuleFactory.py:119(action)
-     5117    0.002    0.000    0.002    0.000 /System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/collections.py:78(__iter__)
-     1101    0.001    0.000    0.001    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/Module.py:185(setValue)
-     4751    0.001    0.000    0.001    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/Module.py:191(getValue)
-     3285    0.001    0.000    0.001    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/ModulesFile.py:176(<lambda>)
-     3285    0.001    0.000    0.001    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/ModulesFile.py:185(<lambda>)
-     2920    0.001    0.000    0.001    0.000 {len}
+        1    0.008    0.008    0.034    0.034 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:222(gen_random_path)
+      730    0.004    0.000    0.020    0.000 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:171(nextState)
+     2190    0.005    0.000    0.007    0.000 {map}
+      730    0.003    0.000    0.006    0.000 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:142(_updateCurAndPrevState)
+      731    0.003    0.000    0.004    0.000 /System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/collections.py:113(items)
+      730    0.001    0.000    0.003    0.000 /Users/bitbook/Documents/SpacNN/src/module/Module.py:121(execAction)
+      731    0.002    0.000    0.002    0.000 /Users/bitbook/Documents/SpacNN/src/model/ModelFactory.py:13(failurecondition)
+      365    0.001    0.000    0.001    0.000 /Users/bitbook/Documents/SpacNN/src/model/ModuleFactory.py:121(action)
+     7675    0.001    0.000    0.001    0.000 /Users/bitbook/Documents/SpacNN/src/module/Module.py:191(getValue)
+      730    0.001    0.000    0.001    0.000 /Users/bitbook/Documents/SpacNN/src/module/Step.py:2(__init__)
+     5117    0.001    0.000    0.001    0.000 /System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/collections.py:78(__iter__)
+     1101    0.001    0.000    0.001    0.000 /Users/bitbook/Documents/SpacNN/src/module/Module.py:185(setValue)
+     3285    0.001    0.000    0.001    0.000 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:180(<lambda>)
+     3285    0.001    0.000    0.001    0.000 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:189(<lambda>)
+     2190    0.000    0.000    0.000    0.000 {len}
       730    0.000    0.000    0.000    0.000 {sum}
-     1460    0.000    0.000    0.000    0.000 {method 'copy' of 'set' objects}
       730    0.000    0.000    0.000    0.000 {method 'join' of 'str' objects}
       731    0.000    0.000    0.000    0.000 {method 'items' of 'dict' objects}
-       95    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/model/ModuleFactory.py:160(naction)
-       97    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/model/ModuleFactory.py:229(naction)
-       86    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/model/ModuleFactory.py:298(naction)
-       87    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/model/ModuleFactory.py:48(naction)
      1101    0.000    0.000    0.000    0.000 {isinstance}
+      103    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/model/ModuleFactory.py:238(naction)
+       87    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/model/ModuleFactory.py:309(naction)
+       88    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/model/ModuleFactory.py:50(naction)
+       87    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/model/ModuleFactory.py:166(naction)
       730    0.000    0.000    0.000    0.000 {method 'random' of '_random.Random' objects}
       730    0.000    0.000    0.000    0.000 {method 'append' of 'list' objects}
+      730    0.000    0.000    0.000    0.000 {method 'copy' of 'set' objects}
       733    0.000    0.000    0.000    0.000 {method 'clear' of 'set' objects}
-        1    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/ModulesFile.py:321(restoreSystem)
-        1    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/ModulesFile.py:309(restoreVars)
-        1    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/ModulesFile.py:149(_initStateAPSetAndStateId)
-        1    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/ModulesFile.py:313(restoreStates)
-        2    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/PostGradCourses/docrepo/hkht/NN/proj/src/module/State.py:27(clearAPSet)
+        1    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:316(restoreSystem)
+        1    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:304(restoreVars)
+        1    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:155(_initStateAPSetAndStateId)
+        1    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/module/State.py:21(updateAPs)
+        1    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:308(restoreStates)
+        2    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/module/State.py:27(clearAPSet)
         1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
 
 
