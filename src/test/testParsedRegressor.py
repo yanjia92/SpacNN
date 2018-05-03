@@ -43,7 +43,7 @@ samples_per_param = 100
 def do_expr_built():
     model = ModelFactory.get_built()
     checker = Checker(model=model, ltl=ltl, duration=TIME_LIMIT_IN_DAYS*2)
-    wrapper = ExperimentWrapper(checker, samples_per_param=samples_per_param)
+    wrapper = ExperimentWrapper(checker)
     wrapper.setconstants([thickness_cnsts,])
     result = wrapper.do_expe()
     return result
@@ -52,7 +52,7 @@ def do_expr_built():
 def do_expr_parsed():
     model = ModelFactory.get_parsed()
     checker = Checker(model=model, ltl=ltl, duration=TIME_LIMIT_IN_DAYS*2)
-    wrapper = ExperimentWrapper(checker, samples_per_param=samples_per_param)
+    wrapper = ExperimentWrapper(checker)
     wrapper.setconstants([thickness_cnsts,])
     result = wrapper.do_expe()
     return result

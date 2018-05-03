@@ -58,8 +58,8 @@ class Checker(threading.Thread):
         ltl=None,
         a=1,
         b=1,
-        c=0.7,
-        d=0.02,
+        c=0.5,
+        d=0.01,
         duration=1.0,
             checkingType=None,
         fb = False):
