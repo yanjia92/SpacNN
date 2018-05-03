@@ -2,7 +2,10 @@
 import math
 import random
 import util
-import matplotlib.pyplot as plt
+try:
+    import matplotlib.pyplot as plt
+except ImportError:
+    pass
 from util.MathUtils import *
 
 

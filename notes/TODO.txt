@@ -1,9 +1,9 @@
 未完成
     验证parsed model在regressor中的正确性
-        0. 测试checker的运行结果和prism的运行结果是否一致 testChecker.py
-            原因是checker设置的随机路径取样数太小所致。
-        1. 对built model和parsed model分别回归分析，绘制出图片，对比两者。
-        	TestNNRegressor.py中有验证sps模型的例子：testSPS()
+        测试合理的checker.c and checker.d 使得验证的结果相对准确 testcheckingalgo.py
+            优化modulesfile.nextstate方法：使用多个step共用一个apset的方法，使得生成一条长度为730的路径时间约为0.016s in windows
+
+
 
     LTL公式的输入 UI
     comparison result:

@@ -1,4 +1,7 @@
-import matplotlib.pyplot as plt
+try:
+    import matplotlib.pyplot as plt
+except ImportError:
+    pass
 from math import *
 
 def plot_multi(*args, **kwargs):

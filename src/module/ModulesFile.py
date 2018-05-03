@@ -70,6 +70,8 @@ class ModulesFile(object):
         self.durationThreshold = 1.0
         # failure biasing is enabled or not
         self.fb = fb
+        self.sset_set_map = dict()  # s: prefix for string type
+        self.tstate_sset_map = dict()  # t: prefix for tuple type
 
     def init(self, modules, labels):
         if modules:
@@ -140,24 +142,36 @@ class ModulesFile(object):
     # update self.curState's and self.prevState's apset and stateId
     # according to the system's current state
     def _updateCurAndPrevState(self):
-        self.prevState.apSet = set(self.curState.apSet)
+        self.prevState.apSet = self.curState.apSet
         self.prevState.stateId = self.curState.stateId
         # self.curState.updateAPs(self.localVars, self.constants, self.labels)
-        vs = self.localVars
-        cs = self.constants
-        self.curState.apSet.clear()
-        for label, func in self.labels.items():
-            if func(vs, cs):
-                self.curState.apSet.add(label)
+        # vs = self.localVars
+        # cs = self.constants
+        # self.curState.apSet.clear()
+        # for label, func in self.labels.items():
+        #     if func(vs, cs):
+        #         self.curState.apSet.add(label)
+        key = self._get_key_of_vars()
+        self.curState.apSet = self.sset_set_map[self.tstate_sset_map[key]]
         self._stateId += 1
         self.curState.stateId = self._stateId
+        return key
 
     def _initStateAPSetAndStateId(self):
         self.curState.stateId = self._stateId
-        self.curState.updateAPs(
-            self.initLocalVars,
-            self.constants,
-            self.labels)
+        key = self._get_key_of_vars()
+        self.curState.apSet = self.sset_set_map[self.tstate_sset_map[key]]
+
+    # 获取当前代表当前所有变量值的key
+    def _get_key_of_vars(self):
+        return self._localvars_tuple()
+        # return self._localvars_tuple1()
+
+    def _localvars_tuple1(self):
+        return tuple(self.localVars.values())
+
+    def _localvars_tuple(self):
+        return tuple(map(lambda var: var.value, self.localVars.values()))
 
     # store new state's info in self.curState
     # (e.g. the transition already happened)
@@ -203,14 +217,15 @@ class ModulesFile(object):
                         holdingTime = 1
                 enabledCommand = cmd_probs[index][0]
                 enabledCommand.execAction()
-                self._updateCurAndPrevState()
+                key = self._updateCurAndPrevState()
                 return (
                     enabledCommand.name,
                     holdingTime,
                     enabledCommand.prob,
                     enabledCommand.biasingRate,
                     exitRate,
-                    biasingExitRate)
+                    biasingExitRate,
+                    key)
 
     # return list of Step instance whose path duration is duration
     # duration: path duration
@@ -228,10 +243,9 @@ class ModulesFile(object):
         path = list()
         timeSum = 0.0
         passedTime = 0.0
+        key = self._get_key_of_vars()
         while timeSum < duration:
             # get enabled commands list
-            variables = [var.getValue() for _, var in self.localVars.items()]
-            varsStr = ''.join([str(v) for v in variables])
             if len(self.scDict) == 0:
                 # 由于存在unbounded变量,无法提前判断所有的变量组合的enabled commands
                 # 因此需要手工判断
@@ -241,12 +255,12 @@ class ModulesFile(object):
                         if comm.guard(self.localVars, self.constants):
                             cmd_probs.append((comm, comm.prob()))
             else:
-                cmd_probs = self.scDict[varsStr]
+                cmd_probs = self.scDict[key]
             if len(cmd_probs) == 0:
                 path.append(self.step_of_current(passedTime=passedTime))
                 self.restoreSystem()
                 return None, path
-            transition, holdingTime, rate, biasingRate, exitRate, biasingExitRate = self.nextState(
+            transition, holdingTime, rate, biasingRate, exitRate, biasingExitRate, key = self.nextState(
                 cmd_probs, duration=duration - timeSum)
             timeSum += holdingTime
             if len(path) == 0 and holdingTime > duration:
@@ -262,7 +276,7 @@ class ModulesFile(object):
                 holdingTime -= (timeSum - duration)
             step = Step(
                 self.prevState.stateId,
-                self.prevState.apSet.copy(),
+                self.prevState.apSet,
                 holdingTime,
                 passedTime,
                 transition,
@@ -273,7 +287,8 @@ class ModulesFile(object):
             path.append(step)
             passedTime += holdingTime
 
-            # 去掉对于stopCondition的判断:因为如果进入failure state,会在对scdict进行查询时,就进入if逻辑,然后将系统当前状态append到path中去
+            # 去掉对于stopCondition的判断:因为如果进入failure state,
+            # 会在对scdict进行查询时,就进入if逻辑,然后将系统当前状态append到path中去
             # if len(path) >= 1 and self.stopCondition and self.stopCondition(
             #         self.localVars, self.constants):
             #     # add this empty step (with no transition made)
@@ -288,9 +303,10 @@ class ModulesFile(object):
         return None, path
 
     def step_of_current(self, passedTime=None, holdingTime=0.0):
+        self._updateCurAndPrevState()
         return Step(
             self.curState.stateId,
-            copy.copy(self.curState.apSet),
+            self.curState.apSet,
             passedTime=passedTime,
             holdingTime=holdingTime
         )
@@ -309,8 +325,8 @@ class ModulesFile(object):
         self._stateId = 0
         self.curState.stateId = 0
         self.prevState.stateId = 0
-        self.curState.clearAPSet()
-        self.prevState.clearAPSet()
+        # self.curState.clearAPSet()
+        # self.prevState.clearAPSet()
         self.stateInited = False
 
     def restoreSystem(self):
@@ -414,11 +430,21 @@ class ModulesFile(object):
                             logger.error("command's prob must be callable")
                             logger.error(msg)
                         cmd_probs.append((copy.copy(command), p))
-            varTuple = tuple([item[1].getValue() for item in self.localVars.items()])
-            varsStr = ''.join([str(v) for v in varTuple])
+            key = self._get_key_of_vars()
             # sort cmd_probs by prob desc to accerate speed of ModulesFile@nextState
             cmd_probs.sort(key=lambda t: t[1], reverse=True)
-            self.scDict[varsStr] = cmd_probs
+            self.scDict[key] = cmd_probs
+
+            vs = self.localVars
+            cs = self.constants
+            apset = set()
+            for name, func in self.labels.items():
+                if func(vs, cs):
+                    apset.add(name)
+            sset = str(apset)
+            if sset not in self.sset_set_map.keys():
+                self.sset_set_map[sset] = apset
+            self.tstate_sset_map[key] = sset
         self.restoreSystem()
         self.commPrepared = True
 
