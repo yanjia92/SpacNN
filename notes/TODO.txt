@@ -1,7 +1,7 @@
 未完成
     验证parsed model在regressor中的正确性
-        测试合理的checker.c and checker.d 使得验证的结果相对准确 testcheckingalgo.py
-            优化modulesfile.nextstate方法：使用多个step共用一个apset的方法，使得生成一条长度为730的路径时间约为0.016s in windows
+        1. 测试合理的checker.c and checker.d 使得验证的结果相对准确 testcheckingalgo.py
+        2. 测试parsed model的正确性
 
 
 

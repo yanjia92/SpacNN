@@ -1,6 +1,11 @@
 def test():
-    d = dict()
-    d[(1, 2)] = 1
+    sets = []
+    es = set()
+    sets.append(es)
+    sets.append(set(["failure"]))
+    s = set(["failure"])
+    print s in sets
+    print id(s) == id(sets[1])
 
 
 if __name__ == "__main__":

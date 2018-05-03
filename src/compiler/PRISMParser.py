@@ -242,13 +242,13 @@ class BasicParser(object):
 
     def p_assignment1(self, p):
         '''assignment : LP NAME ASSIGN expr RP'''
-        update_func = copy.deepcopy(p[4])
+        update_func = copy.copy(p[4])
         key = p[2]
 
         def f(vs, cs):
             var = vs[key]
-            if not var or not isinstance(var, Variable):
-                raise Exception("invalid variable name: {}".format(key))
+            # if not var or not isinstance(var, Variable):
+            #     raise Exception("invalid variable name: {}".format(key))
             var.setValue(update_func())
 
         p[0] = f

@@ -32,7 +32,8 @@ class ModelType:
 class ModulesFile(object):
     # id used for generating State object when generating random path
     # should be added 1 whenever before self.nextState get called.
-    _stateId = 0
+    # _stateId = 0
+    INIT_STATE_ID = 0
 
     def __init__(
             self,
@@ -50,8 +51,8 @@ class ModulesFile(object):
         self.constants = dict()
         self.modelType = modeltype
         self.scDict = OrderedDict()  # {sstate: [(comm, prob)]}
-        self.curState = State(self._stateId, set())
-        self.prevState = State(self._stateId, set())
+        self.curState = State(self.INIT_STATE_ID, set())
+        self.prevState = State(self.INIT_STATE_ID, set())
         self.commPrepared = False
         self.stopCondition = stopCondition
         self.failureCondition = failureCondition
@@ -71,7 +72,9 @@ class ModulesFile(object):
         # failure biasing is enabled or not
         self.fb = fb
         self.sset_set_map = dict()  # s: prefix for string type
-        self.tstate_sset_map = dict()  # t: prefix for tuple type
+        self.tstate_apset_map = dict()  # t: prefix for tuple type
+        self.apset_list = []
+        self.localVarsList = self.localVars.values()  # used to accelerate speed
 
     def init(self, modules, labels):
         if modules:
@@ -144,23 +147,16 @@ class ModulesFile(object):
     def _updateCurAndPrevState(self):
         self.prevState.apSet = self.curState.apSet
         self.prevState.stateId = self.curState.stateId
-        # self.curState.updateAPs(self.localVars, self.constants, self.labels)
-        # vs = self.localVars
-        # cs = self.constants
-        # self.curState.apSet.clear()
-        # for label, func in self.labels.items():
-        #     if func(vs, cs):
-        #         self.curState.apSet.add(label)
         key = self._get_key_of_vars()
-        self.curState.apSet = self.sset_set_map[self.tstate_sset_map[key]]
-        self._stateId += 1
-        self.curState.stateId = self._stateId
+        self.curState.apSet = self.tstate_apset_map[key]
+        self.curState.stateId += 1
         return key
 
     def _initStateAPSetAndStateId(self):
-        self.curState.stateId = self._stateId
+        # self.curState.stateId = self._stateId
+        self.curState.stateId = 0
         key = self._get_key_of_vars()
-        self.curState.apSet = self.sset_set_map[self.tstate_sset_map[key]]
+        self.curState.apSet = self.tstate_apset_map[key]
 
     # 获取当前代表当前所有变量值的key
     def _get_key_of_vars(self):
@@ -171,7 +167,7 @@ class ModulesFile(object):
         return tuple(self.localVars.values())
 
     def _localvars_tuple(self):
-        return tuple(map(lambda var: var.value, self.localVars.values()))
+        return tuple([v.value for v in self.localVarsList])
 
     # store new state's info in self.curState
     # (e.g. the transition already happened)
@@ -183,24 +179,26 @@ class ModulesFile(object):
     # in other allUp state(not initial states), it equals to
     # duration-passedTime.
     def nextState(self, cmd_probs, duration=0.0):
-        if not self.stateInited:
-            self.stateInited = True
-            self._initStateAPSetAndStateId()
+        # if not self.stateInited:
+        #     self.stateInited = True
+        #     self._initStateAPSetAndStateId()
 
         # failure biasing并没有改变一个状态的exit rate
         # exit rate依旧是每个command下的prob(在CTMC模型中,prob表示rate)之和
 
         exitRate = 0.0
-        exitRate = sum(map(lambda t: t[1], cmd_probs))
+        probs = [t[1] for t in cmd_probs]
+        cmds = [t[0] for t in cmd_probs]
+        exitRate = sum(probs)
         if self.fb:
             biasingExitRate = sum(
-            [command.biasingRate for command in map(lambda t:t[0], cmd_probs)])
+            [command.biasingRate for command in cmds])
             probs = [
                 command.biasingRate /
-                float(biasingExitRate) for command in map(lambda t: t[0], cmd_probs)]
+                float(biasingExitRate) for command in cmds]
         else:
             biasingExitRate = None
-            probs = map(lambda p: p/float(exitRate), map(lambda t: t[1], cmd_probs))
+            probs = [p/float(exitRate) for p in probs]
 
         rnd = random.random()  # random number in [0,1)
         probSum = 0.0
@@ -215,7 +213,7 @@ class ModulesFile(object):
                         holdingTime = MathUtils.randomExpo(exitRate)
                     else:
                         holdingTime = 1
-                enabledCommand = cmd_probs[index][0]
+                enabledCommand = cmds[index]
                 enabledCommand.execAction()
                 key = self._updateCurAndPrevState()
                 return (
@@ -237,6 +235,7 @@ class ModulesFile(object):
     def gen_random_path(self, duration, cachedPrefixes=None):
         # Since when initilize a module, all its local variables
         # have been initilized
+        random.seed()
         if not self.commPrepared:
             self.prepareCommands()
             self.commPrepared = True
@@ -260,6 +259,9 @@ class ModulesFile(object):
                 path.append(self.step_of_current(passedTime=passedTime))
                 self.restoreSystem()
                 return None, path
+            if not self.stateInited:
+                self.stateInited = True
+                self._initStateAPSetAndStateId()
             transition, holdingTime, rate, biasingRate, exitRate, biasingExitRate, key = self.nextState(
                 cmd_probs, duration=duration - timeSum)
             timeSum += holdingTime
@@ -441,10 +443,12 @@ class ModulesFile(object):
             for name, func in self.labels.items():
                 if func(vs, cs):
                     apset.add(name)
-            sset = str(apset)
-            if sset not in self.sset_set_map.keys():
-                self.sset_set_map[sset] = apset
-            self.tstate_sset_map[key] = sset
+            if apset not in self.apset_list:
+                self.apset_list.append(apset)
+            # sset = str(apset)
+            # if sset not in self.sset_set_map.keys():
+            #     self.sset_set_map[sset] = apset
+            self.tstate_apset_map[key] = apset
         self.restoreSystem()
         self.commPrepared = True
 

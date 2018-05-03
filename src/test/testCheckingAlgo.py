@@ -5,16 +5,18 @@ import logging
 from PathHelper import get_sep, get_log_dir, get_prism_model_dir
 from util.CsvFileHelper import parse_csv
 from math import fabs
+import random
 
 
 DURATION = 1*365*2
-c = 0.5
-d = 0.009
+c = 0.4
+d = 0.01
 
 
 def get_prism_checking_result():
     filepath = get_prism_model_dir() + get_sep() + "YEAR1_T_1_5_1"
     return parse_csv(filepath)
+
 
 def get_logger():
     logger = logging.getLogger("testCheckingAlgo logging")
@@ -44,10 +46,11 @@ def t1():
 
 def t2():
     '''测试built模型运行checker的结果与PRISM中运行的一致'''
+    random.seed()
     prism_result_x, prism_result_y = get_prism_checking_result()  # (1, 5, 1)
     checker = get_checker()
     samplesize = checker.get_sample_size()
-    thickness = range(5, 6)
+    thickness = range(1, 6)
     probs = []
     logger = get_logger()
     for t in thickness:
