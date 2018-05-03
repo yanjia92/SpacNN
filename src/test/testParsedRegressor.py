@@ -18,7 +18,7 @@ def get_expr_result_prism():
     获取prism中进行experiment的数据
     返回：test_x, test_y
     '''
-    filename = "YEAR1_T_1_10_05"
+    filename = "YEAR1_T_1_5_1"
     x = []
     y = []
     with open(get_prism_model_dir() + get_sep() + filename, "r") as f:
@@ -37,24 +37,34 @@ TIME_LIMIT_IN_DAYS = 365
 ltl = ["U[1, {}]".format(int(TIME_LIMIT_IN_DAYS * 2)), "T", "failure"]
 TEST_DATA_X, TEST_DATA_Y = get_expr_result_prism()
 thickness_cnsts = map(lambda v: Constant("SCREEN_THICKNESS", v), TEST_DATA_X)
+<<<<<<< HEAD
 samples_per_param = 100
+=======
+SAMPLES_PER_PARAM = 400
+>>>>>>> 254cfcda20350d247a16857bd3a6d203e67e3872
 
 
 def do_expr_built():
     model = ModelFactory.get_built()
     checker = Checker(model=model, ltl=ltl, duration=TIME_LIMIT_IN_DAYS*2)
+    # wrapper = ExperimentWrapper(checker, samples_per_param=SAMPLES_PER_PARAM)
     wrapper = ExperimentWrapper(checker)
     wrapper.setconstants([thickness_cnsts,])
+    logger.info("Built model expr began.")
     result = wrapper.do_expe()
+    logger.info("Built model expr end.")
     return result
 
 
 def do_expr_parsed():
     model = ModelFactory.get_parsed()
     checker = Checker(model=model, ltl=ltl, duration=TIME_LIMIT_IN_DAYS*2)
+    # wrapper = ExperimentWrapper(checker, samples_per_param=SAMPLES_PER_PARAM)
     wrapper = ExperimentWrapper(checker)
     wrapper.setconstants([thickness_cnsts,])
+    logger.info("Parsed model expr began.")
     result = wrapper.do_expe()
+    logger.info("Parsed model expr end.")
     return result
 
 

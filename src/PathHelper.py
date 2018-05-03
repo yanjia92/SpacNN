@@ -33,4 +33,5 @@ def test():
     print get_proj_dir()
 
 
-test()
+if __name__ == "__main__":
+    test()

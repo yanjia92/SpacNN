@@ -1,1 +1,5 @@
-Checker is going to generates 2080 paths
+Checker is going to generates 8330 paths
+Verifying 512 paths, causing 13.5099909306s
+Verifying 1024 paths, causing 25.2060639858s
+Verifying 1536 paths, causing 35.9709088802s
+Verifying 2048 paths, causing 46.6693079472s

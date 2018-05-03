@@ -140,9 +140,15 @@ class ModulesFile(object):
     # update self.curState's and self.prevState's apset and stateId
     # according to the system's current state
     def _updateCurAndPrevState(self):
-        self.prevState.apSet = self.curState.apSet.copy()
+        self.prevState.apSet = set(self.curState.apSet)
         self.prevState.stateId = self.curState.stateId
-        self.curState.updateAPs(self.localVars, self.constants, self.labels)
+        # self.curState.updateAPs(self.localVars, self.constants, self.labels)
+        vs = self.localVars
+        cs = self.constants
+        self.curState.apSet.clear()
+        for label, func in self.labels.items():
+            if func(vs, cs):
+                self.curState.apSet.add(label)
         self._stateId += 1
         self.curState.stateId = self._stateId
 
@@ -267,13 +273,14 @@ class ModulesFile(object):
             path.append(step)
             passedTime += holdingTime
 
-            if len(path) >= 1 and self.stopCondition and self.stopCondition(
-                    self.localVars, self.constants):
-                # add this empty step (with no transition made)
-                # to represent the state the system currently is in.
-                path.append(self.step_of_current(passedTime=passedTime))
-                self.restoreSystem()
-                return (None, path)
+            # 去掉对于stopCondition的判断:因为如果进入failure state,会在对scdict进行查询时,就进入if逻辑,然后将系统当前状态append到path中去
+            # if len(path) >= 1 and self.stopCondition and self.stopCondition(
+            #         self.localVars, self.constants):
+            #     # add this empty step (with no transition made)
+            #     # to represent the state the system currently is in.
+            #     path.append(self.step_of_current(passedTime=passedTime))
+            #     self.restoreSystem()
+            #     return (None, path)
 
         # MUST be executed before the function returns
         # to prepare generating next random path.

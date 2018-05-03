@@ -25,6 +25,10 @@ class SPSConfig():
             raise Exception('no parameter found: {0}'.format(name))
 
     def setParam(self, name, value):
+        '''
+        name: param name
+        value: value or Constant
+        '''
         if name not in self.params.keys():
             print "not correct constant name {} in calling SPSConfig.setParam".format(name)
         if isinstance(value, Constant):

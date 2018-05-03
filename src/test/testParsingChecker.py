@@ -13,7 +13,6 @@ class TestParsingChecker(unittest.TestCase):
         self.ltl = ["[1, {}]".format(DURATION), "T", "failure"]
         self.checker = Checker(self.parsed, ltl=self.ltl, duration=DURATION)
 
-    @timeit
     def test_check(self):
         self.checker.run()
 
