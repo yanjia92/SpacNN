@@ -1,16 +1,20 @@
 未完成
     验证parsed model在regressor中的正确性
-        0. 测试checker的运行结果和prism的运行结果是否一致 testChecker.py
-            原因是checker设置的随机路径取样数太小所致。
-        1. 对built model和parsed model分别回归分析，绘制出图片，对比两者。
+        1. 测试合理的checker.c and checker.d 使得验证的结果相对准确 testcheckingalgo.py
+        2. 测试parsed model的正确性
 
+
+
+    LTL公式的输入 UI
     comparison result:
         1. _F, _U in model solution: call model._fillinstate()
         2. failurecondition UI
         3. stopcondition UI
 
-    LTL公式的输入 UI
+
     
+    LTL公式的输入 UI
+
 
 已完成
 如何确保expression的parsing是正确的？ 单元测试成功 testParseExpr.py

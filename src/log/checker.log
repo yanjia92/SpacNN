@@ -1,5 +1,51 @@
-Checker is going to generates 8330 paths
-Verifying 512 paths, causing 13.5099909306s
-Verifying 1024 paths, causing 25.2060639858s
-Verifying 1536 paths, causing 35.9709088802s
-Verifying 2048 paths, causing 46.6693079472s
+Checker is going to generates 4163 paths
+Checker is going to generates 4163 paths
+Verifying 512 paths, causing 4.52500009537s
+Verifying 1024 paths, causing 7.97300004959s
+Verifying 1536 paths, causing 11.4160001278s
+Verifying 2048 paths, causing 14.9100000858s
+Verifying 2560 paths, causing 18.5490000248s
+Verifying 3072 paths, causing 22.0759999752s
+Verifying 3584 paths, causing 25.6640000343s
+Verifying 4096 paths, causing 29.3399999142s
+mc2's result=0.0201777564257
+Checker is going to generates 4163 paths
+Verifying 512 paths, causing 3.66799998283s
+Verifying 1024 paths, causing 7.24499988556s
+Verifying 1536 paths, causing 10.8469998837s
+Verifying 2048 paths, causing 14.4189999104s
+Verifying 2560 paths, causing 17.9879999161s
+Verifying 3072 paths, causing 21.5519998074s
+Verifying 3584 paths, causing 25.1129999161s
+Verifying 4096 paths, causing 28.6159999371s
+mc2's result=0.0196973336536
+Checker is going to generates 4163 paths
+Verifying 512 paths, causing 3.49799990654s
+Verifying 1024 paths, causing 7.01300001144s
+Verifying 1536 paths, causing 10.5120000839s
+Verifying 2048 paths, causing 14.0280001163s
+Verifying 2560 paths, causing 17.4670000076s
+Verifying 3072 paths, causing 20.9089999199s
+Verifying 3584 paths, causing 24.3229999542s
+Verifying 4096 paths, causing 27.7220001221s
+mc2's result=0.0208983905837
+Checker is going to generates 4163 paths
+Verifying 512 paths, causing 3.35600018501s
+Verifying 1024 paths, causing 6.84000015259s
+Verifying 1536 paths, causing 10.4060001373s
+Verifying 2048 paths, causing 14.0080001354s
+Verifying 2560 paths, causing 17.5880000591s
+Verifying 3072 paths, causing 21.1480000019s
+Verifying 3584 paths, causing 24.7060000896s
+Verifying 4096 paths, causing 28.2140002251s
+mc2's result=0.0235407158299
+Checker is going to generates 4163 paths
+Verifying 512 paths, causing 3.54099988937s
+Verifying 1024 paths, causing 7.16699981689s
+Verifying 1536 paths, causing 10.6669998169s
+Verifying 2048 paths, causing 14.2089998722s
+Verifying 2560 paths, causing 17.6969997883s
+Verifying 3072 paths, causing 21.2389998436s
+Verifying 3584 paths, causing 24.757999897s
+Verifying 4096 paths, causing 28.2679998875s
+mc2's result=0.0189766994956

@@ -7,40 +7,26 @@ from nn.NNRegressor import BPNeuralNetwork as BPNN
 from util.PlotHelper import plot_multi
 from PathHelper import get_prism_model_dir, get_sep, get_log_dir
 import logging
+from util.CsvFileHelper import parse_csv
 
 logger = logging.getLogger("test parsed regressor log")
 logger.addHandler(logging.FileHandler(get_log_dir() + get_sep() + "testparsedregre.log", "w"))
 logger.setLevel(logging.INFO)
 
 
-def get_expr_result_prism():
-    '''
-    获取prism中进行experiment的数据
-    返回：test_x, test_y
-    '''
-    filename = "YEAR1_T_1_5_1"
-    x = []
-    y = []
-    with open(get_prism_model_dir() + get_sep() + filename, "r") as f:
-        is_line1 = True
-        for l in f:
-            if is_line1:
-                is_line1 = False
-                continue
-            values = map(lambda token: float(token.strip()), l.split(','))
-            x.append(values[0])
-            y.append(values[1])
-    return (x, y)
+def get_expr_result_prism(filepath):
+    return parse_csv(filepath)
 
 
 TIME_LIMIT_IN_DAYS = 365
 ltl = ["U[1, {}]".format(int(TIME_LIMIT_IN_DAYS * 2)), "T", "failure"]
-TEST_DATA_X, TEST_DATA_Y = get_expr_result_prism()
+prism_data_path = get_prism_model_dir() + get_sep() + "YEAR1_T_1_5_1"
+TEST_DATA_X, TEST_DATA_Y = get_expr_result_prism(prism_data_path)
 thickness_cnsts = map(lambda v: Constant("SCREEN_THICKNESS", v), TEST_DATA_X)
 SAMPLES_PER_PARAM = 400
 
 
-def get_train_data_built():
+def do_expr_built():
     model = ModelFactory.get_built()
     checker = Checker(model=model, ltl=ltl, duration=TIME_LIMIT_IN_DAYS*2)
     # wrapper = ExperimentWrapper(checker, samples_per_param=SAMPLES_PER_PARAM)
@@ -52,7 +38,7 @@ def get_train_data_built():
     return result
 
 
-def get_train_data_parsed():
+def do_expr_parsed():
     model = ModelFactory.get_parsed()
     checker = Checker(model=model, ltl=ltl, duration=TIME_LIMIT_IN_DAYS*2)
     # wrapper = ExperimentWrapper(checker, samples_per_param=SAMPLES_PER_PARAM)
@@ -76,7 +62,7 @@ def test():
     '''生成built and parsed model
        对两个模型进行回归分析，拟合出曲线，绘制在同一幅图中
        并在同一幅图中绘制出真实的由model checker绘制出的曲线,并返回误差'''
-    result1 = get_train_data_built()
+    result1 = do_expr_built()
     tx1 = []
     ty1 = []
     for x,y in result1:
@@ -85,7 +71,7 @@ def test():
     network1 = get_network(tx1, ty1)
     pred_y1 = map(lambda test_x: network1.predict(test_x), TEST_DATA_X)
 
-    result2 = get_train_data_parsed()
+    result2 = do_expr_parsed()
     tx2 = []
     ty2 = []
     for x,y in result2:

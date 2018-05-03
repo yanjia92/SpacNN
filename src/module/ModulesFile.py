@@ -32,7 +32,8 @@ class ModelType:
 class ModulesFile(object):
     # id used for generating State object when generating random path
     # should be added 1 whenever before self.nextState get called.
-    _stateId = 0
+    # _stateId = 0
+    INIT_STATE_ID = 0
 
     def __init__(
             self,
@@ -50,8 +51,8 @@ class ModulesFile(object):
         self.constants = dict()
         self.modelType = modeltype
         self.scDict = OrderedDict()  # {sstate: [(comm, prob)]}
-        self.curState = State(self._stateId, set())
-        self.prevState = State(self._stateId, set())
+        self.curState = State(self.INIT_STATE_ID, set())
+        self.prevState = State(self.INIT_STATE_ID, set())
         self.commPrepared = False
         self.stopCondition = stopCondition
         self.failureCondition = failureCondition
@@ -70,6 +71,10 @@ class ModulesFile(object):
         self.durationThreshold = 1.0
         # failure biasing is enabled or not
         self.fb = fb
+        self.sset_set_map = dict()  # s: prefix for string type
+        self.tstate_apset_map = dict()  # t: prefix for tuple type
+        self.apset_list = []
+        self.localVarsList = self.localVars.values()  # used to accelerate speed
 
     def init(self, modules, labels):
         if modules:
@@ -140,24 +145,29 @@ class ModulesFile(object):
     # update self.curState's and self.prevState's apset and stateId
     # according to the system's current state
     def _updateCurAndPrevState(self):
-        self.prevState.apSet = set(self.curState.apSet)
+        self.prevState.apSet = self.curState.apSet
         self.prevState.stateId = self.curState.stateId
-        # self.curState.updateAPs(self.localVars, self.constants, self.labels)
-        vs = self.localVars
-        cs = self.constants
-        self.curState.apSet.clear()
-        for label, func in self.labels.items():
-            if func(vs, cs):
-                self.curState.apSet.add(label)
-        self._stateId += 1
-        self.curState.stateId = self._stateId
+        key = self._get_key_of_vars()
+        self.curState.apSet = self.tstate_apset_map[key]
+        self.curState.stateId += 1
+        return key
 
     def _initStateAPSetAndStateId(self):
-        self.curState.stateId = self._stateId
-        self.curState.updateAPs(
-            self.initLocalVars,
-            self.constants,
-            self.labels)
+        # self.curState.stateId = self._stateId
+        self.curState.stateId = 0
+        key = self._get_key_of_vars()
+        self.curState.apSet = self.tstate_apset_map[key]
+
+    # 获取当前代表当前所有变量值的key
+    def _get_key_of_vars(self):
+        return self._localvars_tuple()
+        # return self._localvars_tuple1()
+
+    def _localvars_tuple1(self):
+        return tuple(self.localVars.values())
+
+    def _localvars_tuple(self):
+        return tuple([v.value for v in self.localVarsList])
 
     # store new state's info in self.curState
     # (e.g. the transition already happened)
@@ -169,24 +179,26 @@ class ModulesFile(object):
     # in other allUp state(not initial states), it equals to
     # duration-passedTime.
     def nextState(self, cmd_probs, duration=0.0):
-        if not self.stateInited:
-            self.stateInited = True
-            self._initStateAPSetAndStateId()
+        # if not self.stateInited:
+        #     self.stateInited = True
+        #     self._initStateAPSetAndStateId()
 
         # failure biasing并没有改变一个状态的exit rate
         # exit rate依旧是每个command下的prob(在CTMC模型中,prob表示rate)之和
 
         exitRate = 0.0
-        exitRate = sum(map(lambda t: t[1], cmd_probs))
+        probs = [t[1] for t in cmd_probs]
+        cmds = [t[0] for t in cmd_probs]
+        exitRate = sum(probs)
         if self.fb:
             biasingExitRate = sum(
-            [command.biasingRate for command in map(lambda t:t[0], cmd_probs)])
+            [command.biasingRate for command in cmds])
             probs = [
                 command.biasingRate /
-                float(biasingExitRate) for command in map(lambda t: t[0], cmd_probs)]
+                float(biasingExitRate) for command in cmds]
         else:
             biasingExitRate = None
-            probs = map(lambda p: p/float(exitRate), map(lambda t: t[1], cmd_probs))
+            probs = [p/float(exitRate) for p in probs]
 
         rnd = random.random()  # random number in [0,1)
         probSum = 0.0
@@ -201,16 +213,17 @@ class ModulesFile(object):
                         holdingTime = MathUtils.randomExpo(exitRate)
                     else:
                         holdingTime = 1
-                enabledCommand = cmd_probs[index][0]
+                enabledCommand = cmds[index]
                 enabledCommand.execAction()
-                self._updateCurAndPrevState()
+                key = self._updateCurAndPrevState()
                 return (
                     enabledCommand.name,
                     holdingTime,
                     enabledCommand.prob,
                     enabledCommand.biasingRate,
                     exitRate,
-                    biasingExitRate)
+                    biasingExitRate,
+                    key)
 
     # return list of Step instance whose path duration is duration
     # duration: path duration
@@ -222,16 +235,16 @@ class ModulesFile(object):
     def gen_random_path(self, duration, cachedPrefixes=None):
         # Since when initilize a module, all its local variables
         # have been initilized
+        random.seed()
         if not self.commPrepared:
             self.prepareCommands()
             self.commPrepared = True
         path = list()
         timeSum = 0.0
         passedTime = 0.0
+        key = self._get_key_of_vars()
         while timeSum < duration:
             # get enabled commands list
-            variables = [var.getValue() for _, var in self.localVars.items()]
-            varsStr = ''.join([str(v) for v in variables])
             if len(self.scDict) == 0:
                 # 由于存在unbounded变量,无法提前判断所有的变量组合的enabled commands
                 # 因此需要手工判断
@@ -241,12 +254,15 @@ class ModulesFile(object):
                         if comm.guard(self.localVars, self.constants):
                             cmd_probs.append((comm, comm.prob()))
             else:
-                cmd_probs = self.scDict[varsStr]
+                cmd_probs = self.scDict[key]
             if len(cmd_probs) == 0:
                 path.append(self.step_of_current(passedTime=passedTime))
                 self.restoreSystem()
                 return None, path
-            transition, holdingTime, rate, biasingRate, exitRate, biasingExitRate = self.nextState(
+            if not self.stateInited:
+                self.stateInited = True
+                self._initStateAPSetAndStateId()
+            transition, holdingTime, rate, biasingRate, exitRate, biasingExitRate, key = self.nextState(
                 cmd_probs, duration=duration - timeSum)
             timeSum += holdingTime
             if len(path) == 0 and holdingTime > duration:
@@ -262,7 +278,7 @@ class ModulesFile(object):
                 holdingTime -= (timeSum - duration)
             step = Step(
                 self.prevState.stateId,
-                self.prevState.apSet.copy(),
+                self.prevState.apSet,
                 holdingTime,
                 passedTime,
                 transition,
@@ -273,7 +289,8 @@ class ModulesFile(object):
             path.append(step)
             passedTime += holdingTime
 
-            # 去掉对于stopCondition的判断:因为如果进入failure state,会在对scdict进行查询时,就进入if逻辑,然后将系统当前状态append到path中去
+            # 去掉对于stopCondition的判断:因为如果进入failure state,
+            # 会在对scdict进行查询时,就进入if逻辑,然后将系统当前状态append到path中去
             # if len(path) >= 1 and self.stopCondition and self.stopCondition(
             #         self.localVars, self.constants):
             #     # add this empty step (with no transition made)
@@ -288,9 +305,10 @@ class ModulesFile(object):
         return None, path
 
     def step_of_current(self, passedTime=None, holdingTime=0.0):
+        self._updateCurAndPrevState()
         return Step(
             self.curState.stateId,
-            copy.copy(self.curState.apSet),
+            self.curState.apSet,
             passedTime=passedTime,
             holdingTime=holdingTime
         )
@@ -309,8 +327,8 @@ class ModulesFile(object):
         self._stateId = 0
         self.curState.stateId = 0
         self.prevState.stateId = 0
-        self.curState.clearAPSet()
-        self.prevState.clearAPSet()
+        # self.curState.clearAPSet()
+        # self.prevState.clearAPSet()
         self.stateInited = False
 
     def restoreSystem(self):
@@ -414,11 +432,23 @@ class ModulesFile(object):
                             logger.error("command's prob must be callable")
                             logger.error(msg)
                         cmd_probs.append((copy.copy(command), p))
-            varTuple = tuple([item[1].getValue() for item in self.localVars.items()])
-            varsStr = ''.join([str(v) for v in varTuple])
+            key = self._get_key_of_vars()
             # sort cmd_probs by prob desc to accerate speed of ModulesFile@nextState
             cmd_probs.sort(key=lambda t: t[1], reverse=True)
-            self.scDict[varsStr] = cmd_probs
+            self.scDict[key] = cmd_probs
+
+            vs = self.localVars
+            cs = self.constants
+            apset = set()
+            for name, func in self.labels.items():
+                if func(vs, cs):
+                    apset.add(name)
+            if apset not in self.apset_list:
+                self.apset_list.append(apset)
+            # sset = str(apset)
+            # if sset not in self.sset_set_map.keys():
+            #     self.sset_set_map[sset] = apset
+            self.tstate_apset_map[key] = apset
         self.restoreSystem()
         self.commPrepared = True
 

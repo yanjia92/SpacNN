@@ -28,6 +28,8 @@ def test_built():
     pr.enable()
     result, path = built.gen_random_path(duration=duration)
     pr.disable()
+    id1 = id(path[0].apSet)
+    id2 = id(path[1].apSet)
     print "len of path:{}".format(len(path))
     s = StringIO.StringIO()
     sortby = "cumulative"
