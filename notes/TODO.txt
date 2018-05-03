@@ -2,7 +2,7 @@
     验证parsed model在regressor中的正确性
         1. 测试合理的checker.c and checker.d 使得验证的结果相对准确 testcheckingalgo.py
         2. 测试parsed model的正确性
-
+        write Step(state) , Step(NextMove, State)
 
 
     LTL公式的输入 UI

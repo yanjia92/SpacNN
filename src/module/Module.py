@@ -97,7 +97,7 @@ class Command(object):
             module = None,
             prob = None,
             kind=None,
-            biasingRate=None):
+            biasing_rate=None):
         self.name = name
         self.guard = guard
         self.action = action
@@ -108,7 +108,7 @@ class Command(object):
         # by failure biasing methods, such as SFB, BFB, ...
         # failure biasing doesn't change rate, it only changes
         # probability of the embedded DTMC
-        self.biasingRate = biasingRate
+        self.biasing_rate = biasing_rate
         # print "Guard is None ? : " + str(self.guard is None)
 
     def evalGuard(self):

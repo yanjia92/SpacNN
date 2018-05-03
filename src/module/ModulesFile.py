@@ -6,13 +6,13 @@ import math
 import random
 from collections import OrderedDict
 from functools import reduce
-
 import Module
 import util.MathUtils as MathUtils
 from Module import Constant, Variable
 from State import State
 from Step import Step
 from util.AnnotationHelper import *
+from module.NextMove import NextMove
 
 import traceback
 
@@ -75,6 +75,7 @@ class ModulesFile(object):
         self.tstate_apset_map = dict()  # t: prefix for tuple type
         self.apset_list = []
         self.localVarsList = self.localVars.values()  # used to accelerate speed
+        self.state_id = self.INIT_STATE_ID
 
     def init(self, modules, labels):
         if modules:
@@ -145,18 +146,18 @@ class ModulesFile(object):
     # update self.curState's and self.prevState's apset and stateId
     # according to the system's current state
     def _updateCurAndPrevState(self):
-        self.prevState.apSet = self.curState.apSet
-        self.prevState.stateId = self.curState.stateId
+        self.prevState.ap_set = self.curState.ap_set
+        self.prevState.state_id = self.curState.state_id
         key = self._get_key_of_vars()
-        self.curState.apSet = self.tstate_apset_map[key]
-        self.curState.stateId += 1
+        self.curState.ap_set = self.tstate_apset_map[key]
+        self.curState.state_id += 1
         return key
 
     def _initStateAPSetAndStateId(self):
         # self.curState.stateId = self._stateId
-        self.curState.stateId = 0
+        self.curState.state_id = 0
         key = self._get_key_of_vars()
-        self.curState.apSet = self.tstate_apset_map[key]
+        self.curState.ap_set = self.tstate_apset_map[key]
 
     # 获取当前代表当前所有变量值的key
     def _get_key_of_vars(self):
@@ -205,7 +206,7 @@ class ModulesFile(object):
         for index, prob in enumerate(probs):
             probSum += prob
             if probSum >= rnd:
-                if self.forcing and self.curState.stateId == 0:
+                if self.forcing and self.curState.state_id == 0:
                     holdingTime = MathUtils.randomExpo(
                         exitRate, t=duration)
                 else:
@@ -224,6 +225,111 @@ class ModulesFile(object):
                     exitRate,
                     biasingExitRate,
                     key)
+
+    def current_key(self):
+        return self._get_key_of_vars()
+
+    def step_without_move(self, state_id):
+        '''construct a step instance according to system current state'''
+        state = self.current_state()
+        return Step(state)
+
+    def current_state(self):
+        key = self.current_key()
+        apset = self.tstate_apset_map[key]
+        state_id = self.next_state_id()
+        return State(state_id, apset)
+
+    def gen_holding_time(self, exit_rate, duration, first_move):
+        if self.forcing and first_move:
+            holding_time = MathUtils.randomExpo(
+                exit_rate, t=duration)
+        else:
+            if self.modelType == ModelType.CTMC:
+                holding_time = MathUtils.randomExpo(exit_rate)
+            else:
+                holding_time = 1
+        return holding_time
+
+    def gen_next_move(self, cmd_probs, time_passed, duration):
+        rnd_num = random.random()
+        prob_sum = 0
+
+        cmds = [v[0] for v in cmd_probs]
+        probs = [v[1] for v in cmd_probs]
+        exit_rate = sum(probs)
+        actual_probs = [p/exit_rate for p in probs]
+        biasing_exit_rate = None
+        if self.fb:
+            # todo add failure biasing logic
+            pass
+
+        for i, p in enumerate(actual_probs):
+            prob_sum += p
+            if prob_sum >= rnd_num:
+                chosen_cmd = cmds[i]
+                holding_time = self.gen_holding_time(exit_rate, duration-time_passed, int(time_passed) == 0)
+                return NextMove(chosen_cmd, holding_time, time_passed, exit_rate, biasing_exit_rate)
+
+
+    def restore_system(self):
+        self.restore_vars()
+        self.state_id = self.INIT_STATE_ID
+
+    def next_state_id(self):
+        previous = self.state_id
+        self.state_id += 1
+        return previous
+
+    def gen_random_path_V2(self, duration):
+        '''return path: [Step]'''
+        # 思路：
+        # get key of current local vars as key
+        # loop until duration met:
+        #     get enabled commands
+        #     if no enabled commands found:
+        #          append empty step to path and restore_system
+        #          return path
+        #     generate next move info
+        #     generate cur state info
+        #     construct the step instance
+        #     if first move is not possible(holding_time > duration):
+        #           add empty step to path and restore_system and return
+        #     timesum += holdingtime
+        #     if timesum > duration:
+        #           trim holdingtime to (duration - timesum)
+        #     path.append(step)
+        path = []
+        if not self.commPrepared:
+            self.prepareCommands()
+            self.commPrepared = True
+        if len(self.scDict) == 0:
+            logger.error("Unbounded variables not supported!")
+            return None
+        time_passed = 0.0
+        while time_passed < duration:
+            key = self.current_key()
+            cmd_probs = self.scDict[key]
+            if len(cmd_probs) == 0:
+                path.append(self.step_without_move(self.next_state_id()))
+                return path
+            next_move = self.gen_next_move(cmd_probs, time_passed, duration)
+            cur_state = self.current_state()
+            # if first move is not possible
+            if len(path) == 0 and next_move.holding_time > duration:
+                path.append(self.step_without_move(self.next_state_id()))
+                self.restore_system()
+                return path
+            time_passed += next_move.holding_time
+            if time_passed > duration:
+                next_move.holding_time = duration - time_passed
+            # construct step instance
+            step = Step(cur_state, next_move)
+            path.append(step)
+
+        self.restore_system()
+        return path
+
 
     # return list of Step instance whose path duration is duration
     # duration: path duration
@@ -277,8 +383,8 @@ class ModulesFile(object):
             if timeSum > duration:
                 holdingTime -= (timeSum - duration)
             step = Step(
-                self.prevState.stateId,
-                self.prevState.apSet,
+                self.prevState.state_id,
+                self.prevState.ap_set,
                 holdingTime,
                 passedTime,
                 transition,
@@ -307,8 +413,8 @@ class ModulesFile(object):
     def step_of_current(self, passedTime=None, holdingTime=0.0):
         self._updateCurAndPrevState()
         return Step(
-            self.curState.stateId,
-            self.curState.apSet,
+            self.curState.state_id,
+            self.curState.ap_set,
             passedTime=passedTime,
             holdingTime=holdingTime
         )
@@ -319,20 +425,20 @@ class ModulesFile(object):
     def getModelInitState(self):
         return State(0, self.initLocalVars, self)
 
-    def restoreVars(self):
+    def restore_vars(self):
         for k, v in self.initLocalVars.items():
             self.localVars[k].setValue(v.getValue())
 
     def restoreStates(self):
         self._stateId = 0
-        self.curState.stateId = 0
-        self.prevState.stateId = 0
+        self.curState.state_id = 0
+        self.prevState.state_id = 0
         # self.curState.clearAPSet()
         # self.prevState.clearAPSet()
         self.stateInited = False
 
     def restoreSystem(self):
-        self.restoreVars()
+        self.restore_vars()
         self.restoreStates()
 
     # return the probability a path is generated under

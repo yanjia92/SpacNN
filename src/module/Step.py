@@ -1,5 +1,20 @@
 class Step(object):
-    def __init__(
+    def __init__(self, state, next_move=None):
+        if next_move:
+            self.init(
+                state.state_id,
+                state.ap_set,
+                next_move.holding_time,
+                next_move.passed_time,
+                next_move.cmd.name,
+                next_move.cmd.prob,
+                next_move.cmd.biasing_rate,
+                next_move.exit_rate,
+                next_move.biasing_exit_rate)
+        else:
+            self.init(state.state_id, state.ap_set)
+
+    def init(
             self,
             stateId,
             apSet,
@@ -36,7 +51,7 @@ class Step(object):
     def __repr__(self):
         if not hasattr(self.rate, '__call__'):
             return 'Step:(ap={}, command={}, prob={})'.format(
-            str(self.apSet), self.transition, self.rate)
+                str(self.ap_set), self.transition, self.rate)
         return 'Step:(ap={}, command={}, prob={})'.format(
             str(self.apSet), self.transition, self.rate())
 
