@@ -149,7 +149,8 @@ class ModulesFile(object):
     def _updateCurAndPrevState(self):
         self.prevState.ap_set = self.curState.ap_set
         self.prevState.state_id = self.curState.state_id
-        key = self._get_key_of_vars()
+        # key = self._get_key_of_vars()
+        key = tuple([v.value for v in self.localVarsList])
         self.curState.ap_set = self.tstate_apset_map[key]
         self.curState.state_id += 1
         return key
@@ -158,8 +159,9 @@ class ModulesFile(object):
         # self.curState.state_id = 0
         # key = self._get_key_of_vars()
         # self.curState.ap_set = self.tstate_apset_map[key]
+        key = tuple([v.value for v in self.localVarsList])
         self.curState = State(self.INIT_STATE_ID,
-                              self.tstate_apset_map[self._get_key_of_vars()])
+                              self.tstate_apset_map[key])
 
     # 获取当前代表当前所有变量值的key
     def _get_key_of_vars(self):
@@ -229,7 +231,8 @@ class ModulesFile(object):
                     key)
 
     def current_key(self):
-        return self._localvars_tuple()
+        # return self._localvars_tuple()
+        return tuple([v.value for v in self.localVarsList])
 
     def step_without_move(self, key, passed_time):
         '''construct a step instance according to system current state'''
@@ -291,7 +294,7 @@ class ModulesFile(object):
         self.state_id += 1
         return previous
 
-    @profileit(get_log_dir() + get_sep() + "pathgenV2")
+    # @profileit(get_log_dir() + get_sep() + "pathgenV2")
     def gen_random_path_V2(self, duration):
         '''return path: [Step]'''
         # 思路：
@@ -321,7 +324,8 @@ class ModulesFile(object):
         passed_time = 0.0
         while passed_time < duration:
             # key = self.current_key()
-            key = self._localvars_tuple()
+            # key = self._localvars_tuple()
+            key = tuple([v.value for v in self.localVarsList])
             cmd_probs = self.scDict[key]
             if len(cmd_probs) == 0:
                 path.append(self.step_without_move(key, passed_time))
@@ -561,7 +565,8 @@ class ModulesFile(object):
                             logger.error("command's prob must be callable")
                             logger.error(msg)
                         cmd_probs.append((copy.copy(command), p))
-            key = self._get_key_of_vars()
+            # key = self._get_key_of_vars()
+            key = tuple([v.value for v in self.localVarsList])
             # sort cmd_probs by prob desc to accerate speed of
             # ModulesFile@nextState
             cmd_probs.sort(key=lambda t: t[1], reverse=True)

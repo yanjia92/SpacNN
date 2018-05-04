@@ -7,6 +7,9 @@ from collections import namedtuple
 
 
 class State(object):
+    # state_id = None
+    # ap_set = None
+
     def __init__(self, state_id, ap_set):
         self.state_id = state_id
         self.ap_set = ap_set
@@ -19,4 +22,10 @@ class State(object):
 # State = namedtuple("State", fields)
 
 
+def test():
+    s = State(1, set())
+    print s.__dict__
 
+
+if __name__ == "__main__":
+    test()

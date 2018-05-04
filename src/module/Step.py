@@ -1,3 +1,13 @@
+from module.State import State
+from module.NextMove import NextMove
+import logging
+import sys
+
+logger = logging.getLogger("Step logger")
+logger.addHandler(logging.StreamHandler(sys.stdout))
+logger.setLevel(logging.ERROR)
+
+
 class Step(object):
     def __init__(
         self,
@@ -15,6 +25,12 @@ class Step(object):
     ):
         self.state = state
         self.next_move = next_move
+
+        # self.map = dict()
+        # self.map.update([(p, self.state) for p in self.state.__dict__.keys()])
+        # self.map.update([(p, self.next_move) for p in self.next_move._fields])
+        # if self.next_move.cmd is not None:
+        #     self.map.update([(p, self.next_move.cmd) for p in self.next_move.cmd.__dict__.keys()])
         # if state and next_move:
         #     self.state_id = state.state_id
         #     self.ap_set = state.ap_set
@@ -77,18 +93,47 @@ class Step(object):
         return str(self.ap_set)
 
     def __repr__(self):
-        if not hasattr(self.rate, '__call__'):
+        if not hasattr(self.prob, '__call__'):
             return 'Step:(ap={}, command={}, prob={})'.format(
-                str(self.ap_set), self.transition, self.rate)
+                str(self.ap_set), self.name, self.prob)
         return 'Step:(ap={}, command={}, prob={})'.format(
-            str(self.ap_set), self.transition, self.rate())
+            str(self.ap_set), self.name, self.prob())
 
-    def __getattribute__(self, item):
-        if item == "state" or item == "next_move":
-            return object.__getattribute__(self, item)
-        if item == "state_id" or item == "ap_set":
-            return object.__getattribute__(self.state, item)
-        return object.(self.next_move, item)
+    # def __getattribute__(self, item):
+    #     try:
+    #         result = object.__getattribute__(self, item)
+    #     except Exception as e:
+    #         owner = self.map[item]
+    #         if owner:
+    #             result = object.__getattribute__(owner, item)
+    #     finally:
+    #         return result
+        # if item == "state" or item == "next_move":
+        #     return object.__getattribute__(self, item)
+        # if item == "state_id" or item == "ap_set":
+        #     return object.__getattribute__(self.state, item)
+        # if item == "prob" or item == "biasing_rate" or item == "name":
+        #     if self.next_move.cmd:
+        #         return object.__getattribute__(self.next_move.cmd, item)
+        #     return None
+        # return object.__getattribute__(self.next_move, item)
+        # if item == "prop_owner_map":
+        #     return object.__getattribute__(self, item)
+        # if item not in self.prop_owner_map.keys():
+        #     return object.__getattribute__(self, item)
+        # owner = self.prop_owner_map[item]
+        # if owner:
+        #     return object.__getattribute__(owner, item)
+
+    def __getattr__(self, item):
+        # owner = self.map[item]
+        # return object.__getattribute__(owner, item)
+        if item in self.state.__dict__.keys():
+            return self.state.__dict__[item]
+        if item in self.next_move._fields:
+            return getattr(self.next_move, item)
+        if self.next_move.cmd is not None and item in self.next_move.cmd.__dict__.keys():
+            return self.next_move.cmd.__dict__[item]
 
     def asKey(self):
         lAPSet = sorted(list(self.ap_set))
@@ -101,3 +146,15 @@ class Step(object):
 
     def isInitState(self, all_up_label):
         return all_up_label in self.ap_set
+
+
+def test():
+    state = State(1, set())
+    next_move = NextMove()
+    step = Step(state, next_move)
+    print step
+    # print State.__dict__
+
+
+if __name__ == "__main__":
+    test()

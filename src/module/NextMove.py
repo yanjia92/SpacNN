@@ -24,7 +24,7 @@ fileds = [
 ]
 
 NextMove = namedtuple("NextMove", fileds)
-# allow defalut value for NextMove
+# allow default value for NextMove
 NextMove.__new__.__defaults__ = (None, 0.0, None, 0.0, 0.0)
 
 

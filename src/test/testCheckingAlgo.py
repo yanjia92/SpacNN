@@ -9,8 +9,9 @@ import random
 
 
 DURATION = 1*365*2
-c = 0.4
-d = 0.01
+c = 0.6
+d = 0.02
+# d = 0.3
 
 
 def get_prism_checking_result():
@@ -52,11 +53,12 @@ def t2():
     prism_result_x, prism_result_y = get_prism_checking_result()  # (1, 5, 1)
     checker = get_checker()
     samplesize = checker.get_sample_size()
-    thickness = range(5, 6)
+    thickness = range(1, 6)
     probs = []
     logger = get_logger()
     for t in thickness:
         ModelFactory.setParam("SCREEN_THICKNESS", t)
+        checker.model.prepareCommands()
         probs.append(checker.run())
     logger.info("samples={},c={},d={}".format(samplesize, c, d))
     logger.info(probs)

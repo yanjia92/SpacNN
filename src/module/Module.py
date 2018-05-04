@@ -206,6 +206,9 @@ class Variable(object):
             l.append(cp)
         return l
 
+    def incr(self):
+        self.value += 1
+
     def __iadd__(self, other):
         if isinstance(other, Variable) and self.valType == other.valType:
             self.value += other.value

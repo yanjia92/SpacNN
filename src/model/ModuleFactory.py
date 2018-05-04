@@ -119,7 +119,8 @@ class ModuleFactory(object):
             return day_val < DAY_MAX and t_turn == True
 
         def action(vs, cs):
-            vs['day'].setValue(vs['day'].getValue() + 1)
+            # vs['day'].setValue(vs['day'].getValue() + 1)
+            vs['day'].incr()
             vs['timer_turn'].setValue(False)
 
         module.addCommand(
