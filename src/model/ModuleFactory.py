@@ -106,7 +106,7 @@ class ModuleFactory(object):
         module.addVariable(
             Variable(
                 'timer_turn',
-                True,
+                False,
                 set([True, False]),
                 bool
             )

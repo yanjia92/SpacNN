@@ -3,29 +3,20 @@ curdir = os.getcwd()
 pardir = os.path.dirname(os.path.abspath(curdir))
 import sys
 sys.path.append(pardir)
+from collections import namedtuple
+
 
 class State(object):
-    def __init__(self, stateId, apSet):
-        self.state_id = stateId
-        self.ap_set = apSet
+    def __init__(self, state_id, ap_set):
+        self.state_id = state_id
+        self.ap_set = ap_set
 
     def __str__(self):
         result = 'State(id: %d, %s)' % (self.sid, str(self.ap_set))
         return result
 
-    # check if ap holds at current state
-    def checkAP(self, apName):
-       return apName in self.ap_set
-
-    # vs,cs,labels: OrderedDict
-    def updateAPs(self, vs, cs, labels):
-        self.ap_set.clear()
-        for ap, func in labels.items():
-            if func(vs, cs):
-                self.ap_set.add(ap)
-
-    def clearAPSet(self):
-        self.ap_set.clear()
+# fields = ["state_id", "ap_set"]
+# State = namedtuple("State", fields)
 
 
 

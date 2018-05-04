@@ -37,20 +37,22 @@ def t1():
     checker = get_checker()
     PATH_CNT = 3000
     logger = get_logger()
+    logger.setLevel(logging.ERROR)
     for _ in range(PATH_CNT):
         result, path = checker.gen_random_path()
+        if len(path) < DURATION:
+            logger.info("Failed path found.")
         verified = checker.verify(path)
         if not verified and len(path) != DURATION:
-            logger.info("path:{}".format(str(path)))
+            logger.error("path:{}".format(str(path)))
 
 
 def t2():
     '''测试built模型运行checker的结果与PRISM中运行的一致'''
-    random.seed()
     prism_result_x, prism_result_y = get_prism_checking_result()  # (1, 5, 1)
     checker = get_checker()
     samplesize = checker.get_sample_size()
-    thickness = range(1, 6)
+    thickness = range(5, 6)
     probs = []
     logger = get_logger()
     for t in thickness:

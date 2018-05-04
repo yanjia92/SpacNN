@@ -1,31 +1,31 @@
-         14996 function calls in 0.020 seconds
+         14996 function calls in 0.017 seconds
 
    Ordered by: cumulative time
 
    ncalls  tottime  percall  cumtime  percall filename:lineno(function)
-        1    0.004    0.004    0.020    0.020 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:290(gen_random_path_V2)
-      730    0.005    0.000    0.006    0.000 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:255(gen_next_move)
-      730    0.003    0.000    0.003    0.000 /Users/bitbook/Documents/SpacNN/src/module/Step.py:2(__init__)
-      730    0.001    0.000    0.003    0.000 /Users/bitbook/Documents/SpacNN/src/module/Module.py:121(execAction)
+        1    0.004    0.004    0.017    0.017 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:290(gen_random_path_V2)
+      730    0.004    0.000    0.005    0.000 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:255(gen_next_move)
+      730    0.002    0.000    0.002    0.000 /Users/bitbook/Documents/SpacNN/src/module/Step.py:2(__init__)
+      730    0.000    0.000    0.002    0.000 /Users/bitbook/Documents/SpacNN/src/module/Module.py:121(execAction)
       730    0.001    0.000    0.002    0.000 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:238(current_state)
-      730    0.000    0.000    0.002    0.000 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:230(current_key)
+      730    0.000    0.000    0.001    0.000 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:230(current_key)
       365    0.001    0.000    0.001    0.000 /Users/bitbook/Documents/SpacNN/src/model/ModuleFactory.py:121(action)
       730    0.001    0.000    0.001    0.000 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:171(_localvars_tuple)
      1101    0.001    0.000    0.001    0.000 /Users/bitbook/Documents/SpacNN/src/module/Module.py:185(setValue)
       730    0.000    0.000    0.001    0.000 <string>:8(__new__)
-      730    0.000    0.000    0.000    0.000 {built-in method __new__ of type object at 0x109a2a408}
+      730    0.000    0.000    0.000    0.000 {built-in method __new__ of type object at 0x10cb9c408}
       730    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:285(next_state_id)
       730    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/module/State.py:8(__init__)
       730    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:243(gen_holding_time)
       730    0.000    0.000    0.000    0.000 {sum}
-     1461    0.000    0.000    0.000    0.000 {len}
-      114    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/model/ModuleFactory.py:238(naction)
-       89    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/model/ModuleFactory.py:50(naction)
      1101    0.000    0.000    0.000    0.000 {isinstance}
-       85    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/model/ModuleFactory.py:309(naction)
-       77    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/model/ModuleFactory.py:166(naction)
-      730    0.000    0.000    0.000    0.000 {method 'random' of '_random.Random' objects}
+     1461    0.000    0.000    0.000    0.000 {len}
+      106    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/model/ModuleFactory.py:238(naction)
+       89    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/model/ModuleFactory.py:166(naction)
+       84    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/model/ModuleFactory.py:309(naction)
+       86    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/model/ModuleFactory.py:50(naction)
       730    0.000    0.000    0.000    0.000 {method 'append' of 'list' objects}
+      730    0.000    0.000    0.000    0.000 {method 'random' of '_random.Random' objects}
       371    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/module/Module.py:191(getValue)
         1    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:281(restore_system)
         1    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:438(restore_vars)

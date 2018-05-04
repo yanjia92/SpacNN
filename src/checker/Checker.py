@@ -192,7 +192,9 @@ class Checker(threading.Thread):
     # returned (result, path e.g. list of Step instance)
     # using cachedPrefixes to check the path's checking result beforehand
     def gen_random_path(self):
-        return self.model.gen_random_path(self.duration, self.cachedPrefixes)
+        # return self.model.gen_random_path(self.duration, self.cachedPrefixes)
+        path = self.model.gen_random_path_V2(self.duration)
+        return (None, path)
 
     # path: list of Step
     # step: current Step instance
@@ -210,7 +212,7 @@ class Checker(threading.Thread):
     # path: list of Step instance
     def verify(self, path, ltl=None):
         satisfiedSteps = self._rverify(path, 0, ltl)
-        result = 0 in map(lambda step: step.stateId, satisfiedSteps)
+        result = 0 in map(lambda step: step.state_id, satisfiedSteps)
         # logging.info('path verified result: %s' % str(result))
         return result
 
@@ -285,8 +287,8 @@ class Checker(threading.Thread):
             if step in rstates:
                 # check if state is within timeInterval
                 if timeInterval:
-                    stateBeginTime = step.passedTime
-                    stateEndTime = step.passedTime + step.holdingTime
+                    stateBeginTime = step.passed_time
+                    stateEndTime = step.passed_time + step.holding_time
                     interval = Interval(stateBeginTime, stateEndTime)
                     if interval.interleaveWith(timeInterval):
                         result.add(step)
@@ -305,13 +307,13 @@ class Checker(threading.Thread):
     def _checkX(self, path, lstates):
         result = set()
         lstates = filter(lambda s: s.stateId >= 1, lstates)
-        stateIds = [step.stateId for step in path]
+        stateIds = [step.state_id for step in path]
         for s in lstates:
             result.add(path[bisect.bisect_left(stateIds, s.stateId)])
         return result
 
     def _checkAP(self, path, ap):
-        return set([s for s in path if ap in s.apSet])
+        return set([s for s in path if ap in s.ap_set])
 
     # Get the expectation value of posterior distribution.
     def postEx(self, n, x):
@@ -346,7 +348,7 @@ class Checker(threading.Thread):
         x, n = 0.0, 0.0
         postex = 0.0
         for i in range(sz):
-            satisfied, path = s.gen_random_path(self.decided_prefixes)
+            satisfied, path = s.gen_random_path()
             n += 1
             if s.verify([p.ap for p in path], s.ltl, s.pts):
                 x += 1
@@ -426,7 +428,7 @@ class Checker(threading.Thread):
                     x += 1
             else:
                 # nspaths.add(str(path))
-                failed = filter(lambda apset: "failure" in apset, map(lambda step: step.apSet, path))
+                failed = filter(lambda apset: "failure" in apset, map(lambda step: step.ap_set, path))
                 if failed:
                     self.logger.info("fail ap in apset, but verified not failed. path={}".format(str(path)))
                 else:

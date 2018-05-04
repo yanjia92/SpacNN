@@ -11,8 +11,9 @@ import util.MathUtils as MathUtils
 from Module import Constant, Variable
 from State import State
 from Step import Step
-from util.AnnotationHelper import *
+from util.AnnotationHelper import profileit
 from module.NextMove import NextMove
+from PathHelper import *
 
 import traceback
 
@@ -99,7 +100,7 @@ class ModulesFile(object):
         # add constants
         self.constants.update(module.constants)
         module.modulesFile = self
-        for _,comm in module.allCommands().items():
+        for _, comm in module.allCommands().items():
             comm.vs = self.localVars
             comm.cs = self.constants
 
@@ -154,10 +155,11 @@ class ModulesFile(object):
         return key
 
     def _initStateAPSetAndStateId(self):
-        # self.curState.stateId = self._stateId
-        self.curState.state_id = 0
-        key = self._get_key_of_vars()
-        self.curState.ap_set = self.tstate_apset_map[key]
+        # self.curState.state_id = 0
+        # key = self._get_key_of_vars()
+        # self.curState.ap_set = self.tstate_apset_map[key]
+        self.curState = State(self.INIT_STATE_ID,
+                              self.tstate_apset_map[self._get_key_of_vars()])
 
     # 获取当前代表当前所有变量值的key
     def _get_key_of_vars(self):
@@ -193,13 +195,13 @@ class ModulesFile(object):
         exitRate = sum(probs)
         if self.fb:
             biasingExitRate = sum(
-            [command.biasingRate for command in cmds])
+                [command.biasingRate for command in cmds])
             probs = [
                 command.biasingRate /
                 float(biasingExitRate) for command in cmds]
         else:
             biasingExitRate = None
-            probs = [p/float(exitRate) for p in probs]
+            probs = [p / float(exitRate) for p in probs]
 
         rnd = random.random()  # random number in [0,1)
         probSum = 0.0
@@ -221,21 +223,23 @@ class ModulesFile(object):
                     enabledCommand.name,
                     holdingTime,
                     enabledCommand.prob,
-                    enabledCommand.biasingRate,
+                    enabledCommand.biasing_rate,
                     exitRate,
                     biasingExitRate,
                     key)
 
     def current_key(self):
-        return self._get_key_of_vars()
+        return self._localvars_tuple()
 
-    def step_without_move(self, state_id):
+    def step_without_move(self, key, passed_time):
         '''construct a step instance according to system current state'''
-        state = self.current_state()
-        return Step(state)
+        # state = self.current_state(key)
+        ap_set = self.tstate_apset_map[key]
+        state_id = self.next_state_id()
+        state = State(state_id, ap_set)
+        return Step(state=state, next_move=NextMove(passed_time))
 
-    def current_state(self):
-        key = self.current_key()
+    def current_state(self, key):
         apset = self.tstate_apset_map[key]
         state_id = self.next_state_id()
         return State(state_id, apset)
@@ -251,6 +255,7 @@ class ModulesFile(object):
                 holding_time = 1
         return holding_time
 
+    # @profileit(get_log_dir() + get_sep() + "gen_next_move")
     def gen_next_move(self, cmd_probs, time_passed, duration):
         rnd_num = random.random()
         prob_sum = 0
@@ -258,7 +263,7 @@ class ModulesFile(object):
         cmds = [v[0] for v in cmd_probs]
         probs = [v[1] for v in cmd_probs]
         exit_rate = sum(probs)
-        actual_probs = [p/exit_rate for p in probs]
+        actual_probs = [p / exit_rate for p in probs]
         biasing_exit_rate = None
         if self.fb:
             # todo add failure biasing logic
@@ -268,9 +273,14 @@ class ModulesFile(object):
             prob_sum += p
             if prob_sum >= rnd_num:
                 chosen_cmd = cmds[i]
-                holding_time = self.gen_holding_time(exit_rate, duration-time_passed, int(time_passed) == 0)
-                return NextMove(chosen_cmd, holding_time, time_passed, exit_rate, biasing_exit_rate)
-
+                holding_time = self.gen_holding_time(
+                    exit_rate, duration - time_passed, int(time_passed) == 0)
+                return NextMove(
+                    time_passed,
+                    holding_time=holding_time,
+                    cmd=chosen_cmd,
+                    exit_rate=exit_rate,
+                    biasing_exit_rate=biasing_exit_rate)
 
     def restore_system(self):
         self.restore_vars()
@@ -281,6 +291,7 @@ class ModulesFile(object):
         self.state_id += 1
         return previous
 
+    @profileit(get_log_dir() + get_sep() + "pathgenV2")
     def gen_random_path_V2(self, duration):
         '''return path: [Step]'''
         # 思路：
@@ -299,6 +310,7 @@ class ModulesFile(object):
         #     if timesum > duration:
         #           trim holdingtime to (duration - timesum)
         #     path.append(step)
+        #     next_move.cmd.action()
         path = []
         if not self.commPrepared:
             self.prepareCommands()
@@ -306,30 +318,36 @@ class ModulesFile(object):
         if len(self.scDict) == 0:
             logger.error("Unbounded variables not supported!")
             return None
-        time_passed = 0.0
-        while time_passed < duration:
-            key = self.current_key()
+        passed_time = 0.0
+        while passed_time < duration:
+            # key = self.current_key()
+            key = self._localvars_tuple()
             cmd_probs = self.scDict[key]
             if len(cmd_probs) == 0:
-                path.append(self.step_without_move(self.next_state_id()))
-                return path
-            next_move = self.gen_next_move(cmd_probs, time_passed, duration)
-            cur_state = self.current_state()
-            # if first move is not possible
-            if len(path) == 0 and next_move.holding_time > duration:
-                path.append(self.step_without_move(self.next_state_id()))
+                path.append(self.step_without_move(key, passed_time))
                 self.restore_system()
                 return path
-            time_passed += next_move.holding_time
-            if time_passed > duration:
-                next_move.holding_time = duration - time_passed
+            next_move = self.gen_next_move(cmd_probs, passed_time, duration)
+            # cur_state = self.current_state(key)
+            state_id = self.next_state_id()
+            ap_set = self.tstate_apset_map[key]
+            cur_state = State(state_id=state_id, ap_set=ap_set)
+            # if first move is not possible
+            if len(path) == 0 and next_move.holding_time > duration:
+                path.append(self.step_without_move(key, passed_time))
+                self.restore_system()
+                return path
+            if passed_time + next_move.holding_time > duration:
+                next_move.holding_time -= (passed_time +
+                                           next_move.holding_time - duration)
+            passed_time += next_move.holding_time
             # construct step instance
             step = Step(cur_state, next_move)
             path.append(step)
+            next_move.cmd.execAction()
 
         self.restore_system()
         return path
-
 
     # return list of Step instance whose path duration is duration
     # duration: path duration
@@ -338,6 +356,7 @@ class ModulesFile(object):
     # can be stopped.
     # return (None, path) if cache is not hit
     # else return satisfied(of bool type), path
+    @profileit(get_log_dir() + get_sep() + "pathgenV1")
     def gen_random_path(self, duration, cachedPrefixes=None):
         # Since when initilize a module, all its local variables
         # have been initilized
@@ -355,8 +374,8 @@ class ModulesFile(object):
                 # 由于存在unbounded变量,无法提前判断所有的变量组合的enabled commands
                 # 因此需要手工判断
                 cmd_probs = []
-                for _,module in self.modules.items():
-                    for _,comm in module.allCommands().items():
+                for _, module in self.modules.items():
+                    for _, comm in module.allCommands().items():
                         if comm.guard(self.localVars, self.constants):
                             cmd_probs.append((comm, comm.prob()))
             else:
@@ -383,15 +402,15 @@ class ModulesFile(object):
             if timeSum > duration:
                 holdingTime -= (timeSum - duration)
             step = Step(
-                self.prevState.state_id,
-                self.prevState.ap_set,
-                holdingTime,
-                passedTime,
-                transition,
-                rate,
-                biasingRate,
-                exitRate,
-                biasingExitRate)
+                state_id=self.prevState.state_id,
+                ap_set=self.prevState.ap_set,
+                holding_time=holdingTime,
+                passed_time=passedTime,
+                transition=transition,
+                rate=rate,
+                biasing_rate=biasingRate,
+                exit_rate=exitRate,
+                biasing_exit_rate=biasingExitRate)
             path.append(step)
             passedTime += holdingTime
 
@@ -431,8 +450,10 @@ class ModulesFile(object):
 
     def restoreStates(self):
         self._stateId = 0
-        self.curState.state_id = 0
-        self.prevState.state_id = 0
+        # self.curState.state_id = 0
+        # self.prevState.state_id = 0
+        self.curState = State(self.INIT_STATE_ID, set())
+        self.prevState = State(self.INIT_STATE_ID, set())
         # self.curState.clearAPSet()
         # self.prevState.clearAPSet()
         self.stateInited = False
@@ -472,7 +493,7 @@ class ModulesFile(object):
                 # step.biasingExitRate is the sum of probability not the rate
                 lamda = step.exitRate
                 x = step.holdingTime
-                if self.forcing and step.isInitState():
+                if self.forcing and step.isInitState("ALL UP LABEL"):
                     prob *= step.biasingRate / step.biasingExitRate * \
                         forcingPDF(lamda, x, duration)
                 else:
@@ -517,13 +538,15 @@ class ModulesFile(object):
     def prepareCommands(self):
         # first check whether there's a variable of system that is unbounded
         # in that case, prepareCommands can not be executed.
-        if sum(map(int, map(lambda (_,var): not var.bounded, self.localVars.items()))):
+        if sum(map(int,
+                   map(lambda __var: not __var[1].bounded,
+                       self.localVars.items()))):
             return
         for vsList in itertools.product(
                 *[v.allVarsList() for _, v in self.localVars.items()]):
             for v in vsList:
                 self.localVars[v.getName()].setValue(v.getValue())
-            cmd_probs = list() # [(cmd, prob)]
+            cmd_probs = list()  # [(cmd, prob)]
             for _, module in self.modules.items():
                 for _, command in module.commands.items():
                     if command.evalGuard():
@@ -539,7 +562,8 @@ class ModulesFile(object):
                             logger.error(msg)
                         cmd_probs.append((copy.copy(command), p))
             key = self._get_key_of_vars()
-            # sort cmd_probs by prob desc to accerate speed of ModulesFile@nextState
+            # sort cmd_probs by prob desc to accerate speed of
+            # ModulesFile@nextState
             cmd_probs.sort(key=lambda t: t[1], reverse=True)
             self.scDict[key] = cmd_probs
 
@@ -574,14 +598,17 @@ class ModulesFile(object):
     def _fillInStates(self):
         # first check whether there's a variable of system that is unbounded
         # in that case, prepareCommands can not be executed.
-        if sum(map(int, map(lambda (_, var): not var.bounded, self.localVars.items()))):
+        if sum(map(int,
+                   map(lambda __var1: not __var1[1].bounded,
+                       self.localVars.items()))):
             return
         for vars in itertools.product(
                 *[var.allVarsList() for _, var in self.localVars.items()]):
             dictVars = OrderedDict()
             for var in vars:
                 dictVars[var.name] = var
-            if self.initCondition and self.initCondition(dictVars, self.constants):
+            if self.initCondition and self.initCondition(
+                    dictVars, self.constants):
                 self._I.add(''.join([str(var.getValue()) for var in vars]))
             elif self.failureCondition and self.failureCondition(dictVars, self.constants):
                 self._F.add(''.join([str(var.getValue()) for var in vars]))
@@ -674,6 +701,5 @@ class ModulesFile(object):
     def updateconstant(self):
         # 当self.constants进行更新时,更新每个command中的constants
         for _, module in self.modules.items():
-            for _,comm in module.allCommands().items():
+            for _, comm in module.allCommands().items():
                 pass
-
