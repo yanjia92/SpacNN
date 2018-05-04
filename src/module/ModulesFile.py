@@ -75,8 +75,11 @@ class ModulesFile(object):
         self.sset_set_map = dict()  # s: prefix for string type
         self.tstate_apset_map = dict()  # t: prefix for tuple type
         self.apset_list = []
-        self.localVarsList = self.localVars.values()  # used to accelerate speed
+        self.localVarsList = self.localVars.values()  # used to accelerate speeds
         self.state_id = self.INIT_STATE_ID
+
+    def when_parsed(self):
+        '''当生成parsed模型时额外要做的事'''
 
     def init(self, modules, labels):
         if modules:

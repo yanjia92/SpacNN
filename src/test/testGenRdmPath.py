@@ -10,7 +10,8 @@ def test_parsed():
     parsed.prepareCommands()
     pr = cProfile.Profile()
     pr.enable()
-    result, path = parsed.gen_random_path(duration=duration)
+    # result, path = parsed.gen_random_path(duration=duration)
+    path = parsed.gen_random_path_V2(duration=duration)
     pr.disable()
     print "len of path:{}".format(len(path))
     s = StringIO.StringIO()
@@ -40,5 +41,5 @@ def test_built():
 
 
 
-# test_parsed()
-test_built()
+test_parsed()
+# test_built()
