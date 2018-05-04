@@ -83,6 +83,13 @@ class Step(object):
         return 'Step:(ap={}, command={}, prob={})'.format(
             str(self.ap_set), self.transition, self.rate())
 
+    def __getattribute__(self, item):
+        if item == "state" or item == "next_move":
+            return object.__getattribute__(self, item)
+        if item == "state_id" or item == "ap_set":
+            return object.__getattribute__(self.state, item)
+        return object.(self.next_move, item)
+
     def asKey(self):
         lAPSet = sorted(list(self.ap_set))
         result = ','.join(lAPSet)

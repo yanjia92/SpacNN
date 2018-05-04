@@ -276,7 +276,7 @@ class ModulesFile(object):
                 holding_time = self.gen_holding_time(
                     exit_rate, duration - time_passed, int(time_passed) == 0)
                 return NextMove(
-                    time_passed,
+                    passed_time=time_passed,
                     holding_time=holding_time,
                     cmd=chosen_cmd,
                     exit_rate=exit_rate,
