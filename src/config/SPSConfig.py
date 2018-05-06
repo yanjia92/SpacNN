@@ -32,9 +32,9 @@ class SPSConfig():
         if name not in self.params.keys():
             print "not correct constant name {} in calling SPSConfig.setParam".format(name)
         if isinstance(value, Constant):
-            self.params[name].value = value
-            return
-        self.params[name].setValue(value)
+            self.params[name] = value
+        else:
+            self.params[name].setValue(value)
 
     def export2prism(self, prismfileaddr):
         """

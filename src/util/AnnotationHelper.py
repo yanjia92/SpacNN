@@ -95,6 +95,16 @@ def profileit(filepath):
     #
     # return wrapper
 
+def deprecated(subs_func):
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            message = "{} is deprecated. Try use {} instead. ".format(func.__name__, subs_func.__name__)
+            print message
+            return func(*args, **kwargs)
+        return wrapper
+    return decorator
+
+
 def testname(name):
     def wrapper(f):
         print name
@@ -109,10 +119,16 @@ def testname2(name):
         return wrapper1
     return decorator
 
+def setresult(value):
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            return value
+        return wrapper
+    return decorator
+
 @profileit("./profileit_test")
 def test(a):
     return a
-
 
 if __name__ == "__main__":
     print test(1)

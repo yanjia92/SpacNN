@@ -8,7 +8,7 @@ import threading
 import time
 from PathHelper import *
 import sys
-from util.AnnotationHelper import profileit
+from util.AnnotationHelper import profileit, setresult
 
 
 # class represent an interval in DTMC/CTMC
@@ -60,8 +60,8 @@ class Checker(threading.Thread):
         ltl=None,
         a=1,
         b=1,
-        c=0.8,
-        d=0.01,
+        c=0.9,
+        d=0.02,
         duration=1.0,
             checkingType=None,
         fb = False):
@@ -101,10 +101,11 @@ class Checker(threading.Thread):
         d2 = p * p * (p + 1.0)
         return d1 / d2
 
+    @setresult(15000)
     def get_sample_size(self):
         sz = int(1.0 / ((1 - self.c) * 4 * self.d *
                           self.d) - self.a - self.b - 1)
-        self.logger.info("Checker is going to generates {} paths".format(sz))
+        # self.logger.info("Checker is going to generates {} paths".format(sz))
         return sz
 
     # path: list of Step instance
@@ -194,7 +195,7 @@ class Checker(threading.Thread):
     # using cachedPrefixes to check the path's checking result beforehand
     def gen_random_path(self):
         # return self.model.gen_random_path(self.duration, self.cachedPrefixes)
-        path = self.model.gen_random_path_V2(self.duration)
+        path = self.model.gen_random_path_V2()
         return (None, path)
 
     # path: list of Step
@@ -474,12 +475,8 @@ class Checker(threading.Thread):
             return upperBound
 
     def run(self):
-        msg = None
         if self.checkingType == Checker.CheckingType.QUALITATIVE:
             self.is_satisfy = self.mc1()
-            if self.is_satisfy:
-                msg = "The model satisfies the LTL."
-            else:
-                msg = "The model does not satisfy the LTL."
+            return self.is_satisfy
         else:
             return self.mc2()

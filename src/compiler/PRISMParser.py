@@ -112,8 +112,6 @@ class BasicParser(object):
         self.logger.addHandler(logging.FileHandler(LogHelper.get_logging_root() + "BasicParser.log"))
         self.logger.setLevel(logging.ERROR)
         self.vcf_map = defaultdict(lambda: None)
-        self.vc_map = defaultdict(lambda: None)
-
 
     def p_statement(self, p):
         '''statement : model_type_statement
@@ -314,6 +312,8 @@ class BasicParser(object):
             obj = self.vcf_map[name]
             if callable(obj):
                 return obj()
+            # if name == "SCREEN_THICKNESS" and int(obj.getValue()) != 4:
+            #     logger.info("thickness={}".format(int(obj.getValue())))
             return obj.getValue()
         p[0] = f
 
@@ -337,7 +337,7 @@ class BasicParser(object):
         '''boolean_expression : boolean_expression AND boolean_expression_unit
                               | boolean_expression OR boolean_expression_unit
                               | boolean_expression_unit'''
-        print "boolean_expression detached."
+        # print "boolean_expression detached."
         slices = copy.copy(p.slice)
         if len(slices) == 4:
             if slices[2].value == "&":

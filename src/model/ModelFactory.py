@@ -7,6 +7,7 @@ from PathHelper import get_proj_dir, get_sep
 
 class ModelFactory(object):
     module_factory = ModuleFactory(SPSConfig())
+    model_constructor = ModelConstructor()
 
     @classmethod
     def get_built(cls):
@@ -42,9 +43,9 @@ class ModelFactory(object):
         cls.module_factory.config.setParam(name, value)
 
 
-    @staticmethod
-    def get_parsed():
+    @classmethod
+    def get_parsed(cls):
         sep = get_sep()
         mdl_dir = sep.join((get_proj_dir(), 'prism_model', 'smalltest.prism'))
-        return ModelConstructor().parseModelFile(mdl_dir)
+        return cls.model_constructor.parseModelFile(mdl_dir)
 

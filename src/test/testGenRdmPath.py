@@ -7,11 +7,12 @@ duration = 1*365*2
 
 def test_parsed():
     parsed = ModelFactory.get_parsed()
+    parsed.duration = duration
     parsed.prepareCommands()
     pr = cProfile.Profile()
     pr.enable()
     # result, path = parsed.gen_random_path(duration=duration)
-    path = parsed.gen_random_path_V2(duration=duration)
+    path = parsed.gen_random_path_V2()
     pr.disable()
     print "len of path:{}".format(len(path))
     s = StringIO.StringIO()
@@ -38,7 +39,6 @@ def test_built():
     ps = pstats.Stats(pr, stream=io.FileIO("./built", mode='w')).sort_stats(sortby)
     ps.print_stats()
     print s.getvalue()
-
 
 
 test_parsed()

@@ -2,11 +2,12 @@ from module.State import State
 from module.NextMove import NextMove
 import logging
 import sys
+import threading
+import Queue
 
 logger = logging.getLogger("Step logger")
 logger.addHandler(logging.StreamHandler(sys.stdout))
 logger.setLevel(logging.ERROR)
-
 
 class Step(object):
     def __init__(
@@ -146,6 +147,27 @@ class Step(object):
 
     def isInitState(self, all_up_label):
         return all_up_label in self.ap_set
+
+
+# class StepProvider(threading.Thread):
+#     def __init__(self, max_steps, queue, generator, args_gen, kwargs_gen):
+#         # the number of steps to generate
+#         # queue: a blocking thread-safe queue
+#         # generator: the callable object to generate steps
+#         # args, kwargs: parameters passed to generator
+#         threading.Thread.__init__()
+#         self.generator = generator
+#         self.args = args_gen
+#         self.kwargs = kwargs_gen
+#         self.queue = queue
+#         self.max_steps = max_steps
+#
+#     def run(self):
+#         if self.sample_size <= 0:
+#             return
+#         for _ in range(self.max_steps):
+#             if self.generator is not None and self.queue is not None:
+#                 self.queue.put(self.generator(*self.args.next(), **self.kwargs.next()))
 
 
 def test():

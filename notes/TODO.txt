@@ -1,9 +1,11 @@
 未完成
+    0. new thread step generator
     验证parsed model在regressor中的正确性
         1. 测试合理的checker.c and checker.d 使得验证的结果相对准确 testcheckingalgo.py
         2. 测试parsed model的正确性
-        write Step(state) , Step(NextMove, State)
 
+    checker与modulesfile的关系: 除去在进行failure biasing和forcing failure的情况下
+    checker只会调用modulesfile的gen_random_path_V2生成随机路径.
 
     LTL公式的输入 UI
     comparison result:
@@ -11,20 +13,18 @@
         2. failurecondition UI
         3. stopcondition UI
 
-
-    
     LTL公式的输入 UI
 
 
 已完成
 如何确保expression的parsing是正确的？ 单元测试成功 testParseExpr.py
-增加label,测试label testLabel.py单元测试成功
-修改command语法规则,增加name解析
-比较了parsed model和built model之间的异同,即check了两个模型在相同的天数下各个模块的损坏概率,结果是相同.
-提前计算每个day对应的failure probability.(在prepareCommands中进行计算,异步计算)：发现可以提高效率，parsed model和built model模型产生随机路径时间基本相同，大约为0.06s.
+增加label, 测试label testLabel.py单元测试成功
+修改command语法规则, 增加name解析
+比较了parsed model和built model之间的异同, 即check了两个模型在相同的天数下各个模块的损坏概率, 结果是相同.
+提前计算每个day对应的failure probability.(在prepareCommands中进行计算, 异步计算)：发现可以提高效率，parsed model和built model模型产生随机路径时间基本相同，大约为0.06s.
 Fix "Running checker on built model produces different result with PRISM" bug
 
 
 不足
 目前command的update部分不允许出现boolean_expression
-因为在parse module的时候,默认将所有的boolean_expression解析为当前command的guard
+因为在parse module的时候, 默认将所有的boolean_expression解析为当前command的guard

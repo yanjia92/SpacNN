@@ -4,6 +4,7 @@ import itertools
 import logging
 import math
 import random
+import threading
 from collections import OrderedDict
 from functools import reduce
 import Module
@@ -11,7 +12,7 @@ import util.MathUtils as MathUtils
 from Module import Constant, Variable
 from State import State
 from Step import Step
-from util.AnnotationHelper import profileit
+from util.AnnotationHelper import *
 from module.NextMove import NextMove
 from PathHelper import *
 
@@ -29,6 +30,15 @@ class ModelType:
     DTMC, CTMC = range(2)
 
 
+class StepGenThrd(threading.Thread):
+    def __init__(self, step_gen=None):
+        threading.Thread.__init__()
+        self.step_gen = step_gen
+
+    def run(self):
+        pass
+
+
 # class represents a DTMC/CTMC model
 class ModulesFile(object):
     # id used for generating State object when generating random path
@@ -44,7 +54,8 @@ class ModulesFile(object):
             initCondition=None,
             modules=None,
             labels=None,
-            fb=False):
+            fb=False,
+            duration=None):
         self.modules = OrderedDict()
         self.initLocalVars = OrderedDict()
         self.localVars = OrderedDict()
@@ -77,9 +88,7 @@ class ModulesFile(object):
         self.apset_list = []
         self.localVarsList = self.localVars.values()  # used to accelerate speeds
         self.state_id = self.INIT_STATE_ID
-
-    def when_parsed(self):
-        '''当生成parsed模型时额外要做的事'''
+        self.duration = duration # time duration to generate random path
 
     def init(self, modules, labels):
         if modules:
@@ -93,11 +102,16 @@ class ModulesFile(object):
     # module: module instance
     def addModule(self, module):
         if module is None:
-            raise Exception("module cannot be None")
+            # raise Exception("module cannot be None")
+            return
         self.modules[module.name] = module
         # add variables
         for k, v in module.variables.items():
             self.localVars[k] = v
+            if hasattr(
+                    self, "localVarsList") and v not in set(
+                    self.localVarsList):
+                self.localVarsList.append(v)
         for k, v in module.variables.items():
             self.initLocalVars[k] = copy.copy(v)
         # add constants
@@ -261,8 +275,8 @@ class ModulesFile(object):
                 holding_time = 1
         return holding_time
 
-    # @profileit(get_log_dir() + get_sep() + "gen_next_move")
-    def gen_next_move(self, cmd_probs, time_passed, duration):
+    # @profileit(get_log_dir() + get_sep() + "next_move")
+    def next_move(self, cmd_probs, time_passed):
         rnd_num = random.random()
         prob_sum = 0
 
@@ -280,7 +294,7 @@ class ModulesFile(object):
             if prob_sum >= rnd_num:
                 chosen_cmd = cmds[i]
                 holding_time = self.gen_holding_time(
-                    exit_rate, duration - time_passed, int(time_passed) == 0)
+                    exit_rate, self.duration - time_passed, int(time_passed) == 0)
                 return NextMove(
                     passed_time=time_passed,
                     holding_time=holding_time,
@@ -297,8 +311,40 @@ class ModulesFile(object):
         self.state_id += 1
         return previous
 
+    def gen_next_step(self):
+        # the stop-generate-step logic should be taken care of by the caller of this function
+        duration = self.duration
+        passed_time = 0.0
+        while passed_time < duration:
+            step = self.next_step(passed_time)
+            yield step
+            passed_time += step.next_move.holding_time
+            # leave the stop-generate-step logic to the caller of this method
+
+    def next_step(self, passed_time):
+        duration = self.duration
+        key = tuple([v.value for v in self.localVarsList])
+        cmd_probs = self.scDict[key]
+        if len(cmd_probs) == 0:
+            return self.step_without_move(key, passed_time)
+        next_move = self.next_move(cmd_probs, passed_time)
+
+        state_id = self.next_state_id()
+        ap_set = self.tstate_apset_map[key]
+        cur_state = State(state_id=state_id, ap_set=ap_set)
+
+        # if first move is not possible
+        if int(passed_time) == 0 and next_move.holding_time > duration:
+            return self.step_without_move(key, passed_time)
+
+        # trim next_move.holding_time
+        if passed_time + next_move.holding_time > duration:
+            next_move.holding_time -= (passed_time +
+                                       next_move.holding_time - duration)
+        return Step(cur_state, next_move)
+
     # @profileit(get_log_dir() + get_sep() + "pathgenV2")
-    def gen_random_path_V2(self, duration):
+    def gen_random_path_V2(self):
         '''return path: [Step]'''
         # 思路：
         # get key of current local vars as key
@@ -318,43 +364,39 @@ class ModulesFile(object):
         #     path.append(step)
         #     next_move.cmd.action()
         path = []
+        duration = self.duration
         if not self.commPrepared:
             self.prepareCommands()
             self.commPrepared = True
         if len(self.scDict) == 0:
             logger.error("Unbounded variables not supported!")
             return None
-        passed_time = 0.0
-        while passed_time < duration:
-            # key = self.current_key()
-            # key = self._localvars_tuple()
-            key = tuple([v.value for v in self.localVarsList])
-            cmd_probs = self.scDict[key]
-            if len(cmd_probs) == 0:
-                path.append(self.step_without_move(key, passed_time))
-                self.restore_system()
-                return path
-            next_move = self.gen_next_move(cmd_probs, passed_time, duration)
-            # cur_state = self.current_state(key)
-            state_id = self.next_state_id()
-            ap_set = self.tstate_apset_map[key]
-            cur_state = State(state_id=state_id, ap_set=ap_set)
-            # if first move is not possible
-            if len(path) == 0 and next_move.holding_time > duration:
-                path.append(self.step_without_move(key, passed_time))
-                self.restore_system()
-                return path
-            if passed_time + next_move.holding_time > duration:
-                next_move.holding_time -= (passed_time +
-                                           next_move.holding_time - duration)
-            passed_time += next_move.holding_time
-            # construct step instance
-            step = Step(cur_state, next_move)
+        step_generator = self.gen_next_step()
+        step = next(step_generator)
+        path.append(step)
+        while int(
+                step.next_move.holding_time) != 0 and int(step.next_move.passed_time) + int(step.next_move.holding_time) < duration:
+            step.next_move.cmd.execAction()
+            step = next(step_generator)
             path.append(step)
-            next_move.cmd.execAction()
-
         self.restore_system()
         return path
+
+        # passed_time = 0.0
+        # while passed_time < duration:
+        #     # key = self.current_key()
+        #     # key = self._localvars_tuple()
+        #     step = self.next_step(passed_time, duration)
+        #     path.append(step)
+        #     if int(step.next_move.holding_time) == 0:
+        #         # first move is not possible to make or no enabled transition exists
+        #         self.restore_system()
+        #         return path
+        #     step.next_move.cmd.execAction()
+        #     passed_time += step.next_move.holding_time
+        #
+        # self.restore_system()
+        # return path
 
     # return list of Step instance whose path duration is duration
     # duration: path duration
@@ -364,10 +406,12 @@ class ModulesFile(object):
     # return (None, path) if cache is not hit
     # else return satisfied(of bool type), path
     @profileit(get_log_dir() + get_sep() + "pathgenV1")
-    def gen_random_path(self, duration, cachedPrefixes=None):
+    @deprecated("gen_random_path_V2")
+    def gen_random_path(self, cachedPrefixes=None):
         # Since when initilize a module, all its local variables
         # have been initilized
         random.seed()
+        duration = self.duration
         if not self.commPrepared:
             self.prepareCommands()
             self.commPrepared = True
@@ -436,12 +480,12 @@ class ModulesFile(object):
         self.restoreSystem()
         return None, path
 
-    def step_of_current(self, passedTime=None, holdingTime=0.0):
+    def step_of_current(self, passedtime=None, holdingTime=0.0):
         self._updateCurAndPrevState()
         return Step(
             self.curState.state_id,
             self.curState.ap_set,
-            passedTime=passedTime,
+            passedTime=passedtime,
             holdingTime=holdingTime
         )
 

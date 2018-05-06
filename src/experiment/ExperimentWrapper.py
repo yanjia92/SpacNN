@@ -4,6 +4,7 @@ import logging
 import sys
 from checker import Checker
 from collections import OrderedDict
+from model.ModelFactory import ModelFactory
 
 logger = logging.getLogger("ExperimentWrapper logging")
 file_handler = logging.FileHandler("../log/expe.log", "w")
@@ -55,6 +56,8 @@ class ExperimentWrapper(object):
                 paramsdict[name] = value
             for name, param in paramsdict.items():
                 self.checker.model.constants[name].value = param.value
+                ModelFactory.module_factory.config.setParam(name, param)
+
             # self.checker.model.constants.update(paramsdict)
             # logger.info(self.checker.model.constants.items())
 
