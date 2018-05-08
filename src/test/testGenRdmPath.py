@@ -1,17 +1,24 @@
+# -*- coding:utf-8 -*-
 from model.ModelFactory import ModelFactory
 import cProfile, pstats, StringIO
 import io
+from module.ModulesFile import StepGenThd
+import time
 
 duration = 1*365*2
 
 
-def test_parsed():
-    parsed = ModelFactory.get_parsed()
-    parsed.duration = duration
-    parsed.prepare_commands()
+def test_parsed(parsed=None):
+    if not parsed:
+        parsed = ModelFactory.get_parsed()
+        parsed.duration = duration
+        parsed.prepare_commands()
+    # thd = StepGenThd(model=parsed)
+    # thd.setDaemon(True)
+    # thd.start()
+    # time.sleep(2)  # 模拟用户输入
     pr = cProfile.Profile()
     pr.enable()
-    # result, path = parsed.gen_random_path(duration=duration)
     path = parsed.get_random_path_V2()
     pr.disable()
     print "len of path:{}".format(len(path))

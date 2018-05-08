@@ -15,11 +15,10 @@ from Step import Step
 from util.AnnotationHelper import *
 from module.NextMove import NextMove
 from PathHelper import *
-import Queue
 import traceback
 import sys
-from util.BlockingQueue import BlockingQueue
 import time
+import Queue
 
 logger = logging.getLogger("ModulesFile logging")
 logger.addHandler(logging.StreamHandler())
@@ -33,29 +32,37 @@ class ModelType:
     DTMC, CTMC = range(2)
 
 
-class StepGenThrd(threading.Thread):
+STEPS_QUEUE_MAX_SIZE = 73000
+DEFAULT_STEP_Q_C_WAITING = 0.002
+DEFAULT_STEP_Q_P_WAITING = 0.002
+
+
+class StepGenThd(threading.Thread):
     def __init__(self, model=None):
         threading.Thread.__init__(self)
         self.model = model
         self.logger = logging.getLogger("StepGenThrd's log")
         self.logger.addHandler(logging.StreamHandler(sys.stdout))
-        self.logger.setLevel(logging.INFO)
+        self.logger.setLevel(logging.ERROR)
 
     def run(self):
         model = self.model
-        step_gen = model.gen_next_step()
-        queue = model.steps_queue
+
         while True:
+            step_gen = model.gen_next_step(passed_time=0.0)  # generate a new step_generator
+            queue = model.steps_queue
+            passed_time = 0.0
             while True:
+                # generate step until a failure state met or duration is reached
                 step = next(step_gen)
-                while queue.is_full():
-                    time.sleep(random.random())
                 if step:
                     queue.put(step)
+                    passed_time += step.next_move.holding_time
                     self.logger.info("one step added, qsize={}".format(queue.qsize()))
                 else:
                     self.logger.error("None step generated")
-                if int((step.next_move).holding_time) == 0:
+                if int(step.next_move.holding_time) == 0 or int(step.next_move.passed_time) + \
+                        int(step.next_move.holding_time) == model.duration:
                     # ModulesFile generate a step without move
                     break
                 if step.next_move.cmd:
@@ -63,7 +70,6 @@ class StepGenThrd(threading.Thread):
 
             model.restore_system()
 
-STEPS_QUEUE_FACTOR = 10
 
 # class represents a DTMC/CTMC model
 class ModulesFile(object):
@@ -121,13 +127,17 @@ class ModulesFile(object):
         self.logger = logging.getLogger("ModulesFile's log")
         self.logger.addHandler(logging.StreamHandler(sys.stdout))
         self.logger.setLevel(logging.INFO)
+        # self.steps_queue = list()
+        self.steps_queue = Queue.Queue(maxsize=STEPS_QUEUE_MAX_SIZE)
+        self.STEPS_QUEUE_MAX_SIZE = STEPS_QUEUE_MAX_SIZE
 
     def init_queue(self):
         # why here using list is thread-safe?
         # first, there's only consumer and producer.
         # second, operations on list is atomic because of GIL
-        self.steps_queue = BlockingQueue()
+        # self.steps_queue = BlockingQueue()
         # self.steps_queue = Queue.Queue(maxsize=self.duration * STEPS_QUEUE_FACTOR)
+        pass
 
     def init(self, modules, labels):
         if modules:
@@ -323,6 +333,8 @@ class ModulesFile(object):
         probs = [v[1] for v in cmd_probs]
         exit_rate = sum(probs)
         actual_probs = [p / exit_rate for p in probs]
+        if int(exit_rate) == 0:
+            print str(cmds)
         biasing_exit_rate = None
         if self.fb:
             # todo add failure biasing logic
@@ -370,7 +382,6 @@ class ModulesFile(object):
         if len(cmd_probs) == 0:
             return self.step_without_move(key, passed_time)
         next_move = self.next_move(cmd_probs, passed_time)
-
         state_id = self.next_state_id()
         ap_set = self.tstate_apset_map[key]
         cur_state = State(state_id=state_id, ap_set=ap_set)
@@ -385,7 +396,7 @@ class ModulesFile(object):
         #                                next_move.holding_time - duration)
         return Step(cur_state, next_move)
 
-    @profileit(get_log_dir() + get_sep() + "pathgenV2")
+    # @profileit(get_log_dir() + get_sep() + "pathgenV2")
     def get_random_path_V2(self):
         '''return path: [Step]'''
         # 思路：
@@ -407,26 +418,17 @@ class ModulesFile(object):
         #     next_move.cmd.action()
         path = []
         duration = self.duration
-        if not self.commPrepared:
-            self.prepare_commands()
-            self.commPrepared = True
         if len(self.scDict) == 0:
             logger.error("Unbounded variables not supported!")
             return None
-        # step_generator = self.gen_next_step()
-        # step = next(step_generator)
-        while self.steps_queue.is_empty():
-            # todo avoid busy wait
-            time.sleep(random.random())
-        step = self.steps_queue.pop()
+        # step = self.steps_queue.get()  # async
+        generator = self.gen_next_step(passed_time=0.0)
+        step = next(generator)
         path.append(step)
         while int(
                 step.next_move.holding_time) != 0 and int(step.next_move.passed_time) + int(step.next_move.holding_time) < duration:
             step.next_move.cmd.execAction()
-            # step = next(step_generator)
-            while self.steps_queue.is_empty():
-                time.sleep(random.random())
-            step = self.steps_queue.pop()
+            step = next(generator)
             path.append(step)
         self.restore_system()
         return path
@@ -461,9 +463,9 @@ class ModulesFile(object):
         # have been initilized
         random.seed()
         duration = self.duration
-        if not self.commPrepared:
-            self.prepare_commands()
-            self.commPrepared = True
+        # if not self.commPrepared:
+        #     self.prepare_commands()
+        #     self.commPrepared = True
         path = list()
         timeSum = 0.0
         passedTime = 0.0
@@ -635,6 +637,7 @@ class ModulesFile(object):
 
     # generate enabled commands for each state of the model beforehand
     # to accelerate the speed of generating random path
+    # ATTENTION: This method should only be called once which is in Manager.input_file
     def prepare_commands(self):
         # first check whether there's a variable of system that is unbounded
         # in that case, prepare_commands can not be executed.
@@ -721,9 +724,9 @@ class ModulesFile(object):
     # change failure and repair rate according to SFB(simple failure biasing)
     # mentioned in p52-nakayama(1).pdf
     def SFB(self, delta):
-        if not self.scDict or len(self.scDict) == 0:
-            self.prepare_commands()
-            self.commPrepared = True
+        # if not self.scDict or len(self.scDict) == 0:
+        #     self.prepare_commands()
+        #     self.commPrepared = True
         # iterate through states of model
         # make list of all failure and repair transition
         # update the transition probability in proportion
@@ -755,9 +758,9 @@ class ModulesFile(object):
 
     # balanced failure biasing method according to 00717132.pdf
     def BFB(self, delta):
-        if not self.commPrepared:
-            self.prepare_commands()
-            self.commPrepared = True
+        # if not self.commPrepared:
+        #     self.prepare_commands()
+        #     self.commPrepared = True
 
         for varList in itertools.product(
                 *[var.allVarsList() for _, var in self.localVars.items()]):
@@ -793,9 +796,9 @@ class ModulesFile(object):
 
     # the exit rate of allUp state
     def q1(self):
-        if not self.commPrepared:
-            self.prepare_commands()
-            self.commPrepared = True
+        # if not self.commPrepared:
+        #     self.prepare_commands()
+        #     self.commPrepared = True
         key = ''.join([str(var.getValue())
                        for var in self.initLocalVars.values()])
         comms = self.scDict[key]

@@ -196,7 +196,7 @@ class Checker(threading.Thread):
     def gen_random_path(self):
         # return self.model.gen_random_path(self.duration, self.cachedPrefixes)
         path = self.model.get_random_path_V2()
-        return (None, path)
+        return None, path
 
     # path: list of Step
     # step: current Step instance

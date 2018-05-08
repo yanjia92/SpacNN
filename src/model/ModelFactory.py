@@ -49,6 +49,5 @@ class ModelFactory(object):
         mdl_dir = sep.join((get_proj_dir(), 'prism_model', 'smalltest.prism'))
         model =  cls.model_constructor.parseModelFile(mdl_dir)
         model.duration = duration
-        model.init_queue()
         return model
 

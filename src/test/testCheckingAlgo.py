@@ -11,7 +11,6 @@ import random
 DURATION = 1*365*2
 c = 0.6
 d = 0.02
-# d = 0.3
 
 
 def get_prism_checking_result():
@@ -33,16 +32,16 @@ def get_checker(model):
     return checker
 
 
-def t1():
+def t1(model):
     '''测试生成的随机路径要么长度达到最长(duration)，要么包含failure ap'''
-    checker = get_checker(ModelFactory.get_parsed())
+    checker = get_checker(model)
     checker.model.duration = DURATION
     PATH_CNT = 3000
     logger = get_logger()
-    logger.setLevel(logging.ERROR)
+    logger.setLevel(logging.INFO)
     for _ in range(PATH_CNT):
         result, path = checker.gen_random_path()
-        if len(path) < DURATION-1:
+        if len(path) < DURATION:
             logger.info("Failed path found.")
         verified = checker.verify(path)
         if verified is False and len(path) != DURATION:
@@ -50,7 +49,7 @@ def t1():
             logger.error("path'len={}".format(len(path)))
 
 
-def t2():
+def t2(model=None):
     '''测试built模型运行checker的结果与PRISM中运行的一致'''
     prism_result_x, prism_result_y = get_prism_checking_result()  # (1, 5, 1)
     checker = get_checker(ModelFactory.get_built())
@@ -73,19 +72,18 @@ def set_param(name, value):
     ModelFactory.model_constructor.parser.vcf_map[name].value = value
 
 
-def t3():
+def t3(model, set_param_func):
     '''测试parsed模型运行checker的结果与PRISM中运行的一致'''
     logger = get_logger()
     prism_result_x, prism_result_y = get_prism_checking_result()  # (1, 5, 1)
-    checker = get_checker(ModelFactory.get_parsed())
+    checker = get_checker(model)
     samplesize = checker.get_sample_size()
     logger.info("Sampling size = {}".format(samplesize))
     thickness = range(1, 2)
     probs = []
-    checker.model.prepare_commands()
     for t in thickness:
         # ModelFactory.setParam("SCREEN_THICKNESS", t)
-        set_param("SCREEN_THICKNESS", t)
+        set_param_func("SCREEN_THICKNESS", t)
         # checker.model.setConstant("SCREEN_THICKNESS", t)
         probs.append(checker.run())
     logger.info("samples={},c={},d={}".format(samplesize, c, d))
@@ -93,8 +91,10 @@ def t3():
     for v1, v2 in zip(probs, prism_result_y[:len(probs)]):
         logger.info("Diff = %.2f%%" % fabs((v1-v2)/v2*100))
 
+
 if __name__ == "__main__":
-    t1()
+    pass
+    # t1()
     # t2()
     # t3()
 

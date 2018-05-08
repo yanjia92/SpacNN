@@ -128,6 +128,9 @@ class Command(object):
     def __str__(self):
         return 'comm %s of module %s' % (self.name, self.module.name)
 
+    def __repr__(self):
+        return "cmd {} of module {}".format(self.name, self.module.name)
+
     def setGuard(self, guard):
         if not guard:
             # todo throws null pointer exception
