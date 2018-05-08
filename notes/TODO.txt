@@ -4,8 +4,12 @@
         1. 测试合理的checker.c and checker.d 使得验证的结果相对准确 testcheckingalgo.py
         2. 测试parsed model的正确性
 
-    checker与modulesfile的关系: 除去在进行failure biasing和forcing failure的情况下
-    checker只会调用modulesfile的gen_random_path_V2生成随机路径.
+    checker与modulesfile的关系: 
+        checker调用model的probForPath方法
+        checker调用model的q1()
+        checker获取model的fb属性
+        checker调用model的gen_random_path方法获取随机路径
+        所以,checker不会参与修改model底层的数据
 
     LTL公式的输入 UI
     comparison result:

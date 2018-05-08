@@ -60,7 +60,7 @@ def t2():
     logger = get_logger()
     for t in thickness:
         ModelFactory.setParam("SCREEN_THICKNESS", t)
-        checker.model.prepareCommands()
+        checker.model.prepare_commands()
         probs.append(checker.run())
     logger.info("samples={},c={},d={}".format(samplesize, c, d))
     logger.info(probs)
@@ -82,7 +82,7 @@ def t3():
     logger.info("Sampling size = {}".format(samplesize))
     thickness = range(1, 2)
     probs = []
-    checker.model.prepareCommands()
+    checker.model.prepare_commands()
     for t in thickness:
         # ModelFactory.setParam("SCREEN_THICKNESS", t)
         set_param("SCREEN_THICKNESS", t)

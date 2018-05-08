@@ -195,7 +195,7 @@ class Checker(threading.Thread):
     # using cachedPrefixes to check the path's checking result beforehand
     def gen_random_path(self):
         # return self.model.gen_random_path(self.duration, self.cachedPrefixes)
-        path = self.model.gen_random_path_V2()
+        path = self.model.get_random_path_V2()
         return (None, path)
 
     # path: list of Step

@@ -44,8 +44,11 @@ class ModelFactory(object):
 
 
     @classmethod
-    def get_parsed(cls):
+    def get_parsed(cls, duration=730):
         sep = get_sep()
         mdl_dir = sep.join((get_proj_dir(), 'prism_model', 'smalltest.prism'))
-        return cls.model_constructor.parseModelFile(mdl_dir)
+        model =  cls.model_constructor.parseModelFile(mdl_dir)
+        model.duration = duration
+        model.init_queue()
+        return model
 

@@ -8,6 +8,7 @@ from removeComment import clear_comment
 from util.LogHelper import LogHelper
 from util.MathUtils import *
 from collections import defaultdict
+import sys
 
 def bin_add(x,y):
     '''bin_add'''
@@ -485,9 +486,13 @@ class ModelConstructor(object):
         self.parser = BasicParser()
         self.parser.build()
         ModelConstructor.model = ModulesFile(ModelType.DTMC)
+        self.logger = logging.getLogger("model_constructor's logger")
+        self.logger.addHandler(logging.StreamHandler(sys.stdout))
+        self.logger.setLevel(logging.INFO)
 
     def parseModelFile(self, filepath):
         self.parser.parse_model(filepath)
+        self.logger.info("Model parsing finished.")
         return ModelConstructor.model
 
 

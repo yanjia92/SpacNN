@@ -53,11 +53,11 @@ def async(fn):
 
 # def test_built():
 #     built = ModelFactory.get_built()
-#     built.prepareCommands()
+#     built.prepare_commands()
 #     pr = cProfile.Profile()
 #     pr.enable()
 #     # result, path = built.gen_random_path(duration=duration)
-#     path = built.gen_random_path_V2(duration=duration)
+#     path = built.get_random_path_V2(duration=duration)
 #     pr.disable()
 #     id1 = id(path[0].ap_set)
 #     id2 = id(path[1].ap_set)

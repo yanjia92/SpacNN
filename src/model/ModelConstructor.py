@@ -5,7 +5,7 @@ class ModelConstructor(object):
         with open(self._f) as temp:
             for l in temp:
                 self.lines.append(l)
-        print lines
+        # print lines
 
 def test():
     constructor = ModelConstructor("../../prism_model/NewModel.prism")
