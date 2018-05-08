@@ -26,7 +26,7 @@ def test():
         # compute the failure probability of modules
         # get the fail prob function and compute
         var_day = model.getLocalVar("day")
-        var_day.setValue(day_val)
+        var_day.set_value(day_val)
         prbs.append(fail_prob_of_model(model, constructor.parser.vfmap))
 
         # get the parsed function and use it to compute the failure probability
@@ -57,20 +57,20 @@ def fail_prob_of_model(model, vfmap):
 
 # 根据day_val计算sb模块的std_x
 def stdx_sb(vs, cs, vfmap):
-    x = vs["day"].getValue()
+    x = vs["day"].get_value()
     NIEL_YEAR = vfmap["NIEL_YEAR"]()
     dose = x / 365.0 * NIEL_YEAR
-    cdf_x = (1 - cs["SB_P_THRESHOLD"].getValue()) / (log(1 + dose * cs["SB_B"].getValue()))
-    std_x = (cdf_x - cs["SB_A_MU"].getValue()) / cs["SB_A_SIGMA"].getValue()
+    cdf_x = (1 - cs["SB_P_THRESHOLD"].get_value()) / (log(1 + dose * cs["SB_B"].get_value()))
+    std_x = (cdf_x - cs["SB_A_MU"].get_value()) / cs["SB_A_SIGMA"].get_value()
     return std_x
 
 
 def std_x_s3r(vs, cs, vfmap):
-    x = vs["day"].getValue()
+    x = vs["day"].get_value()
     IEL_YEAR = vfmap["IEL_YEAR"]()
     dose = x / 365.0 * IEL_YEAR
-    cdf_x = cs["S3R_DELTAV_THRESHOLD"].getValue() / (cs["S3R_B"] * pow(e, cs["S3R_B"] * dose))
-    std_x = (cdf_x - cs["S3R_A_MU"].getValue()) / cs["S3R_A_SIGMA"].getValue()
+    cdf_x = cs["S3R_DELTAV_THRESHOLD"].get_value() / (cs["S3R_B"] * pow(e, cs["S3R_B"] * dose))
+    std_x = (cdf_x - cs["S3R_A_MU"].get_value()) / cs["S3R_A_SIGMA"].get_value()
     return std_x
 
 if __name__ == "__main__":

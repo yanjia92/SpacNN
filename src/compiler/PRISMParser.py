@@ -205,7 +205,7 @@ class BasicParser(object):
     def p_prob_update(self, p):
         '''prob_update : DQ NAME DQ expr COLON actions'''
         prob = p[4]  # prob_expr is a function
-        action = p[6]  # actions is a function
+        action = p[6]  # actions is a dict
         name = copy.copy(p[2])
         command = Command(name, self.guard, action, self.module, prob)
         self.module.addCommand(command)
@@ -213,14 +213,19 @@ class BasicParser(object):
 
     def p_actions(self, p):
         '''actions : actions AND assignment'''
-        f1 = p[1]
-        f2 = p[3]
+        # f1 = p[1]
+        # f2 = p[3]
+        #
+        # def f(vs, cs):
+        #     f1(vs, cs)
+        #     f2(vs, cs)
 
-        def f(vs, cs):
-            f1(vs, cs)
-            f2(vs, cs)
-
-        p[0] = f
+        # p[0] = f
+        tokens = copy.copy(p.slice)
+        action1 = tokens[1].value  # dict
+        action2 = tokens[3].value   # dict
+        action2.update(action1)
+        p[0] = action2
 
     def p_actions2(self, p):
         '''actions : assignment'''
@@ -231,26 +236,26 @@ class BasicParser(object):
         update_func = copy.deepcopy(p[3])
         var_name = copy.copy(p[1])
 
-        def f(vs, cs):
-            var = vs[var_name]
-            if not var or not isinstance(var, Variable):
-                raise Exception("invalid variable name")
-            var.setValue(update_func())
+        # def f(vs, cs):
+        #     var = vs[var_name]
+        #     if not var or not isinstance(var, Variable):
+        #         raise Exception("invalid variable name")
+        #     var.set_value(update_func())
 
-        p[0] = f
+        p[0] = {self.vcf_map[var_name]: update_func}
 
     def p_assignment1(self, p):
         '''assignment : LP NAME ASSIGN expr RP'''
         update_func = copy.copy(p[4])
         key = p[2]
 
-        def f(vs, cs):
-            var = vs[key]
-            # if not var or not isinstance(var, Variable):
-            #     raise Exception("invalid variable name: {}".format(key))
-            var.setValue(update_func())
+        # def f(vs, cs):
+        #     var = vs[key]
+        #     # if not var or not isinstance(var, Variable):
+        #     #     raise Exception("invalid variable name: {}".format(key))
+        #     var.set_value(update_func())
 
-        p[0] = f
+        p[0] = {self.vcf_map[key]: update_func}
 
     def p_expr(self, p):
         '''expr : expr ADD term
@@ -313,9 +318,9 @@ class BasicParser(object):
             obj = self.vcf_map[name]
             if callable(obj):
                 return obj()
-            # if name == "SCREEN_THICKNESS" and int(obj.getValue()) != 4:
-            #     logger.info("thickness={}".format(int(obj.getValue())))
-            return obj.getValue()
+            # if name == "SCREEN_THICKNESS" and int(obj.get_value()) != 4:
+            #     logger.info("thickness={}".format(int(obj.get_value())))
+            return obj.get_value()
         p[0] = f
 
     def p_factor2(self, p):
@@ -372,7 +377,7 @@ class BasicParser(object):
                 var = vs[tokens[1].value]
                 # if not var or not isinstance(var, Variable):
                 #     raise Exception("invalid variable name")
-                val1 = var.getValue()
+                val1 = var.get_value()
                 val2 = tokens[3]
                 op = tokens[2]
                 if '<' == op:
@@ -409,7 +414,7 @@ class BasicParser(object):
                 var = vs[t[1].value]
                 # if not var or not isinstance(var, Variable):
                 #     raise Exception("invalid var name")
-                val1 = var.getValue()
+                val1 = var.get_value()
                 val2 = t[3].value()
                 op = t[2].value
                 if '<' == op:

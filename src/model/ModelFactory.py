@@ -12,10 +12,10 @@ class ModelFactory(object):
     @classmethod
     def get_built(cls):
         def failurecondition(vs, cs):
-            sb_status = vs['sb_status'].getValue()
-            s3r_status = vs['s3r_status'].getValue()
-            bcr_status = vs['bcr_status'].getValue()
-            bdr_status = vs['bdr_status'].getValue()
+            sb_status = vs['sb_status'].get_value()
+            s3r_status = vs['s3r_status'].get_value()
+            bcr_status = vs['bcr_status'].get_value()
+            bdr_status = vs['bdr_status'].get_value()
             return (sb_status+s3r_status+bcr_status+bdr_status) < 4
 
         labels = {}
@@ -33,7 +33,9 @@ class ModelFactory(object):
                 cls.module_factory.bdrmodule()],
             labels=labels)
         model.constants['SCREEN_THICKNESS'] = cls.module_factory.config.getParam('SCREEN_THICKNESS')
+        model.duration = 730
         return model
+
 
 
     @classmethod

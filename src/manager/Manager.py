@@ -28,7 +28,6 @@ class Manager(object):
     def input_file(self, file_path):
         self.model = self.mdl_parser.parseModelFile(file_path)
         self._setup_model(duration=ModulesFile.DEFAULT_DURATION)
-        self.model.prepare_commands()  # todo change prepare_commands to async call
 
     def async_gen_steps(self):
         thd = StepGenThd(model=self.model)
@@ -39,9 +38,6 @@ class Manager(object):
 def main():
     manager = Manager()
     manager.input_file(get_prism_model_dir() + get_sep() + "smalltest.prism")
-    manager.async_gen_steps()
-    time.sleep(random.random())  # 模拟用户操作
-    # t1(manager.model)
 
     def set_param_func(name, value):
         manager.mdl_parser.parser.vcf_map[name].value = value

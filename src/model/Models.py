@@ -13,7 +13,7 @@ def sps_model_dtmc(duration):
     day = Variable(
         'day',
         1,
-        range(timer.getConstant('TIME_LIMIT').getValue() + 1),
+        range(timer.getConstant('TIME_LIMIT').get_value() + 1),
         int,
         True
     )
@@ -28,13 +28,13 @@ def sps_model_dtmc(duration):
     timer.addVariable(timer_turn)
 
     def incdayaction(vs, cs):
-        vs['day'].setValue(vs['day'].getValue() + 1)
-        vs['timer_turn'].setValue(False)
+        vs['day'].set_value(vs['day'].get_value() + 1)
+        vs['timer_turn'].set_value(False)
 
     inc_day = Command(
         'inc day',
         lambda vs,
-        cs: vs['timer_turn'] == True and vs['day'] < timer.getConstant('TIME_LIMIT').getValue(),
+        cs: vs['timer_turn'] == True and vs['day'] < timer.getConstant('TIME_LIMIT').get_value(),
         incdayaction,
         timer,
         1.0)
@@ -59,20 +59,20 @@ def sps_model_dtmc(duration):
     sb.addVariable(sb_status)
 
     def failaction(vs, cs):
-        vs['sb_status'].setValue(0)
-        vs['timer_turn'].setValue(True)
+        vs['sb_status'].set_value(0)
+        vs['timer_turn'].set_value(True)
 
     # use closure to delay the computation of fail rate
     def f1(day_var):
         def failprobsb():
             # return the failure probability of solar battery after day-dose
-            niel_dose = sb.getConstant('SB_K').getValue() * sb.getConstant('SCREEN_THICKNESS').getValue() * (day_var.getValue() / 365.0)
-            x = (1 - sb.getConstant('SB_P_THRESHOLD').getValue()) / \
-                log(1 + niel_dose * sb.getConstant('SB_B').getValue())
+            niel_dose = sb.getConstant('SB_K').get_value() * sb.getConstant('SCREEN_THICKNESS').get_value() * (day_var.get_value() / 365.0)
+            x = (1 - sb.getConstant('SB_P_THRESHOLD').get_value()) / \
+                log(1 + niel_dose * sb.getConstant('SB_B').get_value())
             std_x = (
                 x -
-                sb.getConstant('SB_A_MU').getValue() /
-                sb.getConstant('SB_A_SIGMA').getValue())
+                sb.getConstant('SB_A_MU').get_value() /
+                sb.getConstant('SB_A_SIGMA').get_value())
             temp = pcf(std_x)
             i = id(day_var)
             return 1- temp
@@ -80,14 +80,14 @@ def sps_model_dtmc(duration):
 
     def f1n(day_var):
         def normalprobsb():
-            niel_dose = sb.getConstant('SB_K').getValue() * sb.getConstant('SCREEN_THICKNESS').getValue() * (
-            day_var.getValue() / 365.0)
-            x = (1 - sb.getConstant('SB_P_THRESHOLD').getValue()) / \
-                log(1 + niel_dose * sb.getConstant('SB_B').getValue())
+            niel_dose = sb.getConstant('SB_K').get_value() * sb.getConstant('SCREEN_THICKNESS').get_value() * (
+                day_var.get_value() / 365.0)
+            x = (1 - sb.getConstant('SB_P_THRESHOLD').get_value()) / \
+                log(1 + niel_dose * sb.getConstant('SB_B').get_value())
             std_x = (
                 x -
-                sb.getConstant('SB_A_MU').getValue() /
-                sb.getConstant('SB_A_SIGMA').getValue())
+                sb.getConstant('SB_A_MU').get_value() /
+                sb.getConstant('SB_A_SIGMA').get_value())
             return pcf(std_x)
         return normalprobsb
 
@@ -104,7 +104,7 @@ def sps_model_dtmc(duration):
     comm_normal = Command(
         'solar battery stay-normal command',
         lambda vs, cs: vs['sb_status'] == 1 and vs['timer_turn'] == False,
-        lambda vs, cs: vs['timer_turn'].setValue(True),
+        lambda vs, cs: vs['timer_turn'].set_value(True),
         sb,
         f1n(timer.getVariable('day'))
     )
@@ -128,29 +128,29 @@ def sps_model_dtmc(duration):
     s3r.addVariable(s3r_status)
 
     def s3rfailaction(vs, cs):
-        vs['s3r_status'].setValue(0)
-        vs['timer_turn'].setValue(True)
+        vs['s3r_status'].set_value(0)
+        vs['timer_turn'].set_value(True)
 
     def f2(day_var):
         def failprobs3r():
-            iel_dose = day_var.getValue() / 365.0 * (s3r.getConstant('S3R_K').getValue() / \
-                                        s3r.getConstant('SCREEN_THICKNESS').getValue())
-            x = s3r.getConstant('S3R_DELTAV_THRESHOLD').getValue() / (s3r.getConstant('S3R_B').getValue()
-                                                           * pow(e, s3r.getConstant('S3R_B').getValue() * iel_dose))
-            std_x = (x - s3r.getConstant('S3R_A_MU').getValue()) / \
-                s3r.getConstant('S3R_A_SIGMA').getValue()
+            iel_dose = day_var.get_value() / 365.0 * (s3r.getConstant('S3R_K').get_value() / \
+                                                      s3r.getConstant('SCREEN_THICKNESS').get_value())
+            x = s3r.getConstant('S3R_DELTAV_THRESHOLD').get_value() / (s3r.getConstant('S3R_B').get_value()
+                                                                       * pow(e, s3r.getConstant('S3R_B').get_value() * iel_dose))
+            std_x = (x - s3r.getConstant('S3R_A_MU').get_value()) / \
+                    s3r.getConstant('S3R_A_SIGMA').get_value()
             return 1 - pcf(std_x)
         return failprobs3r
 
     def f2n(day_var):
         def normalprobs3r():
-            iel_dose = day_var.getValue() / 365.0 * (s3r.getConstant('S3R_K').getValue() / \
-                                                     s3r.getConstant('SCREEN_THICKNESS').getValue())
-            x = s3r.getConstant('S3R_DELTAV_THRESHOLD').getValue() / (s3r.getConstant('S3R_B').getValue()
-                                                                      * pow(e, s3r.getConstant(
-                'S3R_B').getValue() * iel_dose))
-            std_x = (x - s3r.getConstant('S3R_A_MU').getValue()) / \
-                    s3r.getConstant('S3R_A_SIGMA').getValue()
+            iel_dose = day_var.get_value() / 365.0 * (s3r.getConstant('S3R_K').get_value() / \
+                                                      s3r.getConstant('SCREEN_THICKNESS').get_value())
+            x = s3r.getConstant('S3R_DELTAV_THRESHOLD').get_value() / (s3r.getConstant('S3R_B').get_value()
+                                                                       * pow(e, s3r.getConstant(
+                'S3R_B').get_value() * iel_dose))
+            std_x = (x - s3r.getConstant('S3R_A_MU').get_value()) / \
+                    s3r.getConstant('S3R_A_SIGMA').get_value()
             return pcf(std_x)
         return normalprobs3r
 
@@ -166,7 +166,7 @@ def sps_model_dtmc(duration):
     s3r_comm_norm = Command(
         's3r normal command',
         lambda vs, cs: vs['timer_turn'] == False and vs['s3r_status'] == 1,
-        lambda vs, cs: vs['timer_turn'].setValue(True),
+        lambda vs, cs: vs['timer_turn'].set_value(True),
         s3r,
         f2n(timer.getVariable('day'))
     )

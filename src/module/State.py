@@ -4,8 +4,10 @@ pardir = os.path.dirname(os.path.abspath(curdir))
 import sys
 sys.path.append(pardir)
 from collections import namedtuple
+from util.AnnotationHelper import deprecated
 
 
+@deprecated("State class is no longer used, since state_id is not needed. The whole class could be replaced by ap_set")
 class State(object):
     # state_id = None
     # ap_set = None

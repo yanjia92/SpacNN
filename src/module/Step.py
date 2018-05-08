@@ -2,93 +2,49 @@ from module.State import State
 from module.NextMove import NextMove
 import logging
 import sys
-import threading
-import Queue
-
 logger = logging.getLogger("Step logger")
 logger.addHandler(logging.StreamHandler(sys.stdout))
 logger.setLevel(logging.ERROR)
 
+
 class Step(object):
     def __init__(
         self,
-        state=None,
-        next_move=None,
-        state_id=None,
-        ap_set=None,
-        holding_time=None,
-        passed_time=None,
-        transition=None,
-        rate=None,
-        biasing_rate=None,
-        exit_rate=None,
-        biasing_exit_rate=None
+        ap_set,
+        next_move
     ):
-        self.state = state
         self.next_move = next_move
+        self.ap_set = ap_set
 
-        # self.map = dict()
-        # self.map.update([(p, self.state) for p in self.state.__dict__.keys()])
-        # self.map.update([(p, self.next_move) for p in self.next_move._fields])
-        # if self.next_move.cmd is not None:
-        #     self.map.update([(p, self.next_move.cmd) for p in self.next_move.cmd.__dict__.keys()])
-        # if state and next_move:
-        #     self.state_id = state.state_id
-        #     self.ap_set = state.ap_set
-        #     self.holding_time = next_move.holding_time
-        #     self.passed_time = next_move.passed_time
-        #     self.exit_rate = next_move.exit_rate
-        #     self.biasing_exit_rate = next_move.biasing_exit_rate
-        #     if next_move.cmd:
-        #         self.transition = next_move.cmd.name
-        #         self.rate = next_move.cmd.prob
-        #         self.biasing_rate = next_move.cmd.biasing_rate
-        #     else:
-        #         self.transition = "step_without_move"
-        #         self.rate = 0.0
-        #         self.biasing_rate = 0.0
-        # else:
-        #     self.init(
-        #         state_id,
-        #         ap_set,
-        #         holding_time,
-        #         passed_time,
-        #         transition,
-        #         rate,
-        #         biasing_rate,
-        #         exit_rate,
-        #         biasing_exit_rate
-        #     )
-
-    def init(
-            self,
-            state_id,
-            ap_set,
-            holding_time,
-            passed_time,
-            transition,
-            rate,
-            biasing_rate,
-            exit_rate,
-            biasing_exit_rate):
-        self.state_id = state_id
-        # current state's apSet of State before transition happen
-        self.apSet = ap_set
-        # time duration before transfer to next state
-        self.holdingTime = holding_time
-        # time(steps) passed before entering current state
-        self.passedTime = passed_time
-        # transition name to be taken
-        self.transition = transition
-        # original rate of the chosen transition
-        # used to compute the likelihood ratio of original distribution and the
-        # biased distribution
-        self.rate = rate
-        self.exitRate = exit_rate
-        # biasing rate(probability of DTMC actually)
-        # by failure biasing methods, such as SFB, BFB, ...
-        self.biasingRate = biasing_rate
-        self.biasingExitRate = biasing_exit_rate
+    # def init(
+    #         self,
+    #         state_id,
+    #         ap_set,
+    #         holding_time,
+    #         passed_time,
+    #         transition,
+    #         rate,
+    #         biasing_rate,
+    #         exit_rate,
+    #         biasing_exit_rate):
+    #     self.state_id = state_id
+    #     # current state's apSet of State before transition happen
+    #     self.apSet = ap_set
+    #     # time duration before transfer to next state
+    #     self.holdingTime = holding_time
+    #     # time(steps) passed before entering current state
+    #     self.passedTime = passed_time
+    #     # transition name to be taken
+    #     self.transition = transition
+    #     # original rate of the chosen transition
+    #     # used to compute the likelihood ratio of original distribution and the
+    #     # biased distribution
+    #     self.rate = rate
+    #     self.exitRate = exit_rate
+    #     # biasing rate(probability of DTMC actually)
+    #     # by failure biasing methods, such as SFB, BFB, ...
+    #     self.biasingRate = biasing_rate
+    #     self.biasingExitRate = biasing_exit_rate
 
     def __str__(self):
         return str(self.ap_set)
@@ -100,37 +56,9 @@ class Step(object):
         return 'Step:(ap={}, command={}, prob={})'.format(
             str(self.ap_set), self.name, self.prob())
 
-    # def __getattribute__(self, item):
-    #     try:
-    #         result = object.__getattribute__(self, item)
-    #     except Exception as e:
-    #         owner = self.map[item]
-    #         if owner:
-    #             result = object.__getattribute__(owner, item)
-    #     finally:
-    #         return result
-        # if item == "state" or item == "next_move":
-        #     return object.__getattribute__(self, item)
-        # if item == "state_id" or item == "ap_set":
-        #     return object.__getattribute__(self.state, item)
-        # if item == "prob" or item == "biasing_rate" or item == "name":
-        #     if self.next_move.cmd:
-        #         return object.__getattribute__(self.next_move.cmd, item)
-        #     return None
-        # return object.__getattribute__(self.next_move, item)
-        # if item == "prop_owner_map":
-        #     return object.__getattribute__(self, item)
-        # if item not in self.prop_owner_map.keys():
-        #     return object.__getattribute__(self, item)
-        # owner = self.prop_owner_map[item]
-        # if owner:
-        #     return object.__getattribute__(owner, item)
-
     def __getattr__(self, item):
         # owner = self.map[item]
         # return object.__getattribute__(owner, item)
-        if item in self.state.__dict__.keys():
-            return self.state.__dict__[item]
         if item in self.next_move._fields:
             return getattr(self.next_move, item)
         if self.next_move.cmd is not None and item in self.next_move.cmd.__dict__.keys():
@@ -149,31 +77,9 @@ class Step(object):
         return all_up_label in self.ap_set
 
 
-# class StepProvider(threading.Thread):
-#     def __init__(self, max_steps, queue, generator, args_gen, kwargs_gen):
-#         # the number of steps to generate
-#         # queue: a blocking thread-safe queue
-#         # generator: the callable object to generate steps
-#         # args, kwargs: parameters passed to generator
-#         threading.Thread.__init__()
-#         self.generator = generator
-#         self.args = args_gen
-#         self.kwargs = kwargs_gen
-#         self.queue = queue
-#         self.max_steps = max_steps
-#
-#     def run(self):
-#         if self.sample_size <= 0:
-#             return
-#         for _ in range(self.max_steps):
-#             if self.generator is not None and self.queue is not None:
-#                 self.queue.put(self.generator(*self.args.next(), **self.kwargs.next()))
-
-
 def test():
-    state = State(1, set())
     next_move = NextMove()
-    step = Step(state, next_move)
+    step = Step(set(), next_move)
     print step
     # print State.__dict__
 

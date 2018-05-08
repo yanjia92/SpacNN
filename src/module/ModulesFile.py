@@ -96,8 +96,6 @@ class ModulesFile(object):
         self.constants = dict()
         self.modelType = modeltype
         self.scDict = OrderedDict()  # {sstate: [(comm, prob)]}
-        self.curState = State(self.INIT_STATE_ID, set())
-        self.prevState = State(self.INIT_STATE_ID, set())
         self.commPrepared = False
         self.stopCondition = stopCondition
         self.failureCondition = failureCondition
@@ -200,9 +198,9 @@ class ModulesFile(object):
         if not self.localVars[name]:
             return
         if not isinstance(val_or_obj, Variable):
-            self.localVars[name].setValue(val_or_obj)
+            self.localVars[name].set_value(val_or_obj)
         else:
-            self.localVars[name].setValue(val_or_obj.getValue())
+            self.localVars[name].set_value(val_or_obj.get_value())
 
     # label: a function represents ap
     # label is implemented as a function object that receive
@@ -221,13 +219,15 @@ class ModulesFile(object):
         self.curState.state_id += 1
         return key
 
+    @deprecated("Since State is deprecated.")
     def _initStateAPSetAndStateId(self):
+        pass
         # self.curState.state_id = 0
         # key = self._get_key_of_vars()
         # self.curState.ap_set = self.tstate_apset_map[key]
-        key = tuple([v.value for v in self.localVarsList])
-        self.curState = State(self.INIT_STATE_ID,
-                              self.tstate_apset_map[key])
+        # key = tuple([v.value for v in self.localVarsList])
+        # self.curState = State(self.INIT_STATE_ID,
+        #                       self.tstate_apset_map[key])
 
     # 获取当前代表当前所有变量值的key
     def _get_key_of_vars(self):
@@ -249,6 +249,7 @@ class ModulesFile(object):
     # in initial state, it equals to the Checker.duration(5 years for example)
     # in other allUp state(not initial states), it equals to
     # duration-passedTime.
+    @deprecated
     def nextState(self, cmd_probs, duration=0.0):
         # if not self.stateInited:
         #     self.stateInited = True
@@ -304,10 +305,9 @@ class ModulesFile(object):
         '''construct a step instance according to system current state'''
         # state = self.current_state(key)
         ap_set = self.tstate_apset_map[key]
-        state_id = self.next_state_id()
-        state = State(state_id, ap_set)
-        return Step(state=state, next_move=NextMove(passed_time))
+        return Step(ap_set, NextMove(passed_time))
 
+    @deprecated
     def current_state(self, key):
         apset = self.tstate_apset_map[key]
         state_id = self.next_state_id()
@@ -332,9 +332,9 @@ class ModulesFile(object):
         cmds = [v[0] for v in cmd_probs]
         probs = [v[1] for v in cmd_probs]
         exit_rate = sum(probs)
-        actual_probs = [p / exit_rate for p in probs]
-        if int(exit_rate) == 0:
-            print str(cmds)
+        actual_probs = [p/exit_rate for p in probs]
+        # if int(exit_rate) == 0:
+        #     print str(cmds)
         biasing_exit_rate = None
         if self.fb:
             # todo add failure biasing logic
@@ -382,9 +382,9 @@ class ModulesFile(object):
         if len(cmd_probs) == 0:
             return self.step_without_move(key, passed_time)
         next_move = self.next_move(cmd_probs, passed_time)
-        state_id = self.next_state_id()
+        # state_id = self.next_state_id()
         ap_set = self.tstate_apset_map[key]
-        cur_state = State(state_id=state_id, ap_set=ap_set)
+        # cur_state = State(state_id=state_id, ap_set=ap_set)
 
         # if first move is not possible
         if int(passed_time) == 0 and next_move.holding_time > duration:
@@ -394,7 +394,7 @@ class ModulesFile(object):
         # if passed_time + next_move.holding_time > duration:
         #     next_move.holding_time -= (passed_time +
         #                                next_move.holding_time - duration)
-        return Step(cur_state, next_move)
+        return Step(ap_set, next_move)
 
     # @profileit(get_log_dir() + get_sep() + "pathgenV2")
     def get_random_path_V2(self):
@@ -416,38 +416,39 @@ class ModulesFile(object):
         #           trim holdingtime to (duration - timesum)
         #     path.append(step)
         #     next_move.cmd.action()
-        path = []
-        duration = self.duration
-        if len(self.scDict) == 0:
-            logger.error("Unbounded variables not supported!")
-            return None
-        # step = self.steps_queue.get()  # async
-        generator = self.gen_next_step(passed_time=0.0)
-        step = next(generator)
-        path.append(step)
-        while int(
-                step.next_move.holding_time) != 0 and int(step.next_move.passed_time) + int(step.next_move.holding_time) < duration:
-            step.next_move.cmd.execAction()
-            step = next(generator)
-            path.append(step)
-        self.restore_system()
-        return path
 
-        # passed_time = 0.0
-        # while passed_time < duration:
-        #     # key = self.current_key()
-        #     # key = self._localvars_tuple()
-        #     step = self.next_step(passed_time, duration)
-        #     path.append(step)
-        #     if int(step.next_move.holding_time) == 0:
-        #         # first move is not possible to make or no enabled transition exists
-        #         self.restore_system()
-        #         return path
+        # use generator
+        # path = []
+        # duration = self.duration
+        # if len(self.scDict) == 0:
+        #     logger.error("Unbounded variables not supported!")
+        #     return None
+        # # step = self.steps_queue.get()  # async
+        # generator = self.gen_next_step(passed_time=0.0)
+        # step = next(generator)
+        # path.append(step)
+        # while int(
+        #         step.next_move.holding_time) != 0 and int(step.next_move.passed_time) + int(step.next_move.holding_time) < duration:
         #     step.next_move.cmd.execAction()
-        #     passed_time += step.next_move.holding_time
-        #
+        #     step = next(generator)
+        #     path.append(step)
         # self.restore_system()
         # return path
+
+        path = []
+        passed_time = 0.0
+        duration = self.duration
+        while passed_time < duration:
+            step = self.next_step(passed_time)
+            path.append(step)
+            if int(step.next_move.holding_time) == 0:
+                # this step is the end step
+                self.restore_system()
+                return path
+            step.next_move.cmd.execAction()
+            passed_time += step.next_move.holding_time
+        self.restore_system()
+        return path
 
     # return list of Step instance whose path duration is duration
     # duration: path duration
@@ -457,7 +458,7 @@ class ModulesFile(object):
     # return (None, path) if cache is not hit
     # else return satisfied(of bool type), path
     @profileit(get_log_dir() + get_sep() + "pathgenV1")
-    @deprecated("get_random_path_V2")
+    @deprecated("Use get_random_path_V2 instead")
     def gen_random_path(self, cachedPrefixes=None):
         # Since when initilize a module, all its local variables
         # have been initilized
@@ -531,6 +532,7 @@ class ModulesFile(object):
         self.restoreSystem()
         return None, path
 
+    @deprecated
     def step_of_current(self, passedtime=None, holdingTime=0.0):
         self._updateCurAndPrevState()
         return Step(
@@ -543,13 +545,15 @@ class ModulesFile(object):
     def getCurrentState(self):
         return self.curState
 
+    @deprecated
     def getModelInitState(self):
         return State(0, self.initLocalVars, self)
 
     def restore_vars(self):
         for k, v in self.initLocalVars.items():
-            self.localVars[k].setValue(v.getValue())
+            self.localVars[k].set_value(v.get_value())
 
+    @deprecated
     def restoreStates(self):
         self._stateId = 0
         # self.curState.state_id = 0
@@ -637,8 +641,9 @@ class ModulesFile(object):
 
     # generate enabled commands for each state of the model beforehand
     # to accelerate the speed of generating random path
-    # ATTENTION: This method should only be called once which is in Manager.input_file
+    # ATTENTION: when running experiment, constant value must be set before calling this method
     def prepare_commands(self):
+        '''generate enabled commands and probs for each state'''
         # first check whether there's a variable of system that is unbounded
         # in that case, prepare_commands can not be executed.
         if sum(map(int,
@@ -648,7 +653,7 @@ class ModulesFile(object):
         for vsList in itertools.product(
                 *[v.allVarsList() for _, v in self.localVars.items()]):
             for v in vsList:
-                self.localVars[v.getName()].setValue(v.getValue())
+                self.localVars[v.getName()].set_value(v.get_value())
             cmd_probs = list()  # [(cmd, prob)]
             for _, module in self.modules.items():
                 for _, command in module.commands.items():
@@ -664,7 +669,6 @@ class ModulesFile(object):
                             logger.error("command's prob must be callable")
                             logger.error(msg)
                         cmd_probs.append((copy.copy(command), p))
-            # key = self._get_key_of_vars()
             key = tuple([v.value for v in self.localVarsList])
             # sort cmd_probs by prob desc to accerate speed of
             # ModulesFile@nextState
@@ -715,11 +719,11 @@ class ModulesFile(object):
                 dictVars[var.name] = var
             if self.initCondition and self.initCondition(
                     dictVars, self.constants):
-                self._I.add(''.join([str(var.getValue()) for var in vars]))
+                self._I.add(''.join([str(var.get_value()) for var in vars]))
             elif self.failureCondition and self.failureCondition(dictVars, self.constants):
-                self._F.add(''.join([str(var.getValue()) for var in vars]))
+                self._F.add(''.join([str(var.get_value()) for var in vars]))
             else:
-                self._U.add(''.join([str(var.getValue()) for var in vars]))
+                self._U.add(''.join([str(var.get_value()) for var in vars]))
 
     # change failure and repair rate according to SFB(simple failure biasing)
     # mentioned in p52-nakayama(1).pdf
@@ -732,7 +736,7 @@ class ModulesFile(object):
         # update the transition probability in proportion
         for varList in itertools.product(
                 *[var.allVarsList() for _, var in self.localVars.items()]):
-            key = ''.join([str(v.getValue()) for v in varList])
+            key = ''.join([str(v.get_value()) for v in varList])
             commands = self.scDict[key]
             if key in self._I or key in self._F:
                 for comm1 in commands:
@@ -764,7 +768,7 @@ class ModulesFile(object):
 
         for varList in itertools.product(
                 *[var.allVarsList() for _, var in self.localVars.items()]):
-            key = ''.join([str(var.getValue()) for var in varList])
+            key = ''.join([str(var.get_value()) for var in varList])
             enabledComms = self.scDict[key]
             if key in self._I:
                 # initial state, no repair transition
@@ -799,7 +803,7 @@ class ModulesFile(object):
         # if not self.commPrepared:
         #     self.prepare_commands()
         #     self.commPrepared = True
-        key = ''.join([str(var.getValue())
+        key = ''.join([str(var.get_value())
                        for var in self.initLocalVars.values()])
         comms = self.scDict[key]
         return sum(map(lambda comm: comm.prob, comms))

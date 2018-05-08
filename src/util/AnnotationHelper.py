@@ -95,10 +95,9 @@ def profileit(filepath):
     #
     # return wrapper
 
-def deprecated(subs_func):
+def deprecated(message=None):
     def decorator(func):
         def wrapper(*args, **kwargs):
-            message = "{} is deprecated. Try use {} instead. ".format(func.__name__, subs_func.__name__)
             print message
             return func(*args, **kwargs)
         return wrapper

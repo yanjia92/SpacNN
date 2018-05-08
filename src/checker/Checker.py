@@ -101,7 +101,7 @@ class Checker(threading.Thread):
         d2 = p * p * (p + 1.0)
         return d1 / d2
 
-    @setresult(15000)
+    @setresult(3000)
     def get_sample_size(self):
         sz = int(1.0 / ((1 - self.c) * 4 * self.d *
                           self.d) - self.a - self.b - 1)
@@ -213,8 +213,10 @@ class Checker(threading.Thread):
     # return: boolean
     # path: list of Step instance
     def verify(self, path, ltl=None):
+        step0 = path[0]
         satisfiedSteps = self._rverify(path, 0, ltl)
-        result = 0 in map(lambda step: step.state_id, satisfiedSteps)
+        # result = 0 in map(lambda step: step.state_id, satisfiedSteps)
+        result = step0 in list(satisfiedSteps)
         # logging.info('path verified result: %s' % str(result))
         return result
 

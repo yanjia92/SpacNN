@@ -76,7 +76,7 @@ class ExperimentWrapper(object):
             prob = float(count) / self.samples_per_param
             logger.info('{}: {}/{} paths satisfy ltl'.format(paramsdict, count, self.samples_per_param))
             lparamvalues = paramsdict.values() # the 'l' prefix indicate it's a list type
-            lparamvalues = map(lambda constant: constant.getValue(), lparamvalues)
+            lparamvalues = map(lambda constant: constant.get_value(), lparamvalues)
             results.append((lparamvalues, prob))
 
         return results
@@ -91,7 +91,7 @@ class ExperimentWrapper(object):
         results = []
         for params in product(*paramslist):
             for constant in params:
-                self.checker.model.constants[constant.getName()].value =  constant.getValue()
+                self.checker.model.constants[constant.getName()].value =  constant.get_value()
             low, high = self.checker.mc2()
             results.append((params, (low+high)/2.0))
             logger.info("params: {0}, prob: {1}".format(str(params), (low+high)/2.0))

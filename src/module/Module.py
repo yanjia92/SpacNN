@@ -100,6 +100,8 @@ class Command(object):
             biasing_rate=None):
         self.name = name
         self.guard = guard
+        # change action type from function to dict
+        # e.g. {var_name : var_new_value_func}
         self.action = action
         self.prob = prob
         self.module = module
@@ -119,7 +121,9 @@ class Command(object):
         #     logging.info('vs,cs not exist in Module %s' % self.module.name)
 
     def execAction(self):
-        self.action(self.vs, self.cs)
+        for var, update_func in self.action.items():
+            var.value = update_func()
+        # self.action(self.vs, self.cs)
         # if 'vs' in dir(self) and 'cs' in dir(self):
         #     self.action(self.vs, self.cs)
         # else:
@@ -183,15 +187,15 @@ class Variable(object):
             return self.value.__cmp__(v)
 
     def __str__(self):
-        return "(Variable {} : {})".format(self.name, self.getValue())
+        return "(Variable {} : {})".format(self.name, self.get_value())
 
-    def setValue(self, v):
+    def set_value(self, v):
         if isinstance(v, self.valType):
             self.value = v
-        elif isinstance(v, Variable) and self.valType == v.valType:
-            self.value = v.value
+        else:
+            self.value = v.get_value()
 
-    def getValue(self):
+    def get_value(self):
         return self.value
 
     def getName(self):
@@ -262,10 +266,10 @@ class Constant(object):
     def getName(self):
         return self.name
 
-    def getValue(self):
+    def get_value(self):
         return self.value
 
-    def setValue(self, value):
+    def set_value(self, value):
         if isinstance(value, Constant) and self.name == value.name:
             self.value = value.value
         else:
@@ -273,11 +277,11 @@ class Constant(object):
 
     def update(self, constant):
         if self.getName() == constant.getName():
-            self.value = constant.getValue()
+            self.value = constant.get_value()
 
     def __mul__(self, other):
         if isinstance(other, Constant):
-            return self.value * other.getValue()
+            return self.value * other.get_value()
         elif isinstance(other,(int, float)):
             return self.value * other
         else:
@@ -285,7 +289,7 @@ class Constant(object):
 
     def __add__(self, other):
         if isinstance(other, Constant):
-            return self.value + other.getValue()
+            return self.value + other.get_value()
         elif isinstance(other, (int, float)):
             return self.value + other
         else:
@@ -293,7 +297,7 @@ class Constant(object):
 
     def __sub__(self, other):
         if isinstance(other, Constant):
-            return self.value - other.getValue()
+            return self.value - other.get_value()
         elif isinstance(other, (int, float)):
             return self.value - other
         else:
@@ -301,28 +305,28 @@ class Constant(object):
 
     def __div__(self, other):
         if isinstance(other, Constant):
-            return self.value / other.getValue()
+            return self.value / other.get_value()
         elif isinstance(other, (int, float)):
             return self.value / other
         else:
             raise Exception("type error in Constant.__mul__")
 
     def __neg__(self):
-        return Constant(self.getName(), -1 * self.getValue())
+        return Constant(self.getName(), -1 * self.get_value())
 
     def __lt__(self, other):
         if isinstance(other, Constant):
-            return self.getValue() < other.getValue()
-        elif isinstance(other, type(self.getValue())):
-            return self.getValue() < other
+            return self.get_value() < other.get_value()
+        elif isinstance(other, type(self.get_value())):
+            return self.get_value() < other
         else:
             raise Exception('type error in Constant.__lt__: {0}'.format(type(other)))
 
     def __eq__(self, other):
         if isinstance(other, Constant):
-            return self.getValue() == other.getValue()
-        elif isinstance(other, type(self.getValue())):
-            return self.getValue() == other
+            return self.get_value() == other.get_value()
+        elif isinstance(other, type(self.get_value())):
+            return self.get_value() == other
         else:
             raise Exception('type error in Constant.__eq__: {0}'.format(type(other)))
 

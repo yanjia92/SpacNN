@@ -22,7 +22,7 @@ timer.addConstant(Constant('TIME_LIMIT', YEAR * 365))  # 2 years
 day = Variable(
     'day',
     1,
-    range(timer.getConstant('TIME_LIMIT').getValue() + 1),
+    range(timer.getConstant('TIME_LIMIT').get_value() + 1),
     int,
     True
 )
@@ -37,13 +37,13 @@ timer.addVariable(day)
 timer.addVariable(timer_turn)
 
 def incdayaction(vs, cs):
-    vs['day'].setValue(vs['day'].getValue() + 1)
-    vs['timer_turn'].setValue(False)
+    vs['day'].set_value(vs['day'].get_value() + 1)
+    vs['timer_turn'].set_value(False)
 
 inc_day = Command(
     'inc day',
     lambda vs,
-    cs: vs['timer_turn'] == True and vs['day'] <= timer.getConstant('TIME_LIMIT').getValue(),
+    cs: vs['timer_turn'] == True and vs['day'] <= timer.getConstant('TIME_LIMIT').get_value(),
     incdayaction,
     timer,
     1.0)
@@ -70,33 +70,33 @@ sb_status = Variable('sb_status', 1, range(2), int,
 sb.addVariable(sb_status)
 
 def failaction(vs, cs):
-    vs['sb_status'].setValue(0)
-    vs['timer_turn'].setValue(True)
+    vs['sb_status'].set_value(0)
+    vs['timer_turn'].set_value(True)
 
 # use closure to delay the computation of fail rate
 def f1(day_var):
     def failprobsb():
         # return the failure probability of solar battery after day-dose
-        niel_dose = sb.getConstant('SB_K').getValue() * sb.getConstant('SCREEN_THICKNESS').getValue() * (day_var.getValue() / 365.0)
-        x = (1 - sb.getConstant('SB_P_THRESHOLD').getValue()) / \
-            log(1 + niel_dose * sb.getConstant('SB_B').getValue())
+        niel_dose = sb.getConstant('SB_K').get_value() * sb.getConstant('SCREEN_THICKNESS').get_value() * (day_var.get_value() / 365.0)
+        x = (1 - sb.getConstant('SB_P_THRESHOLD').get_value()) / \
+            log(1 + niel_dose * sb.getConstant('SB_B').get_value())
         std_x = (
             x -
-            sb.getConstant('SB_A_MU').getValue() /
-            sb.getConstant('SB_A_SIGMA').getValue())
+            sb.getConstant('SB_A_MU').get_value() /
+            sb.getConstant('SB_A_SIGMA').get_value())
         return 1 - pcf(std_x)
     return failprobsb
 
 def f1n(day_var):
     def normalprobsb():
-        niel_dose = sb.getConstant('SB_K').getValue() * sb.getConstant('SCREEN_THICKNESS').getValue() * (
-        day_var.getValue() / 365.0)
-        x = (1 - sb.getConstant('SB_P_THRESHOLD').getValue()) / \
-            log(1 + niel_dose * sb.getConstant('SB_B').getValue())
+        niel_dose = sb.getConstant('SB_K').get_value() * sb.getConstant('SCREEN_THICKNESS').get_value() * (
+            day_var.get_value() / 365.0)
+        x = (1 - sb.getConstant('SB_P_THRESHOLD').get_value()) / \
+            log(1 + niel_dose * sb.getConstant('SB_B').get_value())
         std_x = (
             x -
-            sb.getConstant('SB_A_MU').getValue() /
-            sb.getConstant('SB_A_SIGMA').getValue())
+            sb.getConstant('SB_A_MU').get_value() /
+            sb.getConstant('SB_A_SIGMA').get_value())
         return pcf(std_x)
     return normalprobsb
 
@@ -113,7 +113,7 @@ sb.addCommand(comm_fail)
 comm_normal = Command(
     'solar battery stay-normal command',
     lambda vs, cs: vs['sb_status'] == 1 and vs['timer_turn'] == False,
-    lambda vs, cs: vs['timer_turn'].setValue(True),
+    lambda vs, cs: vs['timer_turn'].set_value(True),
     sb,
     f1n(timer.getVariable('day'))
 )
@@ -129,10 +129,10 @@ def test():
         doses = []
         std_xs = []
         for v in [Variable('day', i) for i in interval(1, 365*YEAR, 1)]:
-            dose = v.getValue()/365.0 * sb.getConstant("SB_K").getValue() * sb.getConstant("SCREEN_THICKNESS").getValue()
+            dose = v.get_value() / 365.0 * sb.getConstant("SB_K").get_value() * sb.getConstant("SCREEN_THICKNESS").get_value()
             doses.append(dose)
-            x = (1 - sb.getConstant("SB_P_THRESHOLD").getValue()) / (log(1 + sb.getConstant("SB_B").getValue() * dose))
-            std_x = (x - sb.getConstant("SB_A_MU").getValue())/sb.getConstant("SB_A_SIGMA").getValue()
+            x = (1 - sb.getConstant("SB_P_THRESHOLD").get_value()) / (log(1 + sb.getConstant("SB_B").get_value() * dose))
+            std_x = (x - sb.getConstant("SB_A_MU").get_value()) / sb.getConstant("SB_A_SIGMA").get_value()
             p = 1 - pcf(std_x)
             ps.append(p)
             std_xs.append(std_x)

@@ -79,12 +79,11 @@ def t3(model, set_param_func):
     checker = get_checker(model)
     samplesize = checker.get_sample_size()
     logger.info("Sampling size = {}".format(samplesize))
-    thickness = range(1, 2)
+    thickness = range(1, 6)
     probs = []
     for t in thickness:
-        # ModelFactory.setParam("SCREEN_THICKNESS", t)
         set_param_func("SCREEN_THICKNESS", t)
-        # checker.model.setConstant("SCREEN_THICKNESS", t)
+        checker.model.prepare_commands()
         probs.append(checker.run())
     logger.info("samples={},c={},d={}".format(samplesize, c, d))
     logger.info(probs)
@@ -93,8 +92,8 @@ def t3(model, set_param_func):
 
 
 if __name__ == "__main__":
-    pass
+    # pass
     # t1()
     # t2()
-    # t3()
+    t3()
 
