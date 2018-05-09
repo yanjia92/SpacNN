@@ -1,24 +1,9 @@
 未完成
-    0. new thread step generator
-    验证parsed model在regressor中的正确性
-        1. 测试合理的checker.c and checker.d 使得验证的结果相对准确 testcheckingalgo.py
-        2. 测试parsed model的正确性
-
-    checker与modulesfile的关系: 
-        checker调用model的probForPath方法
-        checker调用model的q1()
-        checker获取model的fb属性
-        checker调用model的gen_random_path方法获取随机路径
-        所以,checker不会参与修改model底层的数据
-
+    增加UI
     LTL公式的输入 UI
-    comparison result:
-        1. _F, _U in model solution: call model._fillinstate()
-        2. failurecondition UI
-        3. stopcondition UI
-
-    LTL公式的输入 UI
-
+    UI 需要哪些设计？
+    程序打包发布 https://www.zhihu.com/question/21639330
+    
 
 已完成
 如何确保expression的parsing是正确的？ 单元测试成功 testParseExpr.py
@@ -27,7 +12,15 @@
 比较了parsed model和built model之间的异同, 即check了两个模型在相同的天数下各个模块的损坏概率, 结果是相同.
 提前计算每个day对应的failure probability.(在prepareCommands中进行计算, 异步计算)：发现可以提高效率，parsed model和built model模型产生随机路径时间基本相同，大约为0.06s.
 Fix "Running checker on built model produces different result with PRISM" bug
+验证parsed model在regressor中的正确性
+        1. 测试合理的checker.c and checker.d 使得验证的结果相对准确 testcheckingalgo.py
+        2. 测试parsed model的正确性
+(testcheckingalgo.py succeed on windows)
 
+在本机安装python2.7 pip etc
+在D:\ENV27\ 下安装虚拟环境，安装wxPython pyFormUI https://github.com/jeffchau1979/pyFormUI
+安装matplotlib
+配置pycharm 使用ENV27虚拟环境
 
 不足
 目前command的update部分不允许出现boolean_expression

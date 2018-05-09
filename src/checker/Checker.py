@@ -476,9 +476,8 @@ class Checker(threading.Thread):
             upperBound = 1 - math.exp(-1 * expectation * duration * q_1)
             return upperBound
 
-    def run(self):
+    def run_checker(self):
         if self.checkingType == Checker.CheckingType.QUALITATIVE:
             self.is_satisfy = self.mc1()
             return self.is_satisfy
-        else:
-            return self.mc2()
+        return self.mc2()

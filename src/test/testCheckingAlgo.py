@@ -14,7 +14,7 @@ d = 0.02
 
 
 def get_prism_checking_result():
-    filepath = get_prism_model_dir() + get_sep() + "YEAR1_T_1_5_1"
+    filepath = get_prism_model_dir() + get_sep() + "YEAR1_T_1_10_1"
     return parse_csv(filepath)
 
 
@@ -60,7 +60,7 @@ def t2(model=None):
     for t in thickness:
         ModelFactory.setParam("SCREEN_THICKNESS", t)
         checker.model.prepare_commands()
-        probs.append(checker.run())
+        probs.append(checker.run_checker())
     logger.info("samples={},c={},d={}".format(samplesize, c, d))
     logger.info(probs)
     for v1, v2 in zip(probs, prism_result_y[-(len(probs)):]):
@@ -79,12 +79,12 @@ def t3(model, set_param_func):
     checker = get_checker(model)
     samplesize = checker.get_sample_size()
     logger.info("Sampling size = {}".format(samplesize))
-    thickness = range(1, 6)
+    thickness = range(1, 11)
     probs = []
     for t in thickness:
         set_param_func("SCREEN_THICKNESS", t)
         checker.model.prepare_commands()
-        probs.append(checker.run())
+        probs.append(checker.run_checker())
     logger.info("samples={},c={},d={}".format(samplesize, c, d))
     logger.info(probs)
     for v1, v2 in zip(probs, prism_result_y[:len(probs)]):

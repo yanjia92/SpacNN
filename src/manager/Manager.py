@@ -1,10 +1,12 @@
 # -*- coding:utf-8 -*-
 from compiler.PRISMParser import ModelConstructor
 from module.ModulesFile import StepGenThd
-import time
 from module.ModulesFile import ModulesFile
 import sys
 from test.testCheckingAlgo import *
+from module.Module import Constant
+import itertools
+from nn.NNRegressor import BPNeuralNetwork as BPNN
 
 
 def get_logger(level=logging.INFO):
@@ -16,8 +18,24 @@ def get_logger(level=logging.INFO):
 
 class Manager(object):
     def __init__(self):
+        self.manager_params = {"nh": 5, "no": 1}
         self.mdl_parser = ModelConstructor()
         self.model = None
+        self.expr_params = list()  # [(name, val_list)]
+        self.ltl = None
+        self.checker = Checker(model=self.model, ltl=self.ltl, duration=self.manager_params["duration"])
+        self.regressor = BPNN()
+        self.test_x = []  # [(name, val_list)]
+
+    def set_manager_param(self, name, param):
+        self.manager_params[name] = param
+
+    def get_manager_param(self, name):
+        return self.expr_params[name]
+
+    def set_random_path_duration(self, duration):
+        self.set_manager_param("duration", duration)
+        self.model.duration = duration
 
     def _setup_model(self, duration=None):
         self.model.duration = duration
@@ -33,6 +51,88 @@ class Manager(object):
         thd = StepGenThd(model=self.model)
         thd.setDaemon(True)
         thd.start()
+
+    def _set_constants(self, *constants):
+        '''constants: ([constant_obj])'''
+        while len(self.expr_params):
+            self.expr_params.pop(0)
+        self.expr_params.extend(constants)
+
+    def set_train_constants(self, *constants):
+        '''设置训练时需要的参数
+        constant: [(name, val_list)]
+        '''
+        # const_objs = []
+        # for name, val_list in constants:
+        #     constants_temp = []
+        #     for val in val_list:
+        #         constants_temp.append(Constant(name, val))
+        #     const_objs.append(constants_temp)
+        # self._set_constants(*const_objs)
+        self.expr_params = constants
+
+    def set_ltl(self, ltl):
+        self.ltl = ltl
+
+    def _set_param(self, *constants):
+        '''
+        将参数设置到parser中
+        :param constants: [constant_obj]
+        :return: None
+        '''
+        for constant_obj in constants:
+            self.mdl_parser.parser.vcf_map[constant_obj.get_name()].set_value(constant_obj.get_value())
+
+    def set_test_x(self, *test_constants):
+        '''
+        设置回归分析时参数的值
+        :param test_constants: [(name, val_list)]
+        :return: None
+        '''
+        self.test_x = test_constants
+
+    def _to_constant_objs(self):
+        '''
+        将self.expr_params转化为[[constant_obj]]
+        :return: [[constant_obj]]
+        '''
+        result = []
+        for n, vl in self.expr_params:
+            objs = []
+            for v in vl:
+                objs.append(Constant(n, v))
+            result.append(objs)
+        return result
+
+    def do_regression(self):
+        # get constants and set it to the vcf_map
+        # prepare commands
+        # do_expr and return train data (x, y)
+        # train the BP network
+        # get_test_x
+        # compute the y in terms of test_x
+        # paint
+        train_data_x = []
+        train_data_y = []
+        if len(self.expr_params) == 0:
+            pass  # todo suggest user to set the parameter to run the regressor
+        constant_objs = self._to_constant_objs()
+        for constant_list in itertools.product(*constant_objs):
+            self._set_param(*constant_list)
+            self.model.prepare_commands()
+            train_y = self.checker.run_checker()
+            train_x = [c_obj.get_value() for c_obj in constant_list]
+            train_data_x.append(train_x)
+            train_data_y.append(train_y)
+
+        self.regressor.setup(len(self.expr_params), self.get_manager_param("nh"), self.get_manager_param("no"))
+        self.regressor.train(train_data_x, train_data_y)
+
+        test_x = self.test_x
+
+
+
+
 
 
 def main():

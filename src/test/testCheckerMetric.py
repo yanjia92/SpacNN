@@ -5,7 +5,7 @@ from util.MetricHelper import timeit
 def testMetric():
     model = get_built_model()
     checker = get_checker(model, ltl, 365*2)
-    timeit(checker.run)
+    timeit(checker.run_checker)
 
 
 if __name__ == "__main__":

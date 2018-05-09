@@ -26,7 +26,7 @@ class ExperimentWrapper(object):
     # 将实验值存储在ExperimentWrapper中,避免了直接修改ModulesFile.py
     # constants中的常量必须是同一个常量的不同值
     def _addvalues(self, constants):
-        name = constants[0].getName()
+        name = constants[0].get_name()
         if name not in self.checker.model.constants.keys():
             return
         else:
@@ -85,13 +85,13 @@ class ExperimentWrapper(object):
     # 调用Checker的验证方法
     # return []
     def modelcheck(self):
-        logger.info("run ExpeWrapper's model checking.")
+        logger.info("run_checker ExpeWrapper's model checking.")
         paramslist = self._constants.values() # list of list
         # logger.info(paramslist)
         results = []
         for params in product(*paramslist):
             for constant in params:
-                self.checker.model.constants[constant.getName()].value =  constant.get_value()
+                self.checker.model.constants[constant.get_name()].value =  constant.get_value()
             low, high = self.checker.mc2()
             results.append((params, (low+high)/2.0))
             logger.info("params: {0}, prob: {1}".format(str(params), (low+high)/2.0))

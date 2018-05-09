@@ -1,0 +1,30 @@
+产生随机路径逻辑：
+	涉及到的类：ModulesFile.get_random_path_V2
+		循环直到passed_time >= duration
+			call next_step(passed_time) return step_instance
+			if step_instance.holding_time == 0(e.g. this step is the last step of the path):
+				append the step to the path
+				restore_system
+				return the path
+			else:
+				append the step to the path
+				execute step.next_move_cmd.execAction
+				passed_time += step.next_move.holding_time
+
+
+关于prepare_commands:
+	what it dose:
+		it iterate all possible values of modulesfile.localVars and set to modulesfile.localVars
+		and iterate all commands to see which is enabled and compute its probability. Then using
+		tuple([v.value for v in modulesfile.localVars.values()]) as key, store [(cmd, prob)]
+
+	ATTENTION
+		由于要提前计算每个cmd的prob，所以在调用 prepare_commands 之前必须设置好所有未设定的参数。
+
+
+checker与modulesfile的关系: 
+    checker调用model的probForPath方法
+    checker调用model的q1()
+    checker获取model的fb属性
+    checker调用model的gen_random_path方法获取随机路径
+    所以,checker不会参与修改model底层的数据

@@ -49,7 +49,7 @@ class Module(object):
     # a value is not needed when executing an do_expe over this constant
     # constant is no longer a primitive value, but a Constant typed instance
     def addConstant(self, constant):
-        self.constants[constant.getName()] = constant
+        self.constants[constant.get_name()] = constant
 
     def getConstant(self, name):
         if name in self.constants.keys():
@@ -58,7 +58,7 @@ class Module(object):
 
     # exist for now in the case of do_expe
     def setConstant(self, constant):
-        name = constant.getName()
+        name = constant.get_name()
         if name in self.constants.keys():
             v = self.constants[name]
             self.constants[name] = constant
@@ -258,12 +258,12 @@ class Constant(object):
         self.name = name
 
     def __str__(self):
-        return "constant {0}: {1}".format(self.getName(), self.value)
+        return "constant {0}: {1}".format(self.get_name(), self.value)
 
     def __repr__(self):
         return self.__str__()
 
-    def getName(self):
+    def get_name(self):
         return self.name
 
     def get_value(self):
@@ -276,7 +276,7 @@ class Constant(object):
             self.value = value
 
     def update(self, constant):
-        if self.getName() == constant.getName():
+        if self.get_name() == constant.get_name():
             self.value = constant.get_value()
 
     def __mul__(self, other):
@@ -312,7 +312,7 @@ class Constant(object):
             raise Exception("type error in Constant.__mul__")
 
     def __neg__(self):
-        return Constant(self.getName(), -1 * self.get_value())
+        return Constant(self.get_name(), -1 * self.get_value())
 
     def __lt__(self, other):
         if isinstance(other, Constant):

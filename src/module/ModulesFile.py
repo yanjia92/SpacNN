@@ -653,7 +653,7 @@ class ModulesFile(object):
         for vsList in itertools.product(
                 *[v.allVarsList() for _, v in self.localVars.items()]):
             for v in vsList:
-                self.localVars[v.getName()].set_value(v.get_value())
+                self.localVars[v.get_name()].set_value(v.get_value())
             cmd_probs = list()  # [(cmd, prob)]
             for _, module in self.modules.items():
                 for _, command in module.commands.items():

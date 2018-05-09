@@ -14,7 +14,7 @@ class TestParsingChecker(unittest.TestCase):
         self.checker = Checker(self.parsed, ltl=self.ltl, duration=DURATION)
 
     def test_check(self):
-        self.checker.run()
+        self.checker.run_checker()
 
 
 if __name__ == "__main__":
