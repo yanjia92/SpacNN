@@ -187,8 +187,8 @@ class BasicParser(object):
         var = Variable(p[1], p[len(p) - 2], range(min, max + 1),
                        int)  # 目前默认变量的类型是int p[index] index不能是负数
         self.module.addVariable(var)
-        self.vcf_map[var.getName()] = var
-        self.logger.info("Variable_{} added to Module_{}. init={}, range=[{}, {}]".format(var.getName(), str(self.module), var.initVal, var.valRange[0], var.valRange[-1]))
+        self.vcf_map[var.get_name()] = var
+        self.logger.info("Variable_{} added to Module_{}. init={}, range=[{}, {}]".format(var.get_name(), str(self.module), var.initVal, var.valRange[0], var.valRange[-1]))
 
     def p_module_command_statement(self, p):
         '''module_command_statement : LB RB boolean_expression THEN updates SEMICOLON'''

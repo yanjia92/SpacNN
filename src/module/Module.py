@@ -198,7 +198,7 @@ class Variable(object):
     def get_value(self):
         return self.value
 
-    def getName(self):
+    def get_name(self):
         return self.name
 
     # return list of Variable instance with all possible values

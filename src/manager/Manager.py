@@ -7,6 +7,9 @@ from test.testCheckingAlgo import *
 from module.Module import Constant
 import itertools
 from nn.NNRegressor import BPNeuralNetwork as BPNN
+from util.CsvFileHelper import parse_csv
+from util.PlotHelper import plot_multi
+from util.AnnotationHelper import deprecated
 
 
 def get_logger(level=logging.INFO):
@@ -25,7 +28,7 @@ class Manager(object):
         self.ltl = None
         self.checker = Checker(model=self.model, ltl=self.ltl, duration=self.manager_params["duration"])
         self.regressor = BPNN()
-        self.test_x = []  # [(name, val_list)]
+        self.test_xs = []  # [(name, val_list)]
 
     def set_manager_param(self, name, param):
         self.manager_params[name] = param
@@ -43,10 +46,11 @@ class Manager(object):
     def set_model(self, model):
         self.model = model
 
-    def input_file(self, file_path):
+    def read_model_file(self, file_path):
         self.model = self.mdl_parser.parseModelFile(file_path)
         self._setup_model(duration=ModulesFile.DEFAULT_DURATION)
 
+    @deprecated
     def async_gen_steps(self):
         thd = StepGenThd(model=self.model)
         thd.setDaemon(True)
@@ -83,13 +87,13 @@ class Manager(object):
         for constant_obj in constants:
             self.mdl_parser.parser.vcf_map[constant_obj.get_name()].set_value(constant_obj.get_value())
 
-    def set_test_x(self, *test_constants):
+    def set_test_x(self, test_xs):
         '''
         设置回归分析时参数的值
-        :param test_constants: [(name, val_list)]
+        :param test_xs: [(vals)]
         :return: None
         '''
-        self.test_x = test_constants
+        self.test_xs = test_xs
 
     def _to_constant_objs(self):
         '''
@@ -128,16 +132,22 @@ class Manager(object):
         self.regressor.setup(len(self.expr_params), self.get_manager_param("nh"), self.get_manager_param("no"))
         self.regressor.train(train_data_x, train_data_y)
 
-        test_x = self.test_x
+        test_xs = self.test_xs  # [(vals)]
+        test_expr_ys = []
+        for test_x in test_xs:
+            results = self.regressor.predict(list(test_x))
+            # results is of length 1
+            test_expr_ys.append(results[0])
 
+        # get true value returned from PRISM
+        _, test_prism_ys = parse_csv("YEAR1_T_1_10_1")
 
-
-
+        plot_multi((test_xs, test_expr_ys, "experiment"), (test_xs, test_prism_ys, "prism"))
 
 
 def main():
     manager = Manager()
-    manager.input_file(get_prism_model_dir() + get_sep() + "smalltest.prism")
+    manager.read_model_file(get_prism_model_dir() + get_sep() + "smalltest.prism")
 
     def set_param_func(name, value):
         manager.mdl_parser.parser.vcf_map[name].value = value

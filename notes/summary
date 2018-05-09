@@ -28,3 +28,20 @@ checker与modulesfile的关系:
     checker获取model的fb属性
     checker调用model的gen_random_path方法获取随机路径
     所以,checker不会参与修改model底层的数据
+
+manager 中的实验参数设置的设计
+    设置训练参数接口
+        方法 set_train_constants
+        接收数据形式 [(name, val_list)] name 参数名称 val_list 该参数的训练值
+
+        模型运行（prepare_command，计算prob for every command）之类的操作所依赖的参数值保存在BasicParser.vcf_map中
+            vcf.map = {name: obj} obj could be Constant/Variable object or function object
+
+    设置测试参数接口
+        set_test_x
+        接收数据类型 [(vals)] e.g. [(1, 2, 3), (2, 3, 4)] （1,2,3 分别是三个参数的值）
+        注意
+            这里的参数的顺序必须和设置训练参数时传递的参数的顺序相同
+        
+
+
