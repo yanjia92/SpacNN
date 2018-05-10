@@ -1,36 +1,21 @@
-         3927 function calls in 0.005 seconds
+         36 function calls in 0.000 seconds
 
    Ordered by: cumulative time
 
    ncalls  tottime  percall  cumtime  percall filename:lineno(function)
-        1    0.002    0.002    0.005    0.005 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:294(gen_random_path_V2)
-      210    0.001    0.000    0.002    0.000 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:259(gen_next_move)
-      210    0.000    0.000    0.001    0.000 /Users/bitbook/Documents/SpacNN/src/module/Module.py:121(execAction)
-      105    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/model/ModuleFactory.py:121(action)
-      211    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:172(_localvars_tuple)
-      211    0.000    0.000    0.000    0.000 <string>:8(__new__)
-      322    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/module/Module.py:185(setValue)
-      211    0.000    0.000    0.000    0.000 {built-in method __new__ of type object at 0x10b34f408}
-      210    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:247(gen_holding_time)
-      211    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:289(next_state_id)
-      211    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/module/State.py:10(__init__)
-      210    0.000    0.000    0.000    0.000 {sum}
-      211    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/module/Step.py:2(__init__)
-      422    0.000    0.000    0.000    0.000 {len}
-       23    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/model/ModuleFactory.py:166(naction)
-       30    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/model/ModuleFactory.py:50(naction)
-      322    0.000    0.000    0.000    0.000 {isinstance}
-       30    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/model/ModuleFactory.py:238(naction)
-      211    0.000    0.000    0.000    0.000 {method 'append' of 'list' objects}
-       21    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/model/ModuleFactory.py:309(naction)
-      210    0.000    0.000    0.000    0.000 {method 'random' of '_random.Random' objects}
-        1    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:285(restore_system)
-        1    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:447(restore_vars)
-      111    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/module/Module.py:191(getValue)
+        1    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:388(get_random_path_V2)
+        1    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:344(restore_system)
+        1    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:547(restore_vars)
         1    0.000    0.000    0.000    0.000 /System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/collections.py:113(items)
-        1    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:234(step_without_move)
+        1    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/util/BlockingQueue.py:25(pop)
+        6    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/module/Module.py:185(set_value)
         7    0.000    0.000    0.000    0.000 /System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/collections.py:78(__iter__)
-        1    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/model/ModuleFactory.py:234(faction)
+        2    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/util/BlockingQueue.py:32(is_empty)
+        1    0.000    0.000    0.000    0.000 {method 'pop' of 'list' objects}
+        1    0.000    0.000    0.000    0.000 {len}
+        1    0.000    0.000    0.000    0.000 {method 'append' of 'list' objects}
+        6    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/module/Module.py:191(get_value)
         1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+        6    0.000    0.000    0.000    0.000 {isinstance}
 
 

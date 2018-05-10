@@ -402,7 +402,7 @@ class Checker(threading.Thread):
             n += 1
             if n & 511 == 0:
                 t2 = time.time()
-                self.logger.info("Verifying {} paths, causing {}s".format(n, t2 - begin))
+                # self.logger.info("Verifying {} paths, causing {}s".format(n, t2 - begin))
             if isinstance(satisfied, bool):
                 hitTimes += 1
                 if satisfied:
@@ -425,8 +425,8 @@ class Checker(threading.Thread):
                         pb2 = self.model.probForPath(path, biasing=True, duration=self.duration)
                         likelihood = pb1/pb2
                     except ZeroDivisionError:
-                        logging.error("path's length: %d" % (len(path)))
-                        logging.error("path: %s" % str(path))
+                        # logging.error("path's length: %d" % (len(path)))
+                        # logging.error("path: %s" % str(path))
                         continue
                     x += likelihood
                 else:

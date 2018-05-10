@@ -1,2 +1,30 @@
-Checker is going to generates 4163 paths
-Checker is going to generates 4163 paths
+Verifying 512 paths, causing 11.61850214s
+Verifying 1024 paths, causing 23.7401919365s
+Verifying 1536 paths, causing 35.5529379845s
+Verifying 2048 paths, causing 47.8203089237s
+Verifying 2560 paths, causing 59.7527401447s
+mc2's result=0.027
+Verifying 512 paths, causing 12.4448020458s
+Verifying 1024 paths, causing 24.8807630539s
+Verifying 1536 paths, causing 36.6320960522s
+Verifying 2048 paths, causing 48.8386831284s
+Verifying 2560 paths, causing 60.7333769798s
+mc2's result=0.009
+Verifying 512 paths, causing 11.8682141304s
+Verifying 1024 paths, causing 23.891094923s
+Verifying 1536 paths, causing 35.5529909134s
+Verifying 2048 paths, causing 47.7038280964s
+Verifying 2560 paths, causing 59.9419651031s
+mc2's result=0.0106666666667
+Verifying 512 paths, causing 12.1111521721s
+Verifying 1024 paths, causing 25.6726219654s
+Verifying 1536 paths, causing 38.2788181305s
+Verifying 2048 paths, causing 51.1351070404s
+Verifying 2560 paths, causing 63.6087970734s
+mc2's result=0.0106666666667
+Verifying 512 paths, causing 12.7628209591s
+Verifying 1024 paths, causing 25.65498209s
+Verifying 1536 paths, causing 39.731981039s
+Verifying 2048 paths, causing 51.9775710106s
+Verifying 2560 paths, causing 65.0274031162s
+mc2's result=0.00966666666667

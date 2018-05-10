@@ -3,7 +3,7 @@
    Ordered by: cumulative time
 
    ncalls  tottime  percall  cumtime  percall filename:lineno(function)
-        1    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:254(gen_next_move)
+        1    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:254(next_move)
         1    0.000    0.000    0.000    0.000 <string>:8(__new__)
         1    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:243(gen_holding_time)
         1    0.000    0.000    0.000    0.000 {sum}

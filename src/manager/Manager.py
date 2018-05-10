@@ -152,7 +152,8 @@ def main():
     def set_param_func(name, value):
         manager.mdl_parser.parser.vcf_map[name].value = value
 
-    t3(manager.model, set_param_func)
+    # t3(manager.model, set_param_func)
+    print "hello pyinstaller"
 
 
 if __name__ == "__main__":
