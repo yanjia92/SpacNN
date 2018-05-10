@@ -12,11 +12,11 @@ from util.PlotHelper import plot_multi
 from util.AnnotationHelper import deprecated
 
 
-def get_logger(level=logging.INFO):
-    logger = logging.getLogger("Manager log")
-    logger.addHandler(logging.StreamHandler(sys.stdout))
-    logger.setLevel(level)
-    return logger
+# def get_logger(level=logging.INFO):
+#     logger = logging.getLogger("Manager log")
+#     logger.addHandler(logging.StreamHandler(sys.stdout))
+#     logger.setLevel(level)
+#     return logger
 
 
 class Manager(object):

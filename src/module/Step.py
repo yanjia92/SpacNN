@@ -1,10 +1,7 @@
-from module.State import State
 from module.NextMove import NextMove
-import logging
-import sys
-logger = logging.getLogger("Step logger")
-logger.addHandler(logging.StreamHandler(sys.stdout))
-logger.setLevel(logging.ERROR)
+# logger = logging.getLogger("Step logger")
+# logger.addHandler(logging.StreamHandler(sys.stdout))
+# logger.setLevel(logging.ERROR)
 
 
 class Step(object):

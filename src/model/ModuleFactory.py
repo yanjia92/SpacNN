@@ -2,9 +2,9 @@ from module.Module import *
 from math import log, e, pow
 from util.MathUtils import pcf
 import logging
-logger = logging.getLogger('ModuleFactory logger')
-logger.addHandler(logging.StreamHandler())
-logger.setLevel(logging.ERROR)
+# logger = logging.getLogger('ModuleFactory logger')
+# logger.addHandler(logging.StreamHandler())
+# logger.setLevel(logging.ERROR)
 
 
 class ModuleFactory(object):
@@ -177,7 +177,7 @@ class ModuleFactory(object):
                 std_x = (-config.getParam('S3R_A_MU') + x) / \
                     config.getParam('S3R_A_SIGMA').get_value()
                 p = 1 - pcf(std_x)
-                logger.info('day:{0}, s3r failure prob:{1}'.format(day, p))
+                # logger.info('day:{0}, s3r failure prob:{1}'.format(day, p))
                 return p
             return inner
 

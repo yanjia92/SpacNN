@@ -6,10 +6,10 @@ from checker import Checker
 from collections import OrderedDict
 from model.ModelFactory import ModelFactory
 
-logger = logging.getLogger("ExperimentWrapper logging")
-file_handler = logging.FileHandler("../log/expe.log", "w")
-logger.addHandler(file_handler)
-logger.setLevel(logging.INFO)
+# logger = logging.getLogger("ExperimentWrapper logging")
+# file_handler = logging.FileHandler("../log/expe.log", "w")
+# logger.addHandler(file_handler)
+# logger.setLevel(logging.INFO)
 
 # 使用simulation的方法对模型进行experiment
 # 为模型中的未定参数设定一组值,并进行simulation验证实验,返回多次simulation的期望值(平均值)
@@ -74,7 +74,7 @@ class ExperimentWrapper(object):
                 # logger.info("==============")
 
             prob = float(count) / self.samples_per_param
-            logger.info('{}: {}/{} paths satisfy ltl'.format(paramsdict, count, self.samples_per_param))
+            # logger.info('{}: {}/{} paths satisfy ltl'.format(paramsdict, count, self.samples_per_param))
             lparamvalues = paramsdict.values() # the 'l' prefix indicate it's a list type
             lparamvalues = map(lambda constant: constant.get_value(), lparamvalues)
             results.append((lparamvalues, prob))
@@ -85,7 +85,7 @@ class ExperimentWrapper(object):
     # 调用Checker的验证方法
     # return []
     def modelcheck(self):
-        logger.info("run_checker ExpeWrapper's model checking.")
+        # logger.info("run_checker ExpeWrapper's model checking.")
         paramslist = self._constants.values() # list of list
         # logger.info(paramslist)
         results = []
@@ -94,7 +94,7 @@ class ExperimentWrapper(object):
                 self.checker.model.constants[constant.get_name()].value =  constant.get_value()
             low, high = self.checker.mc2()
             results.append((params, (low+high)/2.0))
-            logger.info("params: {0}, prob: {1}".format(str(params), (low+high)/2.0))
+            # logger.info("params: {0}, prob: {1}".format(str(params), (low+high)/2.0))
         return results
 
 def main():

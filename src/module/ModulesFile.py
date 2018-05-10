@@ -17,12 +17,11 @@ from module.NextMove import NextMove
 from PathHelper import *
 import traceback
 import sys
-import time
 import Queue
 
-logger = logging.getLogger("ModulesFile logging")
-logger.addHandler(logging.StreamHandler())
-logger.setLevel(logging.INFO)
+# logger = logging.getLogger("ModulesFile logging")
+# logger.addHandler(logging.StreamHandler())
+# logger.setLevel(logging.INFO)
 
 allUpCnt = 0
 failureCnt = 0
@@ -41,9 +40,9 @@ class StepGenThd(threading.Thread):
     def __init__(self, model=None):
         threading.Thread.__init__(self)
         self.model = model
-        self.logger = logging.getLogger("StepGenThrd's log")
-        self.logger.addHandler(logging.StreamHandler(sys.stdout))
-        self.logger.setLevel(logging.ERROR)
+        # self.logger = logging.getLogger("StepGenThrd's log")
+        # self.logger.addHandler(logging.StreamHandler(sys.stdout))
+        # self.logger.setLevel(logging.ERROR)
 
     def run(self):
         model = self.model
@@ -58,9 +57,10 @@ class StepGenThd(threading.Thread):
                 if step:
                     queue.put(step)
                     passed_time += step.next_move.holding_time
-                    self.logger.info("one step added, qsize={}".format(queue.qsize()))
+                    # self.logger.info("one step added, qsize={}".format(queue.qsize()))
                 else:
-                    self.logger.error("None step generated")
+                    pass
+                    # self.logger.error("None step generated")
                 if int(step.next_move.holding_time) == 0 or int(step.next_move.passed_time) + \
                         int(step.next_move.holding_time) == model.duration:
                     # ModulesFile generate a step without move
@@ -122,9 +122,9 @@ class ModulesFile(object):
         self.duration = 0.0
         # self.duration = duration # time duration to generate random path
         # self.steps_queue = Queue.Queue(maxsize=self.duration * STEPS_QUEUE_FACTOR)
-        self.logger = logging.getLogger("ModulesFile's log")
-        self.logger.addHandler(logging.StreamHandler(sys.stdout))
-        self.logger.setLevel(logging.INFO)
+        # self.logger = logging.getLogger("ModulesFile's log")
+        # self.logger.addHandler(logging.StreamHandler(sys.stdout))
+        # self.logger.setLevel(logging.INFO)
         # self.steps_queue = list()
         self.steps_queue = Queue.Queue(maxsize=STEPS_QUEUE_MAX_SIZE)
         self.STEPS_QUEUE_MAX_SIZE = STEPS_QUEUE_MAX_SIZE
@@ -666,8 +666,8 @@ class ModulesFile(object):
                             p = command.prob()
                         if p is None:
                             msg = traceback.format_exc()
-                            logger.error("command's prob must be callable")
-                            logger.error(msg)
+                            # logger.error("command's prob must be callable")
+                            # logger.error(msg)
                         cmd_probs.append((copy.copy(command), p))
             key = tuple([v.value for v in self.localVarsList])
             # sort cmd_probs by prob desc to accerate speed of
@@ -689,7 +689,7 @@ class ModulesFile(object):
             self.tstate_apset_map[key] = apset
         self.restoreSystem()
         self.commPrepared = True
-        self.logger.info("prepare_commands finished")
+        # self.logger.info("prepare_commands finished")
 
 
     def exportPathTo(self, path, filename):

@@ -83,10 +83,10 @@ class Checker(threading.Thread):
         self.fb = fb # specify whether failure biasing is enabled
         self.model.fb = fb
 
-        self.logger = logging.getLogger("Checker logging")
-        self.logger.addHandler(logging.FileHandler(get_log_dir() + get_sep() + "checker.log", "w"))
-        self.logger.addHandler(logging.StreamHandler(sys.stdout))
-        self.logger.setLevel(logging.INFO)
+        # self.logger = logging.getLogger("Checker logging")
+        # self.logger.addHandler(logging.FileHandler(get_log_dir() + get_sep() + "checker.log", "w"))
+        # self.logger.addHandler(logging.StreamHandler(sys.stdout))
+        # self.logger.setLevel(logging.INFO)
 
     # Get upper-bound of variance
     def __getVar_m(self, n, a, b):
@@ -435,13 +435,14 @@ class Checker(threading.Thread):
                 # nspaths.add(str(path))
                 failed = filter(lambda apset: "failure" in apset, map(lambda step: step.ap_set, path))
                 if failed:
-                    self.logger.info("fail ap in apset, but verified not failed. path={}".format(str(path)))
+                    pass
+                    # self.logger.info("fail ap in apset, but verified not failed. path={}".format(str(path)))
                 else:
                     # self.logger.info("not failed")
                     pass
 
         postex = self.postEx(n, x)
-        self.logger.info("mc2's result={}".format(postex))
+        # self.logger.info("mc2's result={}".format(postex))
         return postex
 
     def intervalUnreliability(self, duration):

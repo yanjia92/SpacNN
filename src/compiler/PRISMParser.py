@@ -109,9 +109,9 @@ class BasicParser(object):
         # name : value storage structure for constants
         self.cmap = defaultdict(lambda: None)
         # name : func object storage structure for variables and formula
-        self.logger = logging.getLogger("BasicParser logging")
-        self.logger.addHandler(logging.FileHandler(LogHelper.get_logging_root() + "BasicParser.log"))
-        self.logger.setLevel(logging.ERROR)
+        # self.logger = logging.getLogger("BasicParser logging")
+        # self.logger.addHandler(logging.FileHandler(LogHelper.get_logging_root() + "BasicParser.log"))
+        # self.logger.setLevel(logging.ERROR)
         self.vcf_map = defaultdict(lambda: None)
 
     def p_statement(self, p):
@@ -154,7 +154,7 @@ class BasicParser(object):
         obj = Constant(name, value)
         ModelConstructor.model.setConstant(name, obj)
         self.vcf_map[p[3]] = obj
-        self.logger.info("Constant added: {} = {}".format(name, value))
+        # self.logger.info("Constant added: {} = {}".format(name, value))
 
     def p_const_expression1(self, p):
         '''const_value_statement : CONST INT NAME SEMICOLON
@@ -165,7 +165,7 @@ class BasicParser(object):
         obj = Constant(name)
         ModelConstructor.model.addConstant(name, obj)
         self.vcf_map[name] = obj
-        self.logger.info("Unspecified constant added: {}".format(name))
+        # self.logger.info("Unspecified constant added: {}".format(name))
 
     def p_const_expression2(self, p):
         '''const_value_statement : CONST INT NAME ASSIGN expr SEMICOLON
@@ -176,7 +176,7 @@ class BasicParser(object):
         obj = Constant(name, value)
         ModelConstructor.model.addConstant(name, obj)
         self.vcf_map[name] = obj
-        self.logger.info("Constant added: {} = {}".format(name, value))
+        # self.logger.info("Constant added: {} = {}".format(name, value))
 
     def p_module_var_def_statement(self, p):
         '''module_var_def_statement : NAME COLON LB expr COMMA expr RB INIT NUM SEMICOLON'''
@@ -188,11 +188,11 @@ class BasicParser(object):
                        int)  # 目前默认变量的类型是int p[index] index不能是负数
         self.module.addVariable(var)
         self.vcf_map[var.get_name()] = var
-        self.logger.info("Variable_{} added to Module_{}. init={}, range=[{}, {}]".format(var.get_name(), str(self.module), var.initVal, var.valRange[0], var.valRange[-1]))
+        # self.logger.info("Variable_{} added to Module_{}. init={}, range=[{}, {}]".format(var.get_name(), str(self.module), var.initVal, var.valRange[0], var.valRange[-1]))
 
     def p_module_command_statement(self, p):
         '''module_command_statement : LB RB boolean_expression THEN updates SEMICOLON'''
-        self.logger.info("command.tokens : {}".format(p.slice))
+        # self.logger.info("command.tokens : {}".format(p.slice))
 
     def p_updates(self, p):
         '''updates : updates ADD prob_update'''
@@ -209,7 +209,7 @@ class BasicParser(object):
         name = copy.copy(p[2])
         command = Command(name, self.guard, action, self.module, prob)
         self.module.addCommand(command)
-        self.logger.info("Command_{} added.".format(name))
+        # self.logger.info("Command_{} added.".format(name))
 
     def p_actions(self, p):
         '''actions : actions AND assignment'''
@@ -438,7 +438,7 @@ class BasicParser(object):
         slices = copy.copy(p.slice)
         frml_name = slices[2].value
         self.vcf_map[frml_name] = slices[4].value
-        self.logger.info("Formula_{} added.".format(slices[2].value))
+        # self.logger.info("Formula_{} added.".format(slices[2].value))
 
     def p_label_statement(self, p):
         '''label_statement : LABEL NAME ASSIGN boolean_expression SEMICOLON'''
@@ -461,7 +461,7 @@ class BasicParser(object):
 
     def parse_model(self, filepath):
         commentremoved = clear_comment(filepath)
-        self.logger.info("Parsing model file : {}".format(commentremoved))
+        # self.logger.info("Parsing model file : {}".format(commentremoved))
         lines = []
 
         with open(commentremoved) as f:
@@ -491,13 +491,13 @@ class ModelConstructor(object):
         self.parser = BasicParser()
         self.parser.build()
         ModelConstructor.model = ModulesFile(ModelType.DTMC)
-        self.logger = logging.getLogger("model_constructor's logger")
-        self.logger.addHandler(logging.StreamHandler(sys.stdout))
-        self.logger.setLevel(logging.INFO)
+        # self.logger = logging.getLogger("model_constructor's logger")
+        # self.logger.addHandler(logging.StreamHandler(sys.stdout))
+        # self.logger.setLevel(logging.INFO)
 
     def parseModelFile(self, filepath):
         self.parser.parse_model(filepath)
-        self.logger.info("Model parsing finished.")
+        # self.logger.info("Model parsing finished.")
         return ModelConstructor.model
 
 
