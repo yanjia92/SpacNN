@@ -75,7 +75,7 @@ __tabversion__ = '3.10'
 # Change these to modify the default behavior of yacc (if you wish)
 #-----------------------------------------------------------------------------
 
-yaccdebug   = True             # Debugging mode.  If set, yacc generates a
+yaccdebug   = False             # Debugging mode.  If set, yacc generates a
                                # a 'parser.out' file in the current directory
 
 debug_file  = 'parser.out'     # Default name of the debugging file
@@ -110,15 +110,18 @@ class PlyLogger(object):
         self.f = f
 
     def debug(self, msg, *args, **kwargs):
-        self.f.write((msg % args) + '\n')
+        pass
+        # self.f.write((msg % args) + '\n')
 
     info = debug
 
     def warning(self, msg, *args, **kwargs):
-        self.f.write('WARNING: ' + (msg % args) + '\n')
+        pass
+        # self.f.write('WARNING: ' + (msg % args) + '\n')
 
     def error(self, msg, *args, **kwargs):
-        self.f.write('ERROR: ' + (msg % args) + '\n')
+        pass
+        # self.f.write('ERROR: ' + (msg % args) + '\n')
 
     critical = debug
 
@@ -619,7 +622,7 @@ class LRParser:
                             else:
                                 sys.stderr.write('yacc: Syntax error, token=%s' % errtoken.type)
                         else:
-                            sys.stderr.write('yacc: Parse error in input. EOF\n')
+                            # sys.stderr.write('yacc: Parse error in input. EOF\n')
                             return
 
                 else:
@@ -925,7 +928,7 @@ class LRParser:
                             else:
                                 sys.stderr.write('yacc: Syntax error, token=%s' % errtoken.type)
                         else:
-                            sys.stderr.write('yacc: Parse error in input. EOF\n')
+                            # sys.stderr.write('yacc: Parse error in input. EOF\n')
                             return
 
                 else:
@@ -1217,7 +1220,7 @@ class LRParser:
                             else:
                                 sys.stderr.write('yacc: Syntax error, token=%s' % errtoken.type)
                         else:
-                            sys.stderr.write('yacc: Parse error in input. EOF\n')
+                            # sys.stderr.write('yacc: Parse error in input. EOF\n')
                             return
 
                 else:
