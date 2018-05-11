@@ -16,7 +16,6 @@ from util.AnnotationHelper import *
 from module.NextMove import NextMove
 from PathHelper import *
 import traceback
-import sys
 import Queue
 
 # logger = logging.getLogger("ModulesFile logging")

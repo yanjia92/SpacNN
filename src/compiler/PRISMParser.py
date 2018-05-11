@@ -481,7 +481,7 @@ class BasicParser(object):
 
     def build(self):
         self.tokens = MyLexer.tokens
-        self.parser = yacc.yacc(module=self)
+        self.parser = yacc.yacc(module=self, debug=False)
 
 
 class ModelConstructor(object):

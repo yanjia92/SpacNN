@@ -2,7 +2,6 @@
 from model.ModelFactory import ModelFactory
 from checker.Checker import Checker
 import logging
-from PathHelper import get_sep, get_log_dir, get_prism_model_dir
 from util.CsvFileHelper import parse_csv
 import sys
 from math import fabs
