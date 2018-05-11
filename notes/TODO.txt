@@ -6,6 +6,9 @@
         关于virtualenv virtualenv中的很多文件是symbolic link 但是 virtualenv 可以选择 --always-copy 属性
     
 
+    parsetab.py bug
+        yacc.py#write_table
+
 已完成
 如何确保expression的parsing是正确的？ 单元测试成功 testParseExpr.py
 增加label, 测试label testLabel.py单元测试成功

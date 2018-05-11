@@ -63,3 +63,5 @@ manager 中的实验参数设置的设计
         manager.manager_params 用户可以进行设定的参数值 包括 network.nh, no checker.c, d etc 
 
 
+打包细则
+    sudo pyinstaller --clean -F PATH_TO_MANAGER.PY

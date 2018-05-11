@@ -480,8 +480,9 @@ class BasicParser(object):
                 self.parser.parse(line, lexer=lexer)
 
     def build(self):
+        cur_dir = os.path.dirname(os.path.realpath(__file__))
         self.tokens = MyLexer.tokens
-        self.parser = yacc.yacc(module=self)
+        self.parser = yacc.yacc(module=self, outputdir=cur_dir)
 
 
 class ModelConstructor(object):

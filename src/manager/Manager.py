@@ -161,7 +161,7 @@ def main():
         if opt == "--model_file":
             manager.read_model_file(value)
         if opt == "--prism_data":
-            prism_data
+            prism_data = value
     if prism_data:
         t3(manager.model, set_param_func, prism_data)
 

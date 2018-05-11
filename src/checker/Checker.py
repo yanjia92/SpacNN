@@ -382,7 +382,7 @@ class Checker(threading.Thread):
             return False
 
     # Estiamte the probability of property holding
-    @profileit(filepath=get_log_dir() + get_sep() + "checker_mc2_prof")
+    # @profileit(filepath=get_log_dir() + get_sep() + "checker_mc2_prof")
     def mc2(self):
         sz = self.get_sample_size()
         x, n = 0, 0

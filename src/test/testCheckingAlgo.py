@@ -17,11 +17,11 @@ def get_prism_checking_result(filepath):
     return parse_csv(filepath)
 
 
-def get_logger():
-    logger = logging.getLogger("testCheckingAlgo logging")
-    logger.addHandler(sys.stdout)
-    logger.setLevel(logging.INFO)
-    return logger
+# def get_logger():
+#     logger = logging.getLogger("testCheckingAlgo logging")
+#     logger.addHandler(sys.stdout)
+#     logger.setLevel(logging.INFO)
+#     return logger
 
 
 def get_checker(model):
@@ -76,22 +76,21 @@ def set_param(name, value):
 
 def t3(model, set_param_func, prism_data_file):
     '''测试parsed模型运行checker的结果与PRISM中运行的一致'''
-    logger = get_logger()
+    # logger = get_logger()
     prism_result_x, prism_result_y = get_prism_checking_result(prism_data_file)
     checker = get_checker(model)
     samplesize = checker.get_sample_size()
-    logger.info("Sampling size = {}".format(samplesize))
-    thickness = range(1, 11)
+    # logger.info("Sampling size = {}".format(samplesize))
+    thickness = range(1, 2)
     probs = []
     for t in thickness:
         set_param_func("SCREEN_THICKNESS", t)
         checker.model.prepare_commands()
         probs.append(checker.run_checker())
-    logger.info("samples={},c={},d={}".format(samplesize, c, d))
-    logger.info(probs)
+    # logger.info("samples={},c={},d={}".format(samplesize, c, d))
+    # logger.info(probs)
     for v1, v2 in zip(probs, prism_result_y[:len(probs)]):
-        pass
-        logger.info("Diff = %.2f%%" % fabs((v1-v2)/v2*100))
+        print "Diff = %.2f%%" % fabs((v1-v2)/v2*100)
 
 
 if __name__ == "__main__":
