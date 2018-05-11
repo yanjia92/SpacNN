@@ -56,14 +56,14 @@ class Checker(threading.Thread):
     # In DTMC cases, it just represents the number of steps
     def __init__(
         self,
-        model=None,
+        model,
         ltl=None,
         a=1,
         b=1,
         c=0.9,
         d=0.02,
         duration=1.0,
-            checkingType=None,
+            checkingType=CheckingType.QUANTATIVE,
         fb = False):
         threading.Thread.__init__(self)
         self.model = model

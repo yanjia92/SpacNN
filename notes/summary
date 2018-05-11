@@ -42,6 +42,24 @@ manager 中的实验参数设置的设计
         接收数据类型 [(vals)] e.g. [(1, 2, 3), (2, 3, 4)] （1,2,3 分别是三个参数的值）
         注意
             这里的参数的顺序必须和设置训练参数时传递的参数的顺序相同
+
+
+    manager的运行逻辑
+        初始化: init BPNegressor, BasicParser etc.
+        用户输入模型文件的路径
+            read_model_file
+                call BasicParser input_file method
+                set ModulesFile.DEFAULT_DURATION to model.duration
+                init Checker object
+        用户输入ltl表达式
+            这里的解析还没有做
+            set the ltl to checker
+        用户输入一批数据用于训练 输入格式 name start step end 
+
+        训练完成
+
+        用户输入单个点 或者一个范围 可以获取模型检测在这个范围内的值
         
+        manager.manager_params 用户可以进行设定的参数值 包括 network.nh, no checker.c, d etc 
 
 

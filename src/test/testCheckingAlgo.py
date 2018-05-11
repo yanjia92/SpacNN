@@ -4,8 +4,8 @@ from checker.Checker import Checker
 import logging
 from PathHelper import get_sep, get_log_dir, get_prism_model_dir
 from util.CsvFileHelper import parse_csv
+import sys
 from math import fabs
-import random
 
 
 DURATION = 1*365*2
@@ -13,14 +13,13 @@ c = 0.6
 d = 0.02
 
 
-def get_prism_checking_result():
-    filepath = get_prism_model_dir() + get_sep() + "YEAR1_T_1_10_1"
+def get_prism_checking_result(filepath):
     return parse_csv(filepath)
 
 
 def get_logger():
     logger = logging.getLogger("testCheckingAlgo logging")
-    logger.addHandler(logging.FileHandler(get_log_dir() + get_sep() + "testCheckingAlgo.log", "w"))
+    logger.addHandler(sys.stdout)
     logger.setLevel(logging.INFO)
     return logger
 
@@ -37,16 +36,18 @@ def t1(model):
     checker = get_checker(model)
     checker.model.duration = DURATION
     PATH_CNT = 3000
-    logger = get_logger()
-    logger.setLevel(logging.INFO)
+    # logger = get_logger()
+    # logger.setLevel(logging.INFO)
     for _ in range(PATH_CNT):
         result, path = checker.gen_random_path()
         if len(path) < DURATION:
-            logger.info("Failed path found.")
+            pass
+            # logger.info("Failed path found.")
         verified = checker.verify(path)
         if verified is False and len(path) != DURATION:
-            logger.error("path:{}".format(str(path)))
-            logger.error("path'len={}".format(len(path)))
+            pass
+            # logger.error("path:{}".format(str(path)))
+            # logger.error("path'len={}".format(len(path)))
 
 
 def t2(model=None):
@@ -56,15 +57,16 @@ def t2(model=None):
     samplesize = checker.get_sample_size()
     thickness = range(1, 6)
     probs = []
-    logger = get_logger()
+    # logger = get_logger()
     for t in thickness:
         ModelFactory.setParam("SCREEN_THICKNESS", t)
         checker.model.prepare_commands()
         probs.append(checker.run_checker())
-    logger.info("samples={},c={},d={}".format(samplesize, c, d))
-    logger.info(probs)
+    # logger.info("samples={},c={},d={}".format(samplesize, c, d))
+    # logger.info(probs)
     for v1, v2 in zip(probs, prism_result_y[-(len(probs)):]):
-        logger.info("diff={}".format(fabs(v1 - v2)))
+        pass
+        # logger.info("diff={}".format(fabs(v1 - v2)))
 
 
 def set_param(name, value):
@@ -72,10 +74,10 @@ def set_param(name, value):
     ModelFactory.model_constructor.parser.vcf_map[name].value = value
 
 
-def t3(model, set_param_func):
+def t3(model, set_param_func, prism_data_file):
     '''测试parsed模型运行checker的结果与PRISM中运行的一致'''
     logger = get_logger()
-    prism_result_x, prism_result_y = get_prism_checking_result()  # (1, 5, 1)
+    prism_result_x, prism_result_y = get_prism_checking_result(prism_data_file)
     checker = get_checker(model)
     samplesize = checker.get_sample_size()
     logger.info("Sampling size = {}".format(samplesize))
@@ -88,6 +90,7 @@ def t3(model, set_param_func):
     logger.info("samples={},c={},d={}".format(samplesize, c, d))
     logger.info(probs)
     for v1, v2 in zip(probs, prism_result_y[:len(probs)]):
+        pass
         logger.info("Diff = %.2f%%" % fabs((v1-v2)/v2*100))
 
 

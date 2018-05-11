@@ -5,10 +5,10 @@ from PRISMLex import MyLexer
 from module.ModulesFile import *
 from module.Module import *
 from removeComment import clear_comment
-from util.LogHelper import LogHelper
+# from util.LogHelper import LogHelper
 from util.MathUtils import *
 from collections import defaultdict
-import sys
+# import sys
 
 def bin_add(x,y):
     '''bin_add'''

@@ -2,7 +2,6 @@
 from compiler.PRISMParser import ModelConstructor
 from module.ModulesFile import StepGenThd
 from module.ModulesFile import ModulesFile
-import sys
 from test.testCheckingAlgo import *
 from module.Module import Constant
 import itertools
@@ -10,6 +9,7 @@ from nn.NNRegressor import BPNeuralNetwork as BPNN
 from util.CsvFileHelper import parse_csv
 from util.PlotHelper import plot_multi
 from util.AnnotationHelper import deprecated
+import sys, getopt
 
 
 # def get_logger(level=logging.INFO):
@@ -26,7 +26,7 @@ class Manager(object):
         self.model = None
         self.expr_params = list()  # [(name, val_list)]
         self.ltl = None
-        self.checker = Checker(model=self.model, ltl=self.ltl, duration=self.manager_params["duration"])
+        self.checker = None
         self.regressor = BPNN()
         self.test_xs = []  # [(name, val_list)]
 
@@ -43,12 +43,14 @@ class Manager(object):
     def _setup_model(self, duration=None):
         self.model.duration = duration
 
+    @deprecated
     def set_model(self, model):
         self.model = model
 
     def read_model_file(self, file_path):
         self.model = self.mdl_parser.parseModelFile(file_path)
         self._setup_model(duration=ModulesFile.DEFAULT_DURATION)
+        self.checker = Checker(model=self.model)
 
     @deprecated
     def async_gen_steps(self):
@@ -76,7 +78,8 @@ class Manager(object):
         self.expr_params = constants
 
     def set_ltl(self, ltl):
-        self.ltl = ltl
+        if self.checker:
+            self.checker.ltl = ltl
 
     def _set_param(self, *constants):
         '''
@@ -146,14 +149,21 @@ class Manager(object):
 
 
 def main():
-    manager = Manager()
-    manager.read_model_file(get_prism_model_dir() + get_sep() + "smalltest.prism")
-
     def set_param_func(name, value):
         manager.mdl_parser.parser.vcf_map[name].value = value
 
-    # t3(manager.model, set_param_func)
-    print "hello pyinstaller"
+    manager = Manager()
+    short_opts = "h"
+    long_opts = ["prism_data=", "model_file="]
+    opts, args = getopt.getopt(sys.argv[1:], short_opts, long_opts)
+    prism_data = None
+    for opt, value in opts:
+        if opt == "--model_file":
+            manager.read_model_file(value)
+        if opt == "--prism_data":
+            prism_data
+    if prism_data:
+        t3(manager.model, set_param_func, prism_data)
 
 
 if __name__ == "__main__":
