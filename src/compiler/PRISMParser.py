@@ -107,12 +107,21 @@ class BasicParser(object):
             'stdcdf': pcf
         }
         # name : value storage structure for constants
-        self.cmap = defaultdict(lambda: None)
         # name : func object storage structure for variables and formula
         # self.logger = logging.getLogger("BasicParser logging")
         # self.logger.addHandler(logging.FileHandler(LogHelper.get_logging_root() + "BasicParser.log"))
         # self.logger.setLevel(logging.ERROR)
         self.vcf_map = defaultdict(lambda: None)
+
+    def constname_unsure(self):
+        ''':return 不确定的常量名 [str]'''
+        names = []
+        for name, obj_or_func in self.vcf_map.keys():
+            if not callable(obj_or_func):
+                if not obj_or_func.get_value():
+                    # unsure Constant objects
+                    names.append(name)
+        return names
 
     def p_statement(self, p):
         '''statement : model_type_statement
@@ -499,6 +508,7 @@ class ModelConstructor(object):
     def parseModelFile(self, filepath):
         self.parser.parse_model(filepath)
         # self.logger.info("Model parsing finished.")
+        print "Parse finished."
         return ModelConstructor.model
 
 

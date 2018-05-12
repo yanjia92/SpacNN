@@ -21,6 +21,7 @@ import getopt
 
 
 class Manager(object):
+
     def __init__(self):
         self.manager_params = {"nh": 5, "no": 1}
         self.mdl_parser = ModelConstructor()
