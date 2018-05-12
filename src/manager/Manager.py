@@ -7,9 +7,10 @@ from module.Module import Constant
 import itertools
 from nn.NNRegressor import BPNeuralNetwork as BPNN
 from util.CsvFileHelper import parse_csv
-from util.PlotHelper import plot_multi
+# from util.PlotHelper import plot_multi
 from util.AnnotationHelper import deprecated
-import sys, getopt
+import sys
+import getopt
 
 
 # def get_logger(level=logging.INFO):
@@ -145,7 +146,7 @@ class Manager(object):
         # get true value returned from PRISM
         _, test_prism_ys = parse_csv("YEAR1_T_1_10_1")
 
-        plot_multi((test_xs, test_expr_ys, "experiment"), (test_xs, test_prism_ys, "prism"))
+        # plot_multi((test_xs, test_expr_ys, "experiment"), (test_xs, test_prism_ys, "prism"))
 
 
 def main():

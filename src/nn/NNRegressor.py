@@ -1,11 +1,9 @@
 # -*- coding:utf-8 -*-
-import math
-import random
 import util
-try:
-    import matplotlib.pyplot as plt
-except ImportError:
-    pass
+# try:
+#     import matplotlib.pyplot as plt
+# except ImportError:
+#     pass
 from util.MathUtils import *
 
 
@@ -130,12 +128,12 @@ class BPNeuralNetwork:
         test_cases = util.interval(-math.pi, math.pi, 0.01)
         test_labels = [math.cos(x) for x in test_cases]
         predict_labels = [self.predict(test_case) for test_case in test_cases]
-        plt.xlabel("x")
-        plt.ylabel("true value")
-        plt.plot(test_cases, test_labels, label="true value")
-        plt.plot(test_cases, predict_labels, label="predict value")
-        plt.legend()
-        plt.show()
+        # plt.xlabel("x")
+        # plt.ylabel("true value")
+        # plt.plot(test_cases, test_labels, label="true value")
+        # plt.plot(test_cases, predict_labels, label="predict value")
+        # plt.legend()
+        # plt.show()
 
 
 if __name__ == '__main__':
