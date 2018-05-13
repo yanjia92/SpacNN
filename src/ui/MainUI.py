@@ -2,15 +2,16 @@
 from Tkinter import *
 from manager.Manager import Manager
 from director.Director import Director
-
+from CodeWindow import CodeWindow
 '''
 设计思路: 一个dict维护从command_name到command的映射
 '''
 
+
 def add_file_menu(f):
-    def wrapper(*args):
+    def wrapper(*args, **kwargs):
         comm_map = args[0].comm_map
-        menu_bar = f(*args)
+        menu_bar = f(*args, **kwargs)
 
         file_menu = Menu(menu_bar, tearoff=0)
         file_menu.add_command(label="Open", command=comm_map["open"])
@@ -24,12 +25,19 @@ class UIOperator(object):
         self.comm_map = comm_map
         self.root = Tk()
         self.root.title("SpacNN")
-        self.root.geometry("600x800")
+        self.frame_width = 600
+        self.frame_height = 800
+        self.root.geometry("{}x{}".format(self.frame_width, self.frame_height))
         self.root.config(menu=self._get_menu_bar())
+        self._add_code_window()
+        print self.root.children.keys()
 
     @add_file_menu
     def _get_menu_bar(self):
-         return Menu(self.root)
+         return Menu(self.root, name="menu")
+
+    def _add_code_window(self):
+        CodeWindow(self.root)
 
     def start_ui_loop(self):
         self.root.mainloop()
@@ -39,4 +47,5 @@ if __name__ == '__main__':
     manager = Manager()
     director = Director(manager)
     ui_operator = UIOperator(director.comm_map)
+    director.root = ui_operator.root
     ui_operator.start_ui_loop()
