@@ -30,7 +30,11 @@ class UIOperator(object):
         self.root.geometry("{}x{}".format(self.frame_width, self.frame_height))
         self.root.config(menu=self._get_menu_bar())
         self._add_code_window()
-        print self.root.children.keys()
+        # print self.root.children.keys()
+
+        # buttons
+        train_button = Button(self.root, text="train", command=self.comm_map["train"])
+        train_button.pack(side=LEFT)
 
     @add_file_menu
     def _get_menu_bar(self):

@@ -116,7 +116,7 @@ class BasicParser(object):
     def constname_unsure(self):
         ''':return 不确定的常量名 [str]'''
         names = []
-        for name, obj_or_func in self.vcf_map.keys():
+        for name, obj_or_func in self.vcf_map.items():
             if not callable(obj_or_func):
                 if not obj_or_func.get_value():
                     # unsure Constant objects
@@ -172,7 +172,7 @@ class BasicParser(object):
         # 支持解析不确定的常量表达式
         name = p[3]
         obj = Constant(name)
-        ModelConstructor.model.addConstant(name, obj)
+        ModelConstructor.model.setConstant(name, obj)
         self.vcf_map[name] = obj
         # self.logger.info("Unspecified constant added: {}".format(name))
 

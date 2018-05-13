@@ -149,6 +149,8 @@ class Manager(object):
 
         # plot_multi((test_xs, test_expr_ys, "experiment"), (test_xs, test_prism_ys, "prism"))
 
+    def unsure_param_names(self):
+        return self.mdl_parser.parser.constname_unsure()
 
 def main():
     def set_param_func(name, value):

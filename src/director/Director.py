@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import tkFileDialog
 from Tkinter import END
+from ui.testInputDialog import ParamInputDialog
 
 
 class Director(object):
@@ -22,8 +23,20 @@ class Director(object):
                         cw_text.insert(END, l)
         return inner
 
+    def train(self):
+        def inner():
+            # get unsure params
+            params_names = self.manager.unsure_param_names()
+            # display dialog
+            if not hasattr(self, "root"):
+                print "Please add root to the Director. "
+            vals_map = ParamInputDialog(self.root, "Specify parameters to train", params_names).show()
+            print vals_map
+        return inner
+
     def init_comm_map(self):
         self.comm_map["open"] = self.open_file()
+        self.comm_map["train"] = self.train()
 
 
 
