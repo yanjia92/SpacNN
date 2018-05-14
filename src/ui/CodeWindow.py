@@ -7,6 +7,7 @@ class CodeWindow:
         # frame = Frame(root)
         # frame.pack()
         self.textPad(root)
+
         return
 
     def textPad(self, master):

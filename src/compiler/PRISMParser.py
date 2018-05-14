@@ -494,6 +494,11 @@ class BasicParser(object):
         self.parser = yacc.yacc(module=self, outputdir=cur_dir)
 
 
+class LTLParser(object):
+    '''P=? [True U<=NUM statement_prop]'''
+    pass
+
+
 class ModelConstructor(object):
     model = None
 

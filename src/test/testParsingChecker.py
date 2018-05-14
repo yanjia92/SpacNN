@@ -10,7 +10,7 @@ DURATION = int(365 * YEAR * 2)
 class TestParsingChecker(unittest.TestCase):
     def setUp(self):
         self.parsed = ModelFactory.get_parsed()
-        self.ltl = ["[1, {}]".format(DURATION), "T", "failure"]
+        self.ltl = ["U[1, {}]".format(DURATION), "T", "failure"]
         self.checker = Checker(self.parsed, ltl=self.ltl, duration=DURATION)
 
     def test_check(self):

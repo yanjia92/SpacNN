@@ -29,8 +29,18 @@ class UIOperator(object):
         self.frame_height = 800
         self.root.geometry("{}x{}".format(self.frame_width, self.frame_height))
         self.root.config(menu=self._get_menu_bar())
+        lcode_window = Label(self.root, text="Model")
+        lcode_window.pack()
         self._add_code_window()
         # print self.root.children.keys()
+        lLTL = Label(self.root, text="LTL formula for the path")
+        lLTL.pack()
+        var_LTL = StringVar()
+        eLTL = Entry(self.root, textvariable=var_LTL)
+        eLTL.pack()
+        ltl_formula = var_LTL.get().split(',')
+        print ltl_formula
+
 
         # buttons
         train_button = Button(self.root, text="train", command=self.comm_map["train"])

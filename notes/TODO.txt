@@ -1,13 +1,9 @@
 未完成
-    增加UI
     LTL公式的输入 UI
-    UI 需要哪些设计？
     程序打包发布 https://www.zhihu.com/question/21639330
         关于virtualenv virtualenv中的很多文件是symbolic link 但是 virtualenv 可以选择 --always-copy 属性
     
 
-    parsetab.py bug
-        yacc.py#write_table
 
 已完成
 如何确保expression的parsing是正确的？ 单元测试成功 testParseExpr.py
