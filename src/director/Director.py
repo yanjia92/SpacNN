@@ -4,6 +4,8 @@ from Tkinter import END
 from ui.testInputDialog import ParamInputDialog
 import tkMessageBox
 from util.util import *
+from itertools import product
+from PathHelper import *
 
 
 class Director(object):
@@ -68,9 +70,12 @@ class Director(object):
             #  get unsure parameter names
             unsure_names = self.manager.unsure_param_names()
             vals_map = self._input_unsure_params(unsure_names)  # show dialog for user to input
-            self.manager.set_test_x(vals_map.values())
+            # self.manager.set_test_x(vals_map.values())
+            test_xs = [test_x for test_x in product(*vals_map.values())]
+            self.manager.set_test_xs(test_xs)
             # self.manager.run_test(prism_data="C:\\Users\\yanjia\\Documents\\proj\\SpacNN\\prism_model\\YEAR1_T_1_10_1")
-            self.manager.run_test()
+            # self.manager.run_test()
+            self.manager.run_test(prism_data=get_prism_model_dir() + get_sep() + "YEAR1_T_1_10_1")
         return inner
 
     def init_comm_map(self):

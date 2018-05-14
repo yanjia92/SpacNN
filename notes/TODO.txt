@@ -1,6 +1,7 @@
 未完成
-    训练好的network 序列化
-
+    验证network输出的正确性
+    通过LTL输入，运行checker，运行的结果均为0
+    输入LTL不要打回车就直接调用函数
 
 
 
@@ -21,6 +22,7 @@ Fix "Running checker on built model produces different result with PRISM" bug
 安装matplotlib
 配置pycharm 使用ENV27虚拟环境
 LTL公式的输入 UI 不带解析的ltl input finished. yes
+训练好的network 序列化
 
 
 不足

@@ -104,7 +104,7 @@ class Manager(object):
         for constant_obj in constants:
             self.mdl_parser.parser.vcf_map[constant_obj.get_name()].set_value(None)
 
-    def set_test_x(self, test_xs):
+    def set_test_xs(self, test_xs):
         '''
         设置回归分析时参数的值
         :param test_xs: [(vals)]
@@ -143,6 +143,8 @@ class Manager(object):
         self.regressor.setup(len(self.expr_params),
                              self.get_manager_param("nh"),
                              self.get_manager_param("no"))
+        print train_data_x
+        print train_data_y
         self.regressor.train(train_data_x, train_data_y)
 
         network_obj = self.regressor

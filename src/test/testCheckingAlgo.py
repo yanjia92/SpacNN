@@ -80,7 +80,7 @@ def t3(model, set_param_func, prism_data_file):
     checker = get_checker(model)
     samplesize = checker.get_sample_size()
     # logger.info("Sampling size = {}".format(samplesize))
-    thickness = range(1, 2)
+    thickness = range(1, 11)
     probs = []
     for t in thickness:
         set_param_func("SCREEN_THICKNESS", t)

@@ -29,6 +29,7 @@ checker与modulesfile的关系:
     checker调用model的gen_random_path方法获取随机路径
     所以,checker不会参与修改model底层的数据
 
+
 manager 中的实验参数设置的设计
     设置训练参数接口
         方法 set_train_constants
