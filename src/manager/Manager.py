@@ -174,8 +174,8 @@ class Manager(object):
 
         # get true value returned from PRISM
         if prism_data:
-            _, test_prism_ys = parse_csv(prism_data)
-            plot_multi((test_xs, test_expr_ys, "experiment"), (test_xs, test_prism_ys, "prism"))
+            test_prism_xs, test_prism_ys = parse_csv(prism_data)
+            plot_multi((test_xs, test_expr_ys, "experiment"), (test_prism_xs, test_prism_ys, "prism"))
         else:
             plot_multi((test_xs, test_expr_ys, "experiment"))
 
