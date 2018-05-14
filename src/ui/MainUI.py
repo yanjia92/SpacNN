@@ -3,6 +3,8 @@ from Tkinter import *
 from manager.Manager import Manager
 from director.Director import Director
 from CodeWindow import CodeWindow
+from tkinter import ttk
+
 '''
 设计思路: 一个dict维护从command_name到command的映射
 '''
@@ -37,14 +39,17 @@ class UIOperator(object):
         lLTL.pack()
         var_LTL = StringVar()
         eLTL = Entry(self.root, textvariable=var_LTL)
+        eLTL.bind("<Return>", self.comm_map["ltl_input"])
         eLTL.pack()
-        ltl_formula = var_LTL.get().split(',')
-        print ltl_formula
-
 
         # buttons
         train_button = Button(self.root, text="train", command=self.comm_map["train"])
-        train_button.pack(side=LEFT)
+        train_button.pack()
+        predict_button = Button(self.root, text="predict", command=self.comm_map["predict"])
+        predict_button.pack()
+
+        process_bar = ttk.Progressbar(self.root, orient="horizontal", length=200, mode="determinate")
+
 
     @add_file_menu
     def _get_menu_bar(self):

@@ -118,7 +118,7 @@ class BasicParser(object):
         names = []
         for name, obj_or_func in self.vcf_map.items():
             if not callable(obj_or_func):
-                if not obj_or_func.get_value():
+                if obj_or_func.get_value() is None:
                     # unsure Constant objects
                     names.append(name)
         return names

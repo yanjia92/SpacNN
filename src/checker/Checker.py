@@ -402,6 +402,7 @@ class Checker(threading.Thread):
             n += 1
             if n & 511 == 0:
                 t2 = time.time()
+                print  "Verifying {} paths, causing {}s".format(n, t2 - begin)
                 # self.logger.info("Verifying {} paths, causing {}s".format(n, t2 - begin))
             if isinstance(satisfied, bool):
                 hitTimes += 1

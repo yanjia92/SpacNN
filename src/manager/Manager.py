@@ -7,10 +7,14 @@ from module.Module import Constant
 import itertools
 from nn.NNRegressor import BPNeuralNetwork as BPNN
 from util.CsvFileHelper import parse_csv
-# from util.PlotHelper import plot_multi
+from util.PlotHelper import plot_multi
 from util.AnnotationHelper import deprecated
 import sys
 import getopt
+try:
+    import cPickle as pickle
+except ImportError:
+    import pickle
 
 
 # def get_logger(level=logging.INFO):
@@ -30,13 +34,13 @@ class Manager(object):
         self.ltl = None
         self.checker = None
         self.regressor = BPNN()
-        self.test_xs = []  # [(name, val_list)]
+        self.test_xs = []  # [(vals)]
 
     def set_manager_param(self, name, param):
         self.manager_params[name] = param
 
     def get_manager_param(self, name):
-        return self.expr_params[name]
+        return self.manager_params[name]
 
     def set_random_path_duration(self, duration):
         self.set_manager_param("duration", duration)
@@ -82,6 +86,9 @@ class Manager(object):
     def set_ltl(self, ltl):
         if self.checker:
             self.checker.ltl = ltl
+            return ltl
+        else:
+            return
 
     def _set_param(self, *constants):
         '''
@@ -90,7 +97,12 @@ class Manager(object):
         :return: None
         '''
         for constant_obj in constants:
-            self.mdl_parser.parser.vcf_map[constant_obj.get_name()].set_value(constant_obj.get_value())
+            self.mdl_parser.parser.vcf_map[constant_obj.get_name()].set_value(
+                constant_obj.get_value())
+
+    def _clear_param(self, *constants):
+        for constant_obj in constants:
+            self.mdl_parser.parser.vcf_map[constant_obj.get_name()].set_value(None)
 
     def set_test_x(self, test_xs):
         '''
@@ -113,18 +125,10 @@ class Manager(object):
             result.append(objs)
         return result
 
-    def do_regression(self):
-        # get constants and set it to the vcf_map
-        # prepare commands
-        # do_expr and return train data (x, y)
-        # train the BP network
-        # get_test_x
-        # compute the y in terms of test_x
-        # paint
+    def train_network(self):
+        '''给定参数，先在checker中跑，得到训练参数上的ltl公式验证结果(train_y)，然后用这些数据对神经网络进行训练'''
         train_data_x = []
         train_data_y = []
-        if len(self.expr_params) == 0:
-            pass  # todo suggest user to set the parameter to run the regressor
         constant_objs = self._to_constant_objs()
         for constant_list in itertools.product(*constant_objs):
             self._set_param(*constant_list)
@@ -134,8 +138,28 @@ class Manager(object):
             train_data_x.append(train_x)
             train_data_y.append(train_y)
 
-        self.regressor.setup(len(self.expr_params), self.get_manager_param("nh"), self.get_manager_param("no"))
+            self._clear_param(*constant_list)
+
+        self.regressor.setup(len(self.expr_params),
+                             self.get_manager_param("nh"),
+                             self.get_manager_param("no"))
         self.regressor.train(train_data_x, train_data_y)
+
+        network_obj = self.regressor
+        dump_file = "nn.txt"
+        f = open(dump_file, "wb")
+        pickle.dump(network_obj, f)
+        f.close()
+
+
+    def run_test(self, prism_data=None):
+        '''对给定测试参数运行神经网络进行预测'''
+        # try loading dumped network
+        f = open("nn.txt", "rb")
+        network_obj = pickle.load(f)
+        if network_obj:
+            self.regressor = network_obj
+        f.close()
 
         test_xs = self.test_xs  # [(vals)]
         test_expr_ys = []
@@ -143,14 +167,19 @@ class Manager(object):
             results = self.regressor.predict(list(test_x))
             # results is of length 1
             test_expr_ys.append(results[0])
+        print "test_expr_x: {}".format(str(test_xs))
+        print "test_expr_y: {}".format(str(test_expr_ys))
 
         # get true value returned from PRISM
-        _, test_prism_ys = parse_csv("YEAR1_T_1_10_1")
-
-        # plot_multi((test_xs, test_expr_ys, "experiment"), (test_xs, test_prism_ys, "prism"))
+        if prism_data:
+            _, test_prism_ys = parse_csv(prism_data)
+            plot_multi((test_xs, test_expr_ys, "experiment"), (test_xs, test_prism_ys, "prism"))
+        else:
+            plot_multi((test_xs, test_expr_ys, "experiment"))
 
     def unsure_param_names(self):
         return self.mdl_parser.parser.constname_unsure()
+
 
 def main():
     def set_param_func(name, value):

@@ -33,6 +33,7 @@
 # root.mainloop()
 
 import Tkinter as tk
+from collections import OrderedDict
 
 class MyDialog(object):
     def __init__(self, parent, prompt):
@@ -58,12 +59,11 @@ class ParamInputDialog(object):
         self.toplevel = tk.Toplevel(parent)
         lprompt = tk.Label(self.toplevel, text=prompt)
         lprompt.pack(side="top", fill="x")
-        self.vars_map = {}  # name : [begin_val, step_val, end_val]
+        self.vars_map = OrderedDict()  # name : [begin_val, step_val, end_val]
         for name in param_names:
             self._add_le(name, self.toplevel)
         button = tk.Button(self.toplevel, text="Finish", command=self.toplevel.destroy)
         button.pack(side="bottom", anchor="e", padx=4, pady=4)
-
 
     def _add_le(self, name, toplevel):
         self.vars_map[name] = list()

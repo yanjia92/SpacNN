@@ -1,8 +1,7 @@
 未完成
-    LTL公式的输入 UI
-    程序打包发布 https://www.zhihu.com/question/21639330
-        关于virtualenv virtualenv中的很多文件是symbolic link 但是 virtualenv 可以选择 --always-copy 属性
-    
+    训练好的network 序列化
+
+
 
 
 已完成
@@ -21,6 +20,8 @@ Fix "Running checker on built model produces different result with PRISM" bug
 在D:\ENV27\ 下安装虚拟环境，安装wxPython pyFormUI https://github.com/jeffchau1979/pyFormUI
 安装matplotlib
 配置pycharm 使用ENV27虚拟环境
+LTL公式的输入 UI 不带解析的ltl input finished. yes
+
 
 不足
 目前command的update部分不允许出现boolean_expression
