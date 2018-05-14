@@ -56,7 +56,7 @@ class Director(object):
     def ltl_input(self):
         def inner(event=None):
             strLTL = event.widget.get()
-            ltl = strLTL.split(',')
+            ltl = [token.lstrip() for token in strLTL.split(',')]
             result = self.manager.set_ltl(ltl)
             if result:
                 # ltl set
