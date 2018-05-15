@@ -4,21 +4,23 @@ import itertools
 import logging
 import math
 import random
+import threading
 from collections import OrderedDict
 from functools import reduce
-
 import Module
 import util.MathUtils as MathUtils
 from Module import Constant, Variable
 from State import State
 from Step import Step
 from util.AnnotationHelper import *
-
+from module.NextMove import NextMove
+from PathHelper import *
 import traceback
+import Queue
 
-logger = logging.getLogger("ModulesFile logging")
-logger.addHandler(logging.StreamHandler())
-logger.setLevel(logging.INFO)
+# logger = logging.getLogger("ModulesFile logging")
+# logger.addHandler(logging.StreamHandler())
+# logger.setLevel(logging.INFO)
 
 allUpCnt = 0
 failureCnt = 0
@@ -28,12 +30,53 @@ class ModelType:
     DTMC, CTMC = range(2)
 
 
+STEPS_QUEUE_MAX_SIZE = 73000
+DEFAULT_STEP_Q_C_WAITING = 0.002
+DEFAULT_STEP_Q_P_WAITING = 0.002
+
+
+class StepGenThd(threading.Thread):
+    def __init__(self, model=None):
+        threading.Thread.__init__(self)
+        self.model = model
+        # self.logger = logging.getLogger("StepGenThrd's log")
+        # self.logger.addHandler(logging.StreamHandler(sys.stdout))
+        # self.logger.setLevel(logging.ERROR)
+
+    def run(self):
+        model = self.model
+
+        while True:
+            step_gen = model.gen_next_step(passed_time=0.0)  # generate a new step_generator
+            queue = model.steps_queue
+            passed_time = 0.0
+            while True:
+                # generate step until a failure state met or duration is reached
+                step = next(step_gen)
+                if step:
+                    queue.put(step)
+                    passed_time += step.next_move.holding_time
+                    # self.logger.info("one step added, qsize={}".format(queue.qsize()))
+                else:
+                    pass
+                    # self.logger.error("None step generated")
+                if int(step.next_move.holding_time) == 0 or int(step.next_move.passed_time) + \
+                        int(step.next_move.holding_time) == model.duration:
+                    # ModulesFile generate a step without move
+                    break
+                if step.next_move.cmd:
+                    step.next_move.cmd.execAction()
+
+            model.restore_system()
+
+
 # class represents a DTMC/CTMC model
 class ModulesFile(object):
     # id used for generating State object when generating random path
     # should be added 1 whenever before self.nextState get called.
     # _stateId = 0
     INIT_STATE_ID = 0
+    DEFAULT_DURATION = 730
 
     def __init__(
             self,
@@ -43,7 +86,8 @@ class ModulesFile(object):
             initCondition=None,
             modules=None,
             labels=None,
-            fb=False):
+            fb=False,
+            duration=0.0):
         self.modules = OrderedDict()
         self.initLocalVars = OrderedDict()
         self.localVars = OrderedDict()
@@ -51,8 +95,6 @@ class ModulesFile(object):
         self.constants = dict()
         self.modelType = modeltype
         self.scDict = OrderedDict()  # {sstate: [(comm, prob)]}
-        self.curState = State(self.INIT_STATE_ID, set())
-        self.prevState = State(self.INIT_STATE_ID, set())
         self.commPrepared = False
         self.stopCondition = stopCondition
         self.failureCondition = failureCondition
@@ -74,7 +116,25 @@ class ModulesFile(object):
         self.sset_set_map = dict()  # s: prefix for string type
         self.tstate_apset_map = dict()  # t: prefix for tuple type
         self.apset_list = []
-        self.localVarsList = self.localVars.values()  # used to accelerate speed
+        self.localVarsList = self.localVars.values()  # used to accelerate speeds
+        self.state_id = self.INIT_STATE_ID
+        self.duration = 0.0
+        # self.duration = duration # time duration to generate random path
+        # self.steps_queue = Queue.Queue(maxsize=self.duration * STEPS_QUEUE_FACTOR)
+        # self.logger = logging.getLogger("ModulesFile's log")
+        # self.logger.addHandler(logging.StreamHandler(sys.stdout))
+        # self.logger.setLevel(logging.INFO)
+        # self.steps_queue = list()
+        self.steps_queue = Queue.Queue(maxsize=STEPS_QUEUE_MAX_SIZE)
+        self.STEPS_QUEUE_MAX_SIZE = STEPS_QUEUE_MAX_SIZE
+
+    def init_queue(self):
+        # why here using list is thread-safe?
+        # first, there's only consumer and producer.
+        # second, operations on list is atomic because of GIL
+        # self.steps_queue = BlockingQueue()
+        # self.steps_queue = Queue.Queue(maxsize=self.duration * STEPS_QUEUE_FACTOR)
+        pass
 
     def init(self, modules, labels):
         if modules:
@@ -88,17 +148,22 @@ class ModulesFile(object):
     # module: module instance
     def addModule(self, module):
         if module is None:
-            raise Exception("module cannot be None")
+            # raise Exception("module cannot be None")
+            return
         self.modules[module.name] = module
         # add variables
         for k, v in module.variables.items():
             self.localVars[k] = v
+            if hasattr(
+                    self, "localVarsList") and v not in set(
+                    self.localVarsList):
+                self.localVarsList.append(v)
         for k, v in module.variables.items():
             self.initLocalVars[k] = copy.copy(v)
         # add constants
         self.constants.update(module.constants)
         module.modulesFile = self
-        for _,comm in module.allCommands().items():
+        for _, comm in module.allCommands().items():
             comm.vs = self.localVars
             comm.cs = self.constants
 
@@ -132,9 +197,9 @@ class ModulesFile(object):
         if not self.localVars[name]:
             return
         if not isinstance(val_or_obj, Variable):
-            self.localVars[name].setValue(val_or_obj)
+            self.localVars[name].set_value(val_or_obj)
         else:
-            self.localVars[name].setValue(val_or_obj.getValue())
+            self.localVars[name].set_value(val_or_obj.get_value())
 
     # label: a function represents ap
     # label is implemented as a function object that receive
@@ -145,18 +210,23 @@ class ModulesFile(object):
     # update self.curState's and self.prevState's apset and stateId
     # according to the system's current state
     def _updateCurAndPrevState(self):
-        self.prevState.apSet = self.curState.apSet
-        self.prevState.stateId = self.curState.stateId
-        key = self._get_key_of_vars()
-        self.curState.apSet = self.tstate_apset_map[key]
-        self.curState.stateId += 1
+        self.prevState.ap_set = self.curState.ap_set
+        self.prevState.state_id = self.curState.state_id
+        # key = self._get_key_of_vars()
+        key = tuple([v.value for v in self.localVarsList])
+        self.curState.ap_set = self.tstate_apset_map[key]
+        self.curState.state_id += 1
         return key
 
+    @deprecated("Since State is deprecated.")
     def _initStateAPSetAndStateId(self):
-        # self.curState.stateId = self._stateId
-        self.curState.stateId = 0
-        key = self._get_key_of_vars()
-        self.curState.apSet = self.tstate_apset_map[key]
+        pass
+        # self.curState.state_id = 0
+        # key = self._get_key_of_vars()
+        # self.curState.ap_set = self.tstate_apset_map[key]
+        # key = tuple([v.value for v in self.localVarsList])
+        # self.curState = State(self.INIT_STATE_ID,
+        #                       self.tstate_apset_map[key])
 
     # 获取当前代表当前所有变量值的key
     def _get_key_of_vars(self):
@@ -178,6 +248,7 @@ class ModulesFile(object):
     # in initial state, it equals to the Checker.duration(5 years for example)
     # in other allUp state(not initial states), it equals to
     # duration-passedTime.
+    @deprecated
     def nextState(self, cmd_probs, duration=0.0):
         # if not self.stateInited:
         #     self.stateInited = True
@@ -192,20 +263,20 @@ class ModulesFile(object):
         exitRate = sum(probs)
         if self.fb:
             biasingExitRate = sum(
-            [command.biasingRate for command in cmds])
+                [command.biasingRate for command in cmds])
             probs = [
                 command.biasingRate /
                 float(biasingExitRate) for command in cmds]
         else:
             biasingExitRate = None
-            probs = [p/float(exitRate) for p in probs]
+            probs = [p / float(exitRate) for p in probs]
 
         rnd = random.random()  # random number in [0,1)
         probSum = 0.0
         for index, prob in enumerate(probs):
             probSum += prob
             if probSum >= rnd:
-                if self.forcing and self.curState.stateId == 0:
+                if self.forcing and self.curState.state_id == 0:
                     holdingTime = MathUtils.randomExpo(
                         exitRate, t=duration)
                 else:
@@ -220,10 +291,163 @@ class ModulesFile(object):
                     enabledCommand.name,
                     holdingTime,
                     enabledCommand.prob,
-                    enabledCommand.biasingRate,
+                    enabledCommand.biasing_rate,
                     exitRate,
                     biasingExitRate,
                     key)
+
+    def current_key(self):
+        # return self._localvars_tuple()
+        return tuple([v.value for v in self.localVarsList])
+
+    def step_without_move(self, key, passed_time):
+        '''construct a step instance according to system current state'''
+        # state = self.current_state(key)
+        ap_set = self.tstate_apset_map[key]
+        return Step(ap_set, NextMove(passed_time))
+
+    @deprecated
+    def current_state(self, key):
+        apset = self.tstate_apset_map[key]
+        state_id = self.next_state_id()
+        return State(state_id, apset)
+
+    def gen_holding_time(self, exit_rate, duration, first_move):
+        if self.forcing and first_move:
+            holding_time = MathUtils.randomExpo(
+                exit_rate, t=duration)
+        else:
+            if self.modelType == ModelType.CTMC:
+                holding_time = MathUtils.randomExpo(exit_rate)
+            else:
+                holding_time = 1
+        return holding_time
+
+    # @profileit(get_log_dir() + get_sep() + "next_move")
+    def next_move(self, cmd_probs, time_passed):
+        rnd_num = random.random()
+        prob_sum = 0
+
+        cmds = [v[0] for v in cmd_probs]
+        probs = [v[1] for v in cmd_probs]
+        exit_rate = sum(probs)
+        actual_probs = [p/exit_rate for p in probs]
+        # if int(exit_rate) == 0:
+        #     print str(cmds)
+        biasing_exit_rate = None
+        if self.fb:
+            # todo add failure biasing logic
+            pass
+
+        for i, p in enumerate(actual_probs):
+            prob_sum += p
+            if prob_sum >= rnd_num:
+                chosen_cmd = cmds[i]
+                holding_time = self.gen_holding_time(
+                    exit_rate, self.duration - time_passed, int(time_passed) == 0)
+                return NextMove(
+                    passed_time=time_passed,
+                    holding_time=holding_time,
+                    cmd=chosen_cmd,
+                    exit_rate=exit_rate,
+                    biasing_exit_rate=biasing_exit_rate)
+
+    def restore_system(self):
+        self.restore_vars()
+        self.state_id = self.INIT_STATE_ID
+
+    def next_state_id(self):
+        previous = self.state_id
+        self.state_id += 1
+        return previous
+
+    def gen_next_step(self, passed_time=0.0):
+        # the stop-generate-step logic should be taken care of by the caller of this function
+        # duration = self.duration
+        # passed_time = 0.0
+        # while passed_time < duration:
+        #     step = self.next_step(passed_time)
+        #     yield step
+        #     passed_time += step.next_move.holding_time
+        while True:
+            step = self.next_step(passed_time)
+            yield step
+            passed_time += step.next_move.holding_time
+
+    def next_step(self, passed_time):
+        duration = self.duration
+        key = tuple([v.value for v in self.localVarsList])
+        cmd_probs = self.scDict[key]
+        if len(cmd_probs) == 0:
+            return self.step_without_move(key, passed_time)
+        next_move = self.next_move(cmd_probs, passed_time)
+        # state_id = self.next_state_id()
+        ap_set = self.tstate_apset_map[key]
+        # cur_state = State(state_id=state_id, ap_set=ap_set)
+
+        # if first move is not possible
+        if int(passed_time) == 0 and next_move.holding_time > duration:
+            return self.step_without_move(key, passed_time)
+
+        # trim next_move.holding_time
+        # if passed_time + next_move.holding_time > duration:
+        #     next_move.holding_time -= (passed_time +
+        #                                next_move.holding_time - duration)
+        return Step(ap_set, next_move)
+
+    # @profileit(get_log_dir() + get_sep() + "pathgenV2")
+    def get_random_path_V2(self):
+        '''return path: [Step]'''
+        # 思路：
+        # get key of current local vars as key
+        # loop until duration met:
+        #     get enabled commands
+        #     if no enabled commands found:
+        #          append empty step to path and restore_system
+        #          return path
+        #     generate next move info
+        #     generate cur state info
+        #     construct the step instance
+        #     if first move is not possible(holding_time > duration):
+        #           add empty step to path and restore_system and return
+        #     timesum += holdingtime
+        #     if timesum > duration:
+        #           trim holdingtime to (duration - timesum)
+        #     path.append(step)
+        #     next_move.cmd.action()
+
+        # use generator
+        # path = []
+        # duration = self.duration
+        # if len(self.scDict) == 0:
+        #     logger.error("Unbounded variables not supported!")
+        #     return None
+        # # step = self.steps_queue.get()  # async
+        # generator = self.gen_next_step(passed_time=0.0)
+        # step = next(generator)
+        # path.append(step)
+        # while int(
+        #         step.next_move.holding_time) != 0 and int(step.next_move.passed_time) + int(step.next_move.holding_time) < duration:
+        #     step.next_move.cmd.execAction()
+        #     step = next(generator)
+        #     path.append(step)
+        # self.restore_system()
+        # return path
+
+        path = []
+        passed_time = 0.0
+        duration = self.duration
+        while passed_time < duration:
+            step = self.next_step(passed_time)
+            path.append(step)
+            if int(step.next_move.holding_time) == 0:
+                # this step is the end step
+                self.restore_system()
+                return path
+            step.next_move.cmd.execAction()
+            passed_time += step.next_move.holding_time
+        self.restore_system()
+        return path
 
     # return list of Step instance whose path duration is duration
     # duration: path duration
@@ -232,13 +456,16 @@ class ModulesFile(object):
     # can be stopped.
     # return (None, path) if cache is not hit
     # else return satisfied(of bool type), path
-    def gen_random_path(self, duration, cachedPrefixes=None):
+    @profileit(get_log_dir() + get_sep() + "pathgenV1")
+    @deprecated("Use get_random_path_V2 instead")
+    def gen_random_path(self, cachedPrefixes=None):
         # Since when initilize a module, all its local variables
         # have been initilized
         random.seed()
-        if not self.commPrepared:
-            self.prepareCommands()
-            self.commPrepared = True
+        duration = self.duration
+        # if not self.commPrepared:
+        #     self.prepare_commands()
+        #     self.commPrepared = True
         path = list()
         timeSum = 0.0
         passedTime = 0.0
@@ -249,8 +476,8 @@ class ModulesFile(object):
                 # 由于存在unbounded变量,无法提前判断所有的变量组合的enabled commands
                 # 因此需要手工判断
                 cmd_probs = []
-                for _,module in self.modules.items():
-                    for _,comm in module.allCommands().items():
+                for _, module in self.modules.items():
+                    for _, comm in module.allCommands().items():
                         if comm.guard(self.localVars, self.constants):
                             cmd_probs.append((comm, comm.prob()))
             else:
@@ -277,15 +504,15 @@ class ModulesFile(object):
             if timeSum > duration:
                 holdingTime -= (timeSum - duration)
             step = Step(
-                self.prevState.stateId,
-                self.prevState.apSet,
-                holdingTime,
-                passedTime,
-                transition,
-                rate,
-                biasingRate,
-                exitRate,
-                biasingExitRate)
+                state_id=self.prevState.state_id,
+                ap_set=self.prevState.ap_set,
+                holding_time=holdingTime,
+                passed_time=passedTime,
+                transition=transition,
+                rate=rate,
+                biasing_rate=biasingRate,
+                exit_rate=exitRate,
+                biasing_exit_rate=biasingExitRate)
             path.append(step)
             passedTime += holdingTime
 
@@ -304,35 +531,40 @@ class ModulesFile(object):
         self.restoreSystem()
         return None, path
 
-    def step_of_current(self, passedTime=None, holdingTime=0.0):
+    @deprecated
+    def step_of_current(self, passedtime=None, holdingTime=0.0):
         self._updateCurAndPrevState()
         return Step(
-            self.curState.stateId,
-            self.curState.apSet,
-            passedTime=passedTime,
+            self.curState.state_id,
+            self.curState.ap_set,
+            passedTime=passedtime,
             holdingTime=holdingTime
         )
 
     def getCurrentState(self):
         return self.curState
 
+    @deprecated
     def getModelInitState(self):
         return State(0, self.initLocalVars, self)
 
-    def restoreVars(self):
+    def restore_vars(self):
         for k, v in self.initLocalVars.items():
-            self.localVars[k].setValue(v.getValue())
+            self.localVars[k].set_value(v.get_value())
 
+    @deprecated
     def restoreStates(self):
         self._stateId = 0
-        self.curState.stateId = 0
-        self.prevState.stateId = 0
+        # self.curState.state_id = 0
+        # self.prevState.state_id = 0
+        self.curState = State(self.INIT_STATE_ID, set())
+        self.prevState = State(self.INIT_STATE_ID, set())
         # self.curState.clearAPSet()
         # self.prevState.clearAPSet()
         self.stateInited = False
 
     def restoreSystem(self):
-        self.restoreVars()
+        self.restore_vars()
         self.restoreStates()
 
     # return the probability a path is generated under
@@ -366,7 +598,7 @@ class ModulesFile(object):
                 # step.biasingExitRate is the sum of probability not the rate
                 lamda = step.exitRate
                 x = step.holdingTime
-                if self.forcing and step.isInitState():
+                if self.forcing and step.isInitState("ALL UP LABEL"):
                     prob *= step.biasingRate / step.biasingExitRate * \
                         forcingPDF(lamda, x, duration)
                 else:
@@ -408,16 +640,20 @@ class ModulesFile(object):
 
     # generate enabled commands for each state of the model beforehand
     # to accelerate the speed of generating random path
-    def prepareCommands(self):
+    # ATTENTION: when running experiment, constant value must be set before calling this method
+    def prepare_commands(self):
+        '''generate enabled commands and probs for each state'''
         # first check whether there's a variable of system that is unbounded
-        # in that case, prepareCommands can not be executed.
-        if sum(map(int, map(lambda (_,var): not var.bounded, self.localVars.items()))):
+        # in that case, prepare_commands can not be executed.
+        if sum(map(int,
+                   map(lambda __var: not __var[1].bounded,
+                       self.localVars.items()))):
             return
         for vsList in itertools.product(
                 *[v.allVarsList() for _, v in self.localVars.items()]):
             for v in vsList:
-                self.localVars[v.getName()].setValue(v.getValue())
-            cmd_probs = list() # [(cmd, prob)]
+                self.localVars[v.get_name()].set_value(v.get_value())
+            cmd_probs = list()  # [(cmd, prob)]
             for _, module in self.modules.items():
                 for _, command in module.commands.items():
                     if command.evalGuard():
@@ -429,11 +665,12 @@ class ModulesFile(object):
                             p = command.prob()
                         if p is None:
                             msg = traceback.format_exc()
-                            logger.error("command's prob must be callable")
-                            logger.error(msg)
+                            # logger.error("command's prob must be callable")
+                            # logger.error(msg)
                         cmd_probs.append((copy.copy(command), p))
-            key = self._get_key_of_vars()
-            # sort cmd_probs by prob desc to accerate speed of ModulesFile@nextState
+            key = tuple([v.value for v in self.localVarsList])
+            # sort cmd_probs by prob desc to accerate speed of
+            # ModulesFile@nextState
             cmd_probs.sort(key=lambda t: t[1], reverse=True)
             self.scDict[key] = cmd_probs
 
@@ -451,6 +688,8 @@ class ModulesFile(object):
             self.tstate_apset_map[key] = apset
         self.restoreSystem()
         self.commPrepared = True
+        # self.logger.info("prepare_commands finished")
+
 
     def exportPathTo(self, path, filename):
         f = file(filename, 'w')
@@ -467,33 +706,36 @@ class ModulesFile(object):
     # '111' is a operational state representation
     def _fillInStates(self):
         # first check whether there's a variable of system that is unbounded
-        # in that case, prepareCommands can not be executed.
-        if sum(map(int, map(lambda (_, var): not var.bounded, self.localVars.items()))):
+        # in that case, prepare_commands can not be executed.
+        if sum(map(int,
+                   map(lambda __var1: not __var1[1].bounded,
+                       self.localVars.items()))):
             return
         for vars in itertools.product(
                 *[var.allVarsList() for _, var in self.localVars.items()]):
             dictVars = OrderedDict()
             for var in vars:
                 dictVars[var.name] = var
-            if self.initCondition and self.initCondition(dictVars, self.constants):
-                self._I.add(''.join([str(var.getValue()) for var in vars]))
+            if self.initCondition and self.initCondition(
+                    dictVars, self.constants):
+                self._I.add(''.join([str(var.get_value()) for var in vars]))
             elif self.failureCondition and self.failureCondition(dictVars, self.constants):
-                self._F.add(''.join([str(var.getValue()) for var in vars]))
+                self._F.add(''.join([str(var.get_value()) for var in vars]))
             else:
-                self._U.add(''.join([str(var.getValue()) for var in vars]))
+                self._U.add(''.join([str(var.get_value()) for var in vars]))
 
     # change failure and repair rate according to SFB(simple failure biasing)
     # mentioned in p52-nakayama(1).pdf
     def SFB(self, delta):
-        if not self.scDict or len(self.scDict) == 0:
-            self.prepareCommands()
-            self.commPrepared = True
+        # if not self.scDict or len(self.scDict) == 0:
+        #     self.prepare_commands()
+        #     self.commPrepared = True
         # iterate through states of model
         # make list of all failure and repair transition
         # update the transition probability in proportion
         for varList in itertools.product(
                 *[var.allVarsList() for _, var in self.localVars.items()]):
-            key = ''.join([str(v.getValue()) for v in varList])
+            key = ''.join([str(v.get_value()) for v in varList])
             commands = self.scDict[key]
             if key in self._I or key in self._F:
                 for comm1 in commands:
@@ -519,13 +761,13 @@ class ModulesFile(object):
 
     # balanced failure biasing method according to 00717132.pdf
     def BFB(self, delta):
-        if not self.commPrepared:
-            self.prepareCommands()
-            self.commPrepared = True
+        # if not self.commPrepared:
+        #     self.prepare_commands()
+        #     self.commPrepared = True
 
         for varList in itertools.product(
                 *[var.allVarsList() for _, var in self.localVars.items()]):
-            key = ''.join([str(var.getValue()) for var in varList])
+            key = ''.join([str(var.get_value()) for var in varList])
             enabledComms = self.scDict[key]
             if key in self._I:
                 # initial state, no repair transition
@@ -557,10 +799,10 @@ class ModulesFile(object):
 
     # the exit rate of allUp state
     def q1(self):
-        if not self.commPrepared:
-            self.prepareCommands()
-            self.commPrepared = True
-        key = ''.join([str(var.getValue())
+        # if not self.commPrepared:
+        #     self.prepare_commands()
+        #     self.commPrepared = True
+        key = ''.join([str(var.get_value())
                        for var in self.initLocalVars.values()])
         comms = self.scDict[key]
         return sum(map(lambda comm: comm.prob, comms))
@@ -568,6 +810,5 @@ class ModulesFile(object):
     def updateconstant(self):
         # 当self.constants进行更新时,更新每个command中的constants
         for _, module in self.modules.items():
-            for _,comm in module.allCommands().items():
+            for _, comm in module.allCommands().items():
                 pass
-

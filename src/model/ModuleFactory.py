@@ -2,9 +2,9 @@ from module.Module import *
 from math import log, e, pow
 from util.MathUtils import pcf
 import logging
-logger = logging.getLogger('ModuleFactory logger')
-logger.addHandler(logging.StreamHandler())
-logger.setLevel(logging.ERROR)
+# logger = logging.getLogger('ModuleFactory logger')
+# logger.addHandler(logging.StreamHandler())
+# logger.setLevel(logging.ERROR)
 
 
 class ModuleFactory(object):
@@ -35,24 +35,24 @@ class ModuleFactory(object):
         )   
 
         def _module_action_guard(vs, cs):
-            timer_turn = vs['timer_turn'].getValue()
-            sb_status = vs['sb_status'].getValue()
-            s3r_status = vs['s3r_status'].getValue()
-            bcr_status = vs['bcr_status'].getValue()
-            bdr_status = vs['bdr_status'].getValue()
+            timer_turn = vs['timer_turn'].get_value()
+            sb_status = vs['sb_status'].get_value()
+            s3r_status = vs['s3r_status'].get_value()
+            bcr_status = vs['bcr_status'].get_value()
+            bdr_status = vs['bdr_status'].get_value()
             return timer_turn == False and sb_status == 1 and s3r_status == 1 and bcr_status == 1 and bdr_status == 1
 
         def faction(vs, cs):
-            vs['sb_status'].setValue(0)
-            vs['timer_turn'].setValue(True)
+            vs['sb_status'].set_value(0)
+            vs['timer_turn'].set_value(True)
 
         # normal action
         def naction(vs, cs):
-            vs['timer_turn'].setValue(True)
+            vs['timer_turn'].set_value(True)
 
         def f(day_var):
             def inner():
-                day = day_var.getValue()
+                day = day_var.get_value()
                 dose = module.getConstant(
                     'SB_K') * config.getParam('SCREEN_THICKNESS') * day / 365.0
                 x = (-module.getConstant('SB_P_THRESHOLD') + 1) / \
@@ -106,21 +106,22 @@ class ModuleFactory(object):
         module.addVariable(
             Variable(
                 'timer_turn',
-                True,
+                False,
                 set([True, False]),
                 bool
             )
         )
 
         def _timer_action_guard(vs, cs):
-            day_val = vs['day'].getValue()
+            day_val = vs['day'].get_value()
             DAY_MAX = self.config.getParam("DURATION_IN_DAY")
-            t_turn = vs['timer_turn'].getValue()
+            t_turn = vs['timer_turn'].get_value()
             return day_val < DAY_MAX and t_turn == True
 
         def action(vs, cs):
-            vs['day'].setValue(vs['day'].getValue() + 1)
-            vs['timer_turn'].setValue(False)
+            # vs['day'].set_value(vs['day'].get_value() + 1)
+            vs['day'].incr()
+            vs['timer_turn'].set_value(False)
 
         module.addCommand(
             Command(
@@ -152,31 +153,31 @@ class ModuleFactory(object):
         )
 
         def _module_action_guard(vs, cs):
-            timer_turn = vs['timer_turn'].getValue()
-            sb_status = vs['sb_status'].getValue()
-            s3r_status = vs['s3r_status'].getValue()
-            bcr_status = vs['bcr_status'].getValue()
-            bdr_status = vs['bdr_status'].getValue()
+            timer_turn = vs['timer_turn'].get_value()
+            sb_status = vs['sb_status'].get_value()
+            s3r_status = vs['s3r_status'].get_value()
+            bcr_status = vs['bcr_status'].get_value()
+            bdr_status = vs['bdr_status'].get_value()
             return timer_turn == False and sb_status == 1 and s3r_status == 1 and bcr_status == 1 and bdr_status == 1
 
         def faction(vs, cs):
-            vs['s3r_status'].setValue(0)
-            vs['timer_turn'].setValue(True)
+            vs['s3r_status'].set_value(0)
+            vs['timer_turn'].set_value(True)
 
         def naction(vs, cs):
-            vs['timer_turn'].setValue(True)
+            vs['timer_turn'].set_value(True)
 
         def f(day_var):
             def inner():
-                day = day_var.getValue()
+                day = day_var.get_value()
                 dose = module.getConstant('S3R_K') / config.getParam(
                     'SCREEN_THICKNESS') * (day / 365.0)
                 x = config.getParam('S3R_DELTAV_THRESHOLD') / (
                     config.getParam('S3R_B') * pow(e, config.getParam('S3R_B') * dose))
                 std_x = (-config.getParam('S3R_A_MU') + x) / \
-                    config.getParam('S3R_A_SIGMA').getValue()
+                    config.getParam('S3R_A_SIGMA').get_value()
                 p = 1 - pcf(std_x)
-                logger.info('day:{0}, s3r failure prob:{1}'.format(day, p))
+                # logger.info('day:{0}, s3r failure prob:{1}'.format(day, p))
                 return p
             return inner
 
@@ -224,29 +225,29 @@ class ModuleFactory(object):
         )
 
         def _module_action_guard(vs, cs):
-            timer_turn = vs['timer_turn'].getValue()
-            sb_status = vs['sb_status'].getValue()
-            s3r_status = vs['s3r_status'].getValue()
-            bcr_status = vs['bcr_status'].getValue()
-            bdr_status = vs['bdr_status'].getValue()
+            timer_turn = vs['timer_turn'].get_value()
+            sb_status = vs['sb_status'].get_value()
+            s3r_status = vs['s3r_status'].get_value()
+            bcr_status = vs['bcr_status'].get_value()
+            bdr_status = vs['bdr_status'].get_value()
             return timer_turn == False and sb_status == 1 and s3r_status == 1 and bcr_status == 1 and bdr_status == 1
 
         def faction(vs, cs):
-            vs['bcr_status'].setValue(0)
-            vs['timer_turn'].setValue(True)
+            vs['bcr_status'].set_value(0)
+            vs['timer_turn'].set_value(True)
 
         def naction(vs, cs):
-            vs['timer_turn'].setValue(True)
+            vs['timer_turn'].set_value(True)
 
         def f(day_var):
             def inner():
-                day = day_var.getValue()
+                day = day_var.get_value()
                 dose = config.getParam('S3R_K') / config.getParam(
                     'SCREEN_THICKNESS') * (day / 365.0)
                 x = config.getParam('S3R_DELTAV_THRESHOLD') / (
                     config.getParam('S3R_B') * pow(e, config.getParam('S3R_B') * dose))
                 std_x = (-config.getParam('S3R_A_MU') + x) / \
-                    config.getParam('S3R_A_SIGMA').getValue()
+                    config.getParam('S3R_A_SIGMA').get_value()
                 p = 1 - pcf(std_x)
                 # logger.info('day:{0}, bcr failure prob:{1}'.format(day, p))
                 return p
@@ -295,29 +296,29 @@ class ModuleFactory(object):
             )
         )
         def _module_action_guard(vs, cs):
-            timer_turn = vs['timer_turn'].getValue()
-            sb_status = vs['sb_status'].getValue()
-            s3r_status = vs['s3r_status'].getValue()
-            bcr_status = vs['bcr_status'].getValue()
-            bdr_status = vs['bdr_status'].getValue()
+            timer_turn = vs['timer_turn'].get_value()
+            sb_status = vs['sb_status'].get_value()
+            s3r_status = vs['s3r_status'].get_value()
+            bcr_status = vs['bcr_status'].get_value()
+            bdr_status = vs['bdr_status'].get_value()
             return timer_turn == False and sb_status == 1 and s3r_status == 1 and bcr_status == 1 and bdr_status == 1
 
         def faction(vs, cs):
-            vs['bdr_status'].setValue(0)
-            vs['timer_turn'].setValue(True)
+            vs['bdr_status'].set_value(0)
+            vs['timer_turn'].set_value(True)
 
         def naction(vs, cs):
-            vs['timer_turn'].setValue(True)
+            vs['timer_turn'].set_value(True)
 
         def f(day_var):
             def inner():
-                day = day_var.getValue()
+                day = day_var.get_value()
                 dose = config.getParam('S3R_K') / config.getParam(
                     'SCREEN_THICKNESS') * (day / 365.0)
                 x = config.getParam('S3R_DELTAV_THRESHOLD') / (
                     config.getParam('S3R_B') * pow(e, config.getParam('S3R_B') * dose))
                 std_x = (-config.getParam('S3R_A_MU') + x) / \
-                    config.getParam('S3R_A_SIGMA').getValue()
+                    config.getParam('S3R_A_SIGMA').get_value()
                 p = 1 - pcf(std_x)
                 return p
             return inner

@@ -32,9 +32,9 @@ class SPSConfig():
         if name not in self.params.keys():
             print "not correct constant name {} in calling SPSConfig.setParam".format(name)
         if isinstance(value, Constant):
-            self.params[name].value = value
-            return
-        self.params[name].setValue(value)
+            self.params[name] = value
+        else:
+            self.params[name].set_value(value)
 
     def export2prism(self, prismfileaddr):
         """
@@ -60,7 +60,7 @@ class SPSConfig():
                         i = line.find('=')
                         if i == -1:
                             break
-                        line = line[:i+1] + " " + str(v.getValue()) + ";" + comment + "\n"
+                        line = line[:i+1] + " " + str(v.get_value()) + ";" + comment + "\n"
                         f_new.write(line)
                         written = True
                         break

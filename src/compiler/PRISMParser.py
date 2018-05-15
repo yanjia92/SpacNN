@@ -5,9 +5,10 @@ from PRISMLex import MyLexer
 from module.ModulesFile import *
 from module.Module import *
 from removeComment import clear_comment
-from util.LogHelper import LogHelper
+# from util.LogHelper import LogHelper
 from util.MathUtils import *
 from collections import defaultdict
+# import sys
 
 def bin_add(x,y):
     '''bin_add'''
@@ -106,14 +107,21 @@ class BasicParser(object):
             'stdcdf': pcf
         }
         # name : value storage structure for constants
-        self.cmap = defaultdict(lambda: None)
         # name : func object storage structure for variables and formula
-        self.logger = logging.getLogger("BasicParser logging")
-        self.logger.addHandler(logging.FileHandler(LogHelper.get_logging_root() + "BasicParser.log"))
-        self.logger.setLevel(logging.ERROR)
+        # self.logger = logging.getLogger("BasicParser logging")
+        # self.logger.addHandler(logging.FileHandler(LogHelper.get_logging_root() + "BasicParser.log"))
+        # self.logger.setLevel(logging.ERROR)
         self.vcf_map = defaultdict(lambda: None)
-        self.vc_map = defaultdict(lambda: None)
 
+    def constname_unsure(self):
+        ''':return 不确定的常量名 [str]'''
+        names = []
+        for name, obj_or_func in self.vcf_map.items():
+            if not callable(obj_or_func):
+                if obj_or_func.get_value() is None:
+                    # unsure Constant objects
+                    names.append(name)
+        return names
 
     def p_statement(self, p):
         '''statement : model_type_statement
@@ -155,7 +163,7 @@ class BasicParser(object):
         obj = Constant(name, value)
         ModelConstructor.model.setConstant(name, obj)
         self.vcf_map[p[3]] = obj
-        self.logger.info("Constant added: {} = {}".format(name, value))
+        # self.logger.info("Constant added: {} = {}".format(name, value))
 
     def p_const_expression1(self, p):
         '''const_value_statement : CONST INT NAME SEMICOLON
@@ -164,9 +172,9 @@ class BasicParser(object):
         # 支持解析不确定的常量表达式
         name = p[3]
         obj = Constant(name)
-        ModelConstructor.model.addConstant(name, obj)
+        ModelConstructor.model.setConstant(name, obj)
         self.vcf_map[name] = obj
-        self.logger.info("Unspecified constant added: {}".format(name))
+        # self.logger.info("Unspecified constant added: {}".format(name))
 
     def p_const_expression2(self, p):
         '''const_value_statement : CONST INT NAME ASSIGN expr SEMICOLON
@@ -177,7 +185,7 @@ class BasicParser(object):
         obj = Constant(name, value)
         ModelConstructor.model.addConstant(name, obj)
         self.vcf_map[name] = obj
-        self.logger.info("Constant added: {} = {}".format(name, value))
+        # self.logger.info("Constant added: {} = {}".format(name, value))
 
     def p_module_var_def_statement(self, p):
         '''module_var_def_statement : NAME COLON LB expr COMMA expr RB INIT NUM SEMICOLON'''
@@ -188,12 +196,12 @@ class BasicParser(object):
         var = Variable(p[1], p[len(p) - 2], range(min, max + 1),
                        int)  # 目前默认变量的类型是int p[index] index不能是负数
         self.module.addVariable(var)
-        self.vcf_map[var.getName()] = var
-        self.logger.info("Variable_{} added to Module_{}. init={}, range=[{}, {}]".format(var.getName(), str(self.module), var.initVal, var.valRange[0], var.valRange[-1]))
+        self.vcf_map[var.get_name()] = var
+        # self.logger.info("Variable_{} added to Module_{}. init={}, range=[{}, {}]".format(var.get_name(), str(self.module), var.initVal, var.valRange[0], var.valRange[-1]))
 
     def p_module_command_statement(self, p):
         '''module_command_statement : LB RB boolean_expression THEN updates SEMICOLON'''
-        self.logger.info("command.tokens : {}".format(p.slice))
+        # self.logger.info("command.tokens : {}".format(p.slice))
 
     def p_updates(self, p):
         '''updates : updates ADD prob_update'''
@@ -206,22 +214,27 @@ class BasicParser(object):
     def p_prob_update(self, p):
         '''prob_update : DQ NAME DQ expr COLON actions'''
         prob = p[4]  # prob_expr is a function
-        action = p[6]  # actions is a function
+        action = p[6]  # actions is a dict
         name = copy.copy(p[2])
         command = Command(name, self.guard, action, self.module, prob)
         self.module.addCommand(command)
-        self.logger.info("Command_{} added.".format(name))
+        # self.logger.info("Command_{} added.".format(name))
 
     def p_actions(self, p):
         '''actions : actions AND assignment'''
-        f1 = p[1]
-        f2 = p[3]
+        # f1 = p[1]
+        # f2 = p[3]
+        #
+        # def f(vs, cs):
+        #     f1(vs, cs)
+        #     f2(vs, cs)
 
-        def f(vs, cs):
-            f1(vs, cs)
-            f2(vs, cs)
-
-        p[0] = f
+        # p[0] = f
+        tokens = copy.copy(p.slice)
+        action1 = tokens[1].value  # dict
+        action2 = tokens[3].value   # dict
+        action2.update(action1)
+        p[0] = action2
 
     def p_actions2(self, p):
         '''actions : assignment'''
@@ -232,26 +245,26 @@ class BasicParser(object):
         update_func = copy.deepcopy(p[3])
         var_name = copy.copy(p[1])
 
-        def f(vs, cs):
-            var = vs[var_name]
-            if not var or not isinstance(var, Variable):
-                raise Exception("invalid variable name")
-            var.setValue(update_func())
+        # def f(vs, cs):
+        #     var = vs[var_name]
+        #     if not var or not isinstance(var, Variable):
+        #         raise Exception("invalid variable name")
+        #     var.set_value(update_func())
 
-        p[0] = f
+        p[0] = {self.vcf_map[var_name]: update_func}
 
     def p_assignment1(self, p):
         '''assignment : LP NAME ASSIGN expr RP'''
         update_func = copy.copy(p[4])
         key = p[2]
 
-        def f(vs, cs):
-            var = vs[key]
-            # if not var or not isinstance(var, Variable):
-            #     raise Exception("invalid variable name: {}".format(key))
-            var.setValue(update_func())
+        # def f(vs, cs):
+        #     var = vs[key]
+        #     # if not var or not isinstance(var, Variable):
+        #     #     raise Exception("invalid variable name: {}".format(key))
+        #     var.set_value(update_func())
 
-        p[0] = f
+        p[0] = {self.vcf_map[key]: update_func}
 
     def p_expr(self, p):
         '''expr : expr ADD term
@@ -314,7 +327,9 @@ class BasicParser(object):
             obj = self.vcf_map[name]
             if callable(obj):
                 return obj()
-            return obj.getValue()
+            # if name == "SCREEN_THICKNESS" and int(obj.get_value()) != 4:
+            #     logger.info("thickness={}".format(int(obj.get_value())))
+            return obj.get_value()
         p[0] = f
 
     def p_factor2(self, p):
@@ -337,7 +352,7 @@ class BasicParser(object):
         '''boolean_expression : boolean_expression AND boolean_expression_unit
                               | boolean_expression OR boolean_expression_unit
                               | boolean_expression_unit'''
-        print "boolean_expression detached."
+        # print "boolean_expression detached."
         slices = copy.copy(p.slice)
         if len(slices) == 4:
             if slices[2].value == "&":
@@ -371,7 +386,7 @@ class BasicParser(object):
                 var = vs[tokens[1].value]
                 # if not var or not isinstance(var, Variable):
                 #     raise Exception("invalid variable name")
-                val1 = var.getValue()
+                val1 = var.get_value()
                 val2 = tokens[3]
                 op = tokens[2]
                 if '<' == op:
@@ -408,7 +423,7 @@ class BasicParser(object):
                 var = vs[t[1].value]
                 # if not var or not isinstance(var, Variable):
                 #     raise Exception("invalid var name")
-                val1 = var.getValue()
+                val1 = var.get_value()
                 val2 = t[3].value()
                 op = t[2].value
                 if '<' == op:
@@ -432,7 +447,7 @@ class BasicParser(object):
         slices = copy.copy(p.slice)
         frml_name = slices[2].value
         self.vcf_map[frml_name] = slices[4].value
-        self.logger.info("Formula_{} added.".format(slices[2].value))
+        # self.logger.info("Formula_{} added.".format(slices[2].value))
 
     def p_label_statement(self, p):
         '''label_statement : LABEL NAME ASSIGN boolean_expression SEMICOLON'''
@@ -455,7 +470,7 @@ class BasicParser(object):
 
     def parse_model(self, filepath):
         commentremoved = clear_comment(filepath)
-        self.logger.info("Parsing model file : {}".format(commentremoved))
+        # self.logger.info("Parsing model file : {}".format(commentremoved))
         lines = []
 
         with open(commentremoved) as f:
@@ -474,8 +489,14 @@ class BasicParser(object):
                 self.parser.parse(line, lexer=lexer)
 
     def build(self):
+        cur_dir = os.path.dirname(os.path.realpath(__file__))
         self.tokens = MyLexer.tokens
-        self.parser = yacc.yacc(module=self)
+        self.parser = yacc.yacc(module=self, outputdir=cur_dir)
+
+
+class LTLParser(object):
+    '''P=? [True U<=NUM statement_prop]'''
+    pass
 
 
 class ModelConstructor(object):
@@ -485,9 +506,14 @@ class ModelConstructor(object):
         self.parser = BasicParser()
         self.parser.build()
         ModelConstructor.model = ModulesFile(ModelType.DTMC)
+        # self.logger = logging.getLogger("model_constructor's logger")
+        # self.logger.addHandler(logging.StreamHandler(sys.stdout))
+        # self.logger.setLevel(logging.INFO)
 
     def parseModelFile(self, filepath):
         self.parser.parse_model(filepath)
+        # self.logger.info("Model parsing finished.")
+        print "Parse finished."
         return ModelConstructor.model
 
 

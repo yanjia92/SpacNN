@@ -1,0 +1,4 @@
+OrderedDict([('SCREEN_THICKNESS', constant SCREEN_THICKNESS: 1.0)]): 124/6247 paths satisfy ltl
+OrderedDict([('SCREEN_THICKNESS', constant SCREEN_THICKNESS: 2.0)]): 141/6247 paths satisfy ltl
+OrderedDict([('SCREEN_THICKNESS', constant SCREEN_THICKNESS: 3.0)]): 142/6247 paths satisfy ltl
+OrderedDict([('SCREEN_THICKNESS', constant SCREEN_THICKNESS: 4.0)]): 143/6247 paths satisfy ltl

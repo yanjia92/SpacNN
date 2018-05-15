@@ -22,7 +22,7 @@ class Test(unittest.TestCase):
 
         def f(day_var):
             def inner():
-                day = day_var.getValue()
+                day = day_var.get_value()
                 dose = module.getConstant(
                     'SB_K') * config.getParam('SCREEN_THICKNESS') * day / 365.0
                 x = (-module.getConstant('SB_P_THRESHOLD') + 1) / \
@@ -35,7 +35,7 @@ class Test(unittest.TestCase):
             ff = f(varday)
             logger.info(
                 'sb: day_{0}, prob={1}'.format(
-                    varday.getValue(), ff()))
+                    varday.get_value(), ff()))
 
     def tests3rfail(self):
         module = self.factory.s3rmodule()
@@ -43,16 +43,16 @@ class Test(unittest.TestCase):
 
         def f(day_var):
             def inner():
-                day = day_var.getValue()
+                day = day_var.get_value()
                 dose = module.getConstant('S3R_K') / config.getParam(
                     'SCREEN_THICKNESS') * (day / 365.0)
                 x = config.getParam('S3R_DELTAV_THRESHOLD') / (
                     config.getParam('S3R_B') * pow(e, config.getParam('S3R_B') * dose))
                 std_x = (-config.getParam('S3R_A_MU') + x) / \
-                    config.getParam('S3R_A_SIGMA').getValue()
+                    config.getParam('S3R_A_SIGMA').get_value()
                 logger.info(
                     's3r: day_{0}, std_x={1}'.format(
-                        day_var.getValue(), std_x))
+                        day_var.get_value(), std_x))
                 p = 1 - pcf(std_x)
                 return p
             return inner
@@ -60,7 +60,7 @@ class Test(unittest.TestCase):
             ff = f(varday)
             logger.info(
                 's3r: day_{0}, prob={1}'.format(
-                    varday.getValue(), ff()))
+                    varday.get_value(), ff()))
 
 
 if __name__ == "__main__":

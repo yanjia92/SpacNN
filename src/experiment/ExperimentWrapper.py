@@ -4,11 +4,12 @@ import logging
 import sys
 from checker import Checker
 from collections import OrderedDict
+from model.ModelFactory import ModelFactory
 
-logger = logging.getLogger("ExperimentWrapper logging")
-file_handler = logging.FileHandler("../log/expe.log", "w")
-logger.addHandler(file_handler)
-logger.setLevel(logging.INFO)
+# logger = logging.getLogger("ExperimentWrapper logging")
+# file_handler = logging.FileHandler("../log/expe.log", "w")
+# logger.addHandler(file_handler)
+# logger.setLevel(logging.INFO)
 
 # 使用simulation的方法对模型进行experiment
 # 为模型中的未定参数设定一组值,并进行simulation验证实验,返回多次simulation的期望值(平均值)
@@ -25,7 +26,7 @@ class ExperimentWrapper(object):
     # 将实验值存储在ExperimentWrapper中,避免了直接修改ModulesFile.py
     # constants中的常量必须是同一个常量的不同值
     def _addvalues(self, constants):
-        name = constants[0].getName()
+        name = constants[0].get_name()
         if name not in self.checker.model.constants.keys():
             return
         else:
@@ -55,6 +56,8 @@ class ExperimentWrapper(object):
                 paramsdict[name] = value
             for name, param in paramsdict.items():
                 self.checker.model.constants[name].value = param.value
+                ModelFactory.module_factory.config.setParam(name, param)
+
             # self.checker.model.constants.update(paramsdict)
             # logger.info(self.checker.model.constants.items())
 
@@ -71,9 +74,9 @@ class ExperimentWrapper(object):
                 # logger.info("==============")
 
             prob = float(count) / self.samples_per_param
-            logger.info('{}: {}/{} paths satisfy ltl'.format(paramsdict, count, self.samples_per_param))
+            # logger.info('{}: {}/{} paths satisfy ltl'.format(paramsdict, count, self.samples_per_param))
             lparamvalues = paramsdict.values() # the 'l' prefix indicate it's a list type
-            lparamvalues = map(lambda constant: constant.getValue(), lparamvalues)
+            lparamvalues = map(lambda constant: constant.get_value(), lparamvalues)
             results.append((lparamvalues, prob))
 
         return results
@@ -82,16 +85,16 @@ class ExperimentWrapper(object):
     # 调用Checker的验证方法
     # return []
     def modelcheck(self):
-        logger.info("run ExpeWrapper's model checking.")
+        # logger.info("run_checker ExpeWrapper's model checking.")
         paramslist = self._constants.values() # list of list
         # logger.info(paramslist)
         results = []
         for params in product(*paramslist):
             for constant in params:
-                self.checker.model.constants[constant.getName()].value =  constant.getValue()
+                self.checker.model.constants[constant.get_name()].value =  constant.get_value()
             low, high = self.checker.mc2()
             results.append((params, (low+high)/2.0))
-            logger.info("params: {0}, prob: {1}".format(str(params), (low+high)/2.0))
+            # logger.info("params: {0}, prob: {1}".format(str(params), (low+high)/2.0))
         return results
 
 def main():

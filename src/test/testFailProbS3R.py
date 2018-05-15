@@ -33,13 +33,13 @@ class TestCase(unittest.TestCase):
             xs = []
             std_xs = []
             for v in [Variable("day", i) for i in interval(1, 365*YEAR, 1)]:
-                dose = v.getValue() / 365.0 * (s3r.getConstant("S3R_K").getValue() /
-                                               self.config.getParam("SCREEN_THICKNESS").getValue())
+                dose = v.get_value() / 365.0 * (s3r.getConstant("S3R_K").get_value() /
+                                                self.config.getParam("SCREEN_THICKNESS").get_value())
                 # 阈值电压漂移
                 xs.append(dose)
-                x = s3r.getConstant("S3R_DELTAV_THRESHOLD").getValue() / (
-                s3r.getConstant("S3R_B").getValue() * exp(s3r.getConstant("S3R_B").getValue() * dose))
-                std_x = (x - s3r.getConstant("S3R_A_MU").getValue()) / s3r.getConstant("S3R_A_SIGMA").getValue()
+                x = s3r.getConstant("S3R_DELTAV_THRESHOLD").get_value() / (
+                    s3r.getConstant("S3R_B").get_value() * exp(s3r.getConstant("S3R_B").get_value() * dose))
+                std_x = (x - s3r.getConstant("S3R_A_MU").get_value()) / s3r.getConstant("S3R_A_SIGMA").get_value()
                 p = 1 - pcf(std_x)
                 ps.append(p)
                 std_xs.append(std_x)

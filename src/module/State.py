@@ -3,29 +3,31 @@ curdir = os.getcwd()
 pardir = os.path.dirname(os.path.abspath(curdir))
 import sys
 sys.path.append(pardir)
+from collections import namedtuple
+from util.AnnotationHelper import deprecated
 
+
+@deprecated("State class is no longer used, since state_id is not needed. The whole class could be replaced by ap_set")
 class State(object):
-    def __init__(self, stateId, apSet):
-        self.stateId = stateId
-        self.apSet = apSet
+    # state_id = None
+    # ap_set = None
+
+    def __init__(self, state_id, ap_set):
+        self.state_id = state_id
+        self.ap_set = ap_set
 
     def __str__(self):
-        result = 'State(id: %d, %s)' % (self.sid, str(self.apSet))
+        result = 'State(id: %d, %s)' % (self.sid, str(self.ap_set))
         return result
 
-    # check if ap holds at current state
-    def checkAP(self, apName):
-       return apName in self.apSet
-
-    # vs,cs,labels: OrderedDict
-    def updateAPs(self, vs, cs, labels):
-        self.apSet.clear()
-        for ap, func in labels.items():
-            if func(vs, cs):
-                self.apSet.add(ap)
-
-    def clearAPSet(self):
-        self.apSet.clear()
+# fields = ["state_id", "ap_set"]
+# State = namedtuple("State", fields)
 
 
+def test():
+    s = State(1, set())
+    print s.__dict__
 
+
+if __name__ == "__main__":
+    test()

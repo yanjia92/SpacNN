@@ -19,8 +19,8 @@ def poission_model():
         lambda vs,
         cs: True,
         lambda vs,
-        cs: vs['n'].setValue(
-            vs['n'].getValue() +
+        cs: vs['n'].set_value(
+            vs['n'].get_value() +
             1),
         module,
         module.getConstant("r"),

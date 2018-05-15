@@ -8,6 +8,7 @@ import threading
 import time
 from PathHelper import *
 import sys
+from util.AnnotationHelper import profileit, setresult
 
 
 # class represent an interval in DTMC/CTMC
@@ -55,14 +56,14 @@ class Checker(threading.Thread):
     # In DTMC cases, it just represents the number of steps
     def __init__(
         self,
-        model=None,
+        model,
         ltl=None,
         a=1,
         b=1,
-        c=0.8,
-        d=0.01,
+        c=0.9,
+        d=0.02,
         duration=1.0,
-            checkingType=None,
+            checkingType=CheckingType.QUANTATIVE,
         fb = False):
         threading.Thread.__init__(self)
         self.model = model
@@ -82,10 +83,10 @@ class Checker(threading.Thread):
         self.fb = fb # specify whether failure biasing is enabled
         self.model.fb = fb
 
-        self.logger = logging.getLogger("Checker logging")
-        self.logger.addHandler(logging.FileHandler(get_log_dir() + get_sep() + "checker.log", "w"))
-        self.logger.addHandler(logging.StreamHandler(sys.stdout))
-        self.logger.setLevel(logging.INFO)
+        # self.logger = logging.getLogger("Checker logging")
+        # self.logger.addHandler(logging.FileHandler(get_log_dir() + get_sep() + "checker.log", "w"))
+        # self.logger.addHandler(logging.StreamHandler(sys.stdout))
+        # self.logger.setLevel(logging.INFO)
 
     # Get upper-bound of variance
     def __getVar_m(self, n, a, b):
@@ -100,10 +101,11 @@ class Checker(threading.Thread):
         d2 = p * p * (p + 1.0)
         return d1 / d2
 
+    @setresult(3000)
     def get_sample_size(self):
         sz = int(1.0 / ((1 - self.c) * 4 * self.d *
                           self.d) - self.a - self.b - 1)
-        self.logger.info("Checker is going to generates {} paths".format(sz))
+        # self.logger.info("Checker is going to generates {} paths".format(sz))
         return sz
 
     # path: list of Step instance
@@ -192,7 +194,9 @@ class Checker(threading.Thread):
     # returned (result, path e.g. list of Step instance)
     # using cachedPrefixes to check the path's checking result beforehand
     def gen_random_path(self):
-        return self.model.gen_random_path(self.duration, self.cachedPrefixes)
+        # return self.model.gen_random_path(self.duration, self.cachedPrefixes)
+        path = self.model.get_random_path_V2()
+        return None, path
 
     # path: list of Step
     # step: current Step instance
@@ -209,8 +213,10 @@ class Checker(threading.Thread):
     # return: boolean
     # path: list of Step instance
     def verify(self, path, ltl=None):
+        step0 = path[0]
         satisfiedSteps = self._rverify(path, 0, ltl)
-        result = 0 in map(lambda step: step.stateId, satisfiedSteps)
+        # result = 0 in map(lambda step: step.state_id, satisfiedSteps)
+        result = step0 in list(satisfiedSteps)
         # logging.info('path verified result: %s' % str(result))
         return result
 
@@ -285,8 +291,8 @@ class Checker(threading.Thread):
             if step in rstates:
                 # check if state is within timeInterval
                 if timeInterval:
-                    stateBeginTime = step.passedTime
-                    stateEndTime = step.passedTime + step.holdingTime
+                    stateBeginTime = step.passed_time
+                    stateEndTime = step.passed_time + step.holding_time
                     interval = Interval(stateBeginTime, stateEndTime)
                     if interval.interleaveWith(timeInterval):
                         result.add(step)
@@ -305,13 +311,13 @@ class Checker(threading.Thread):
     def _checkX(self, path, lstates):
         result = set()
         lstates = filter(lambda s: s.stateId >= 1, lstates)
-        stateIds = [step.stateId for step in path]
+        stateIds = [step.state_id for step in path]
         for s in lstates:
             result.add(path[bisect.bisect_left(stateIds, s.stateId)])
         return result
 
     def _checkAP(self, path, ap):
-        return set([s for s in path if ap in s.apSet])
+        return set([s for s in path if ap in s.ap_set])
 
     # Get the expectation value of posterior distribution.
     def postEx(self, n, x):
@@ -346,7 +352,7 @@ class Checker(threading.Thread):
         x, n = 0.0, 0.0
         postex = 0.0
         for i in range(sz):
-            satisfied, path = s.gen_random_path(self.decided_prefixes)
+            satisfied, path = s.gen_random_path()
             n += 1
             if s.verify([p.ap for p in path], s.ltl, s.pts):
                 x += 1
@@ -376,6 +382,7 @@ class Checker(threading.Thread):
             return False
 
     # Estiamte the probability of property holding
+    # @profileit(filepath=get_log_dir() + get_sep() + "checker_mc2_prof")
     def mc2(self):
         sz = self.get_sample_size()
         x, n = 0, 0
@@ -395,7 +402,8 @@ class Checker(threading.Thread):
             n += 1
             if n & 511 == 0:
                 t2 = time.time()
-                self.logger.info("Verifying {} paths, causing {}s".format(n, t2 - begin))
+                print  "Verifying {} paths, causing {}s".format(n, t2 - begin)
+                # self.logger.info("Verifying {} paths, causing {}s".format(n, t2 - begin))
             if isinstance(satisfied, bool):
                 hitTimes += 1
                 if satisfied:
@@ -418,23 +426,24 @@ class Checker(threading.Thread):
                         pb2 = self.model.probForPath(path, biasing=True, duration=self.duration)
                         likelihood = pb1/pb2
                     except ZeroDivisionError:
-                        logging.error("path's length: %d" % (len(path)))
-                        logging.error("path: %s" % str(path))
+                        # logging.error("path's length: %d" % (len(path)))
+                        # logging.error("path: %s" % str(path))
                         continue
                     x += likelihood
                 else:
                     x += 1
             else:
                 # nspaths.add(str(path))
-                failed = filter(lambda apset: "failure" in apset, map(lambda step: step.apSet, path))
+                failed = filter(lambda apset: "failure" in apset, map(lambda step: step.ap_set, path))
                 if failed:
-                    self.logger.info("fail ap in apset, but verified not failed. path={}".format(str(path)))
+                    pass
+                    # self.logger.info("fail ap in apset, but verified not failed. path={}".format(str(path)))
                 else:
                     # self.logger.info("not failed")
                     pass
 
         postex = self.postEx(n, x)
-        self.logger.info("mc2's result={}".format(postex))
+        # self.logger.info("mc2's result={}".format(postex))
         return postex
 
     def intervalUnreliability(self, duration):
@@ -469,13 +478,8 @@ class Checker(threading.Thread):
             upperBound = 1 - math.exp(-1 * expectation * duration * q_1)
             return upperBound
 
-    def run(self):
-        msg = None
+    def run_checker(self):
         if self.checkingType == Checker.CheckingType.QUALITATIVE:
             self.is_satisfy = self.mc1()
-            if self.is_satisfy:
-                msg = "The model satisfies the LTL."
-            else:
-                msg = "The model does not satisfy the LTL."
-        else:
-            return self.mc2()
+            return self.is_satisfy
+        return self.mc2()

@@ -4,6 +4,7 @@ except ImportError:
     pass
 from math import *
 
+
 def plot_multi(*args, **kwargs):
     '''args: line_data, format: (x, y, label)'''
     if "title" in kwargs.keys():

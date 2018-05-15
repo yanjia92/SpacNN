@@ -11,7 +11,7 @@ def test():
     cmd = buildCommand()
     assert cmd.evalGuard() == True
     cmd.execAction()
-    assert cmd.vs['a'].getValue() == 0
+    assert cmd.vs['a'].get_value() == 0
 
 
 if __name__ == '__main__':
