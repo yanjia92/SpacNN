@@ -1,4 +1,4 @@
-from Tkinter import *
+from Tkinter import Scrollbar, TOP, X, Text
 
 
 class CodeWindow:

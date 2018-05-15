@@ -101,7 +101,7 @@ class Checker(threading.Thread):
         d2 = p * p * (p + 1.0)
         return d1 / d2
 
-    @setresult(3000)
+    @setresult(6000)
     def get_sample_size(self):
         sz = int(1.0 / ((1 - self.c) * 4 * self.d *
                           self.d) - self.a - self.b - 1)
@@ -402,8 +402,7 @@ class Checker(threading.Thread):
             n += 1
             if n & 511 == 0:
                 t2 = time.time()
-                print  "Verifying {} paths, causing {}s".format(n, t2 - begin)
-                # self.logger.info("Verifying {} paths, causing {}s".format(n, t2 - begin))
+                print "Verifying {} paths, causing {}s".format(n, t2 - begin)
             if isinstance(satisfied, bool):
                 hitTimes += 1
                 if satisfied:

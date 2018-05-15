@@ -75,7 +75,7 @@ class Director(object):
             self.manager.set_test_xs(test_xs)
             # self.manager.run_test(prism_data="C:\\Users\\yanjia\\Documents\\proj\\SpacNN\\prism_model\\YEAR1_T_1_10_1")
             # self.manager.run_test()
-            self.manager.run_test(prism_data=get_prism_model_dir() + get_sep() + "YEAR1_T_1_10_1")
+            self.manager.run_test("YEAR1_T_1_10_1")
         return inner
 
     def init_comm_map(self):
