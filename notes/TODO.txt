@@ -1,9 +1,7 @@
 未完成
-    验证network输出的正确性
-    通过LTL输入，运行checker，运行的结果均为0
     输入LTL不要打回车就直接调用函数
-
-
+    ltl解析
+    用户可以选择prism true data to print or not.
 
 已完成
 如何确保expression的parsing是正确的？ 单元测试成功 testParseExpr.py

@@ -11,6 +11,7 @@ from util.PlotHelper import plot_multi
 from util.AnnotationHelper import deprecated
 import sys
 import getopt
+import os
 try:
     import cPickle as pickle
 except ImportError:
@@ -174,8 +175,11 @@ class Manager(object):
 
         # get true value returned from PRISM
         if prism_data:
-            test_prism_xs, test_prism_ys = parse_csv(prism_data)
-            plot_multi((test_xs, test_expr_ys, "experiment"), (test_prism_xs, test_prism_ys, "prism"))
+            if not os.path.exists(prism_data):
+                print "Specify a prism true data to print if you want to. "
+            else:
+                test_prism_xs, test_prism_ys = parse_csv(prism_data)
+                plot_multi((test_xs, test_expr_ys, "experiment"), (test_prism_xs, test_prism_ys, "prism"))
         else:
             plot_multi((test_xs, test_expr_ys, "experiment"))
 

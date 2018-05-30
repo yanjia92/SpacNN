@@ -1,7 +1,7 @@
 try:
     import matplotlib.pyplot as plt
 except ImportError:
-    pass
+    print "matplotlib not installed."
 from math import *
 
 
