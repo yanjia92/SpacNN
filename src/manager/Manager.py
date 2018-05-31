@@ -16,7 +16,7 @@ try:
     import cPickle as pickle
 except ImportError:
     import pickle
-
+from compiler.LTLParser import LTLParser
 
 # def get_logger(level=logging.INFO):
 #     logger = logging.getLogger("Manager log")
@@ -36,6 +36,7 @@ class Manager(object):
         self.checker = None
         self.regressor = BPNN()
         self.test_xs = []  # [(vals)]
+        self.ltl_parser = LTLParser().build_parser()
 
     def set_manager_param(self, name, param):
         self.manager_params[name] = param

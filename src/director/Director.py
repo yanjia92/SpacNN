@@ -56,8 +56,8 @@ class Director(object):
     def ltl_input(self):
         def inner(event=None):
             strLTL = event.widget.get()
-            ltl = [token.lstrip() for token in strLTL.split(',')]
-            result = self.manager.set_ltl(ltl)
+            parsed_ltl = self.manager.ltl_parser.parse_line(strLTL)
+            result = self.manager.set_ltl(parsed_ltl)
             if result:
                 # ltl set
                 tkMessageBox.showinfo("Info", "LTL公式已设定")

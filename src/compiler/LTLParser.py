@@ -3,6 +3,7 @@ from LTLLexer import LTLLexer
 from collections import namedtuple
 import os
 from util.BinaryTreeUtils import BT_level_traverse
+import copy
 
 
 TreeNode = namedtuple("TreeNode", ["object", "left", "right"])
@@ -81,14 +82,28 @@ class LTLParser(object):
         with open(path, "r") as f:
             for line in f:
                 self.parser.parse(line, lexer=self.lexer.lexer)
+        return self._get_parsed_result()
 
-    def get_parsed_result(self):
-        return self.parsed_results
+    def parse_line(self, ltl_str):
+        self.parser.parse(ltl_str, lexer=self.lexer.lexer)
+        return self._get_parsed_result(index=0)
+
+    def _get_parsed_result(self, index=None):
+        if index is not None:
+            result = self.parsed_results.pop(index)
+            self._clear_results()
+            return result
+        results = copy.copy(self.parsed_results)
+        self._clear_results()
+        return results
+
+    def _clear_results(self):
+        while len(self.parsed_results) > 0:
+            self.parsed_results.pop(0)
 
 def main():
     parser = LTLParser().build_parser()
-    parser.parse_file("../../prism_model/LTLTest.props")
-    print parser.get_parsed_result()
+    print parser.parse_file("../../prism_model/LTLTest.props")
 
 
 if __name__ == "__main__":
