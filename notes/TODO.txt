@@ -1,7 +1,9 @@
 未完成
-    输入LTL不要打回车就直接调用函数
-    ltl解析
     用户可以选择prism true data to print or not.
+        在进入predict界面时用户可以选择要打印的prism数据文本文件
+            文本文件格式 第一行是所有数据的文字定义 之后的每一行分别是数据
+
+    bug 设置训练数据,中途退出,依旧进行训练
 
 已完成
 如何确保expression的parsing是正确的？ 单元测试成功 testParseExpr.py
@@ -21,7 +23,11 @@ Fix "Running checker on built model produces different result with PRISM" bug
 配置pycharm 使用ENV27虚拟环境
 LTL公式的输入 UI 不带解析的ltl input finished. yes
 训练好的network 序列化
-
+ltl解析
+输入LTL不要打回车就直接调用函数
+    这里的ltl解析放到用户按train的按钮时再调用
+用户输入超参数
+    超参数: 取样数目 神经网络隐藏层神经元个数 学习率 矫正率
 
 不足
 目前command的update部分不允许出现boolean_expression

@@ -21,13 +21,25 @@ def add_file_menu(f):
     return wrapper
 
 
+def add_option_menu(f):
+    def wrapper(*args, **kwargs):
+        comm_map = args[0].comm_map
+        menu_bar = f(*args, **kwargs)
+
+        option_menu = Menu(menu_bar, tearoff=0)
+        option_menu.add_command(label="Option", command=comm_map["option"])
+        menu_bar.add_cascade(label="Option", menu=option_menu)
+        return menu_bar
+    return wrapper
+
+
 class UIOperator(object):
     def __init__(self, comm_map):
         self.comm_map = comm_map
         self.root = Tk()
         self.root.title("SpacNN")
-        self.frame_width = 600
-        self.frame_height = 800
+        self.frame_width = 800
+        self.frame_height = 1000
         self.root.geometry("{}x{}".format(self.frame_width, self.frame_height))
         self.root.config(menu=self._get_menu_bar())
         lcode_window = Label(self.root, text="Model")
@@ -37,8 +49,9 @@ class UIOperator(object):
         lLTL = Label(self.root, text="LTL formula for the path")
         lLTL.pack()
         var_LTL = StringVar()
-        eLTL = Entry(self.root, textvariable=var_LTL)
-        eLTL.bind("<Return>", self.comm_map["ltl_input"])
+        eLTL = Entry(self.root, textvariable=var_LTL, name="eLTL")
+        # eLTL.bind("<Return>", self.comm_map["ltl_input"])
+        # self.root.bind_class("Entry", "<FocusOut>", self.comm_map["ltl_input"])
         eLTL.pack()
 
         # buttons
@@ -47,9 +60,10 @@ class UIOperator(object):
         predict_button = Button(self.root, text="predict", command=self.comm_map["predict"])
         predict_button.pack()
 
-        # process_bar = ttk.Progressbar(self.root, orient="horizontal", length=200, mode="determinate")
+        # children = self.root.winfo_children()
+        # print children
 
-
+    @add_option_menu
     @add_file_menu
     def _get_menu_bar(self):
          return Menu(self.root, name="menu")

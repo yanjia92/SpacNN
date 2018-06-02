@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 import tkFileDialog
-from Tkinter import END
 from ui.testInputDialog import ParamInputDialog
 import tkMessageBox
 from util.util import *
 from itertools import product
-from PathHelper import *
+from ui.testInputDialog import ManagerParamInputDialog
+from Tkinter import *
 
 
 class Director(object):
@@ -17,7 +17,8 @@ class Director(object):
 
     def open_file(self):
         def inner():
-            filename = tkFileDialog.askopenfilename(title="Select your PRISM model")
+            filename = tkFileDialog.askopenfilename(
+                title="Select your PRISM model")
             # print filename
             self.manager.read_model_file(filename)
             if hasattr(self, "root"):
@@ -30,7 +31,8 @@ class Director(object):
     def _input_unsure_params(self, names):
         ''':return {name: values_list}'''
         if len(names) == 0:
-            tkMessageBox.showerror("Error", "Open a .prism model or your model contains no unsure parameters. ")
+            tkMessageBox.showerror(
+                "Error", "Open a .prism model or your model contains no unsure parameters. ")
             return
             # display dialog
         if not hasattr(self, "root"):
@@ -44,13 +46,23 @@ class Director(object):
 
     def train(self):
         def inner():
+            # get ltl from root
+            if not hasattr(self, "root"):
+                pass
+            for widget in self.root.pack_slaves():
+                if isinstance(widget, Entry) and widget._name == "eLTL":
+                    strLTL = widget.get()
+                    parsed_ltl = self.manager.ltl_parser.parse_line(strLTL)
+                    result = self.manager.set_ltl(parsed_ltl)
+                    if not result:
+                        tkMessageBox.showerror("Error", "ltl 设置错误")
             # get unsure params
             params_names = self.manager.unsure_param_names()
-            vals_map = self._input_unsure_params(params_names)  # show dialog for user to input
+            vals_map = self._input_unsure_params(
+                params_names)  # show dialog for user to input
             self.manager.set_train_constants(*vals_map.items())
             self.manager.train_network()
             print "Train finished"
-
         return inner
 
     def ltl_input(self):
@@ -62,14 +74,16 @@ class Director(object):
                 # ltl set
                 tkMessageBox.showinfo("Info", "LTL公式已设定")
             else:
-                tkMessageBox.showerror("Error", "Open a .prism model before setting LTL")
+                tkMessageBox.showerror(
+                    "Error", "Open a .prism model before setting LTL")
         return inner
 
     def predict(self):
         def inner():
             #  get unsure parameter names
             unsure_names = self.manager.unsure_param_names()
-            vals_map = self._input_unsure_params(unsure_names)  # show dialog for user to input
+            vals_map = self._input_unsure_params(
+                unsure_names)  # show dialog for user to input
             # self.manager.set_test_x(vals_map.values())
             test_xs = [test_x for test_x in product(*vals_map.values())]
             self.manager.set_test_xs(test_xs)
@@ -78,13 +92,20 @@ class Director(object):
             self.manager.run_test("YEAR1_T_1_10_1")
         return inner
 
+    def option(self):
+        def inner():
+            # get manager parameter names
+            if not hasattr(self, "root"):
+                print "Error in Director. Specify ui root to Director"
+            custom_options = ManagerParamInputDialog(
+                self.root, "custom options", self.manager.manager_params).show()
+            # set customer options
+            self.manager.manager_params.update(custom_options)
+        return inner
+
     def init_comm_map(self):
         self.comm_map["open"] = self.open_file()
         self.comm_map["train"] = self.train()
         self.comm_map["ltl_input"] = self.ltl_input()
         self.comm_map["predict"] = self.predict()
-
-
-
-
-
+        self.comm_map["option"] = self.option()

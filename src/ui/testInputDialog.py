@@ -35,6 +35,7 @@
 import Tkinter as tk
 from collections import OrderedDict
 
+
 class MyDialog(object):
     def __init__(self, parent, prompt):
         self.toplevel = tk.Toplevel(parent)
@@ -54,6 +55,36 @@ class MyDialog(object):
         return value
 
 
+class ManagerParamInputDialog(object):
+    def __init__(self, parent, prompt, params_map):
+        self.toplevel = tk.Toplevel(parent)
+        self.params_map = params_map
+        # add prompt label
+        lprompt = tk.Label(self.toplevel, text=prompt)
+        lprompt.pack(side="top", fill="x")
+        self.vars_map = dict()
+        for name, value in self.params_map.items():
+            self._add_le(name, value)
+        button = tk.Button(self.toplevel, text="Finish", command=self.toplevel.destroy)
+        button.pack(side="bottom", anchor="e", padx=4, pady=4)
+
+    def _add_le(self, name, value):
+        lname = tk.Label(self.toplevel, text=name)
+        varvalue = tk.DoubleVar(value=value)
+        evalue = tk.Entry(self.toplevel, textvariable=varvalue)
+        self.vars_map[name] = varvalue
+        lname.pack(side="top", fill="x")
+        evalue.pack(side="top", fill="x")
+
+    def show(self):
+        self.toplevel.grab_set()
+        self.toplevel.wait_window()
+
+        for name, var in self.vars_map.items():
+            self.vars_map[name] = var.get()
+        return self.vars_map
+
+
 class ParamInputDialog(object):
     def __init__(self, parent, prompt, param_names):
         self.toplevel = tk.Toplevel(parent)
@@ -64,6 +95,7 @@ class ParamInputDialog(object):
             self._add_le(name, self.toplevel)
         button = tk.Button(self.toplevel, text="Finish", command=self.toplevel.destroy)
         button.pack(side="bottom", anchor="e", padx=4, pady=4)
+        self.toplevel.protocol("WM_DELETE_WINDOW", self.toplevel.destroy)
 
     def _add_le(self, name, toplevel):
         self.vars_map[name] = list()

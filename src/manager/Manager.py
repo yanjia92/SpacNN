@@ -28,7 +28,21 @@ from compiler.LTLParser import LTLParser
 class Manager(object):
 
     def __init__(self):
-        self.manager_params = {"nh": 5, "no": 1}
+        self.manager_params = {
+            "隐藏层神经元个数": 5, 
+            "输出层神经元个数": 1, 
+            "训练样本取样数": 6000, 
+            "学习速率": 0.05, 
+            "矫正率": 0.1
+        }
+
+        self._params_map = {
+            "nh": "隐藏层神经元个数",
+            "no": "输出层神经元个数",
+            "samples": "训练样本取样数",
+            "learning_rate": "学习速率",
+            "correct_rate": "矫正率"
+        }
         self.mdl_parser = ModelConstructor()
         self.model = None
         self.expr_params = list()  # [(name, val_list)]
@@ -42,7 +56,9 @@ class Manager(object):
         self.manager_params[name] = param
 
     def get_manager_param(self, name):
-        return self.manager_params[name]
+        if name not in self._params_map.keys():
+            print "key not exist when get manager parameter: {}".format(name)
+        return self.manager_params[self._params_map[name]]
 
     def set_random_path_duration(self, duration):
         self.set_manager_param("duration", duration)
@@ -132,23 +148,29 @@ class Manager(object):
         train_data_x = []
         train_data_y = []
         constant_objs = self._to_constant_objs()
+        self.checker.samples = self.get_manager_param("samples")
         for constant_list in itertools.product(*constant_objs):
-            self._set_param(*constant_list)
-            self.model.prepare_commands()
-            train_y = self.checker.run_checker()
-            train_x = [c_obj.get_value() for c_obj in constant_list]
-            train_data_x.append(train_x)
-            train_data_y.append(train_y)
-
-            self._clear_param(*constant_list)
+            try:
+                self._set_param(*constant_list)
+                self.model.prepare_commands()
+                train_y = self.checker.run_checker()
+                train_x = [c_obj.get_value() for c_obj in constant_list]
+                train_data_x.append(train_x)
+                train_data_y.append(train_y)
+            finally:
+                self._clear_param(*constant_list)
 
         self.regressor.setup(len(self.expr_params),
-                             self.get_manager_param("nh"),
-                             self.get_manager_param("no"))
+                             int(self.get_manager_param("nh")),
+                             int(self.get_manager_param("no")),
+                             self.get_manager_param("learning_rate"),
+                             self.get_manager_param("correct_rate"))
+
         print train_data_x
         print train_data_y
         self.regressor.train(train_data_x, train_data_y)
 
+        # dump the network
         network_obj = self.regressor
         dump_file = "nn.txt"
         f = open(dump_file, "wb")

@@ -101,11 +101,13 @@ class Checker(threading.Thread):
         d2 = p * p * (p + 1.0)
         return d1 / d2
 
-    @setresult(6000)
+    # @setresult(6000)
     def get_sample_size(self):
+        if hasattr(self, "samples"):
+            return self.samples
         sz = int(1.0 / ((1 - self.c) * 4 * self.d *
                           self.d) - self.a - self.b - 1)
-        # self.logger.info("Checker is going to generates {} paths".format(sz))
+        # print "Checker is going to generates {} paths".format(sz)
         return sz
 
     # path: list of Step instance
@@ -220,7 +222,6 @@ class Checker(threading.Thread):
         # logging.info('path verified result: %s' % str(result))
         return result
 
-
     '''
     path: list of Step instance
     ltlRoot: current ltl symbol's index in ltl
@@ -265,7 +266,7 @@ class Checker(threading.Thread):
         elif ltl[ltlRoot] == 'X':
             lstates = self._rverify(path, ltlRoot * 2 + 1, ltl=ltl)
             return self._checkX(path, lstates)
-        elif ltl[ltlRoot] == 'T':
+        elif ltl[ltlRoot] == 'true':
             return set(path)
         else:
             ap = ltl[ltlRoot]
@@ -384,7 +385,8 @@ class Checker(threading.Thread):
     # Estiamte the probability of property holding
     # @profileit(filepath=get_log_dir() + get_sep() + "checker_mc2_prof")
     def mc2(self):
-        sz = self.get_sample_size()
+        sz = int(self.get_sample_size())
+        print "samples: {}".format(sz)
         x, n = 0, 0
         hitTimes = 0
         satisfying = 0

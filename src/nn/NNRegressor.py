@@ -21,7 +21,7 @@ class BPNeuralNetwork:
         self.input_correction = []
         self.output_correction = []
 
-    def setup(self, ni, nh, no):
+    def setup(self, ni, nh, no, learn, correct):
         self.input_n = ni + 1
         self.hidden_n = nh
         self.output_n = no
@@ -42,6 +42,9 @@ class BPNeuralNetwork:
         # init correction matrix
         self.input_correction = make_matrix(self.input_n, self.hidden_n)
         self.output_correction = make_matrix(self.hidden_n, self.output_n)
+
+        self.learn = learn
+        self.correct = correct
 
     def predict(self, inputs):
         # activate input layer
@@ -70,7 +73,7 @@ class BPNeuralNetwork:
         return self.output_cells[:]
 
     # x,y,修改最大迭代次数， 学习率λ， 矫正率μ三个参数.
-    def back_propagate(self, case, label, learn, correct):
+    def back_propagate(self, case, label):
         # feed forward
         self.predict(case)
         # get output layer error
@@ -93,16 +96,16 @@ class BPNeuralNetwork:
         for h in range(self.hidden_n):
             for o in range(self.output_n):
                 change = output_deltas[o] * self.hidden_cells[h]
-                self.output_weights[h][o] += learn * change + \
-                    correct * self.output_correction[h][o]
+                self.output_weights[h][o] += self.learn * change + \
+                    self.correct * self.output_correction[h][o]
                 self.output_correction[h][o] = change
 
         # update input weights
         for i in range(self.input_n):
             for h in range(self.hidden_n):
                 change = hidden_deltas[h] * self.input_cells[i]
-                self.input_weights[i][h] += learn * change + \
-                    correct * self.input_correction[i][h]
+                self.input_weights[i][h] += self.learn * change + \
+                    self.correct * self.input_correction[i][h]
                 self.input_correction[i][h] = change
         # get global error
         error = 0.0
@@ -113,13 +116,13 @@ class BPNeuralNetwork:
                 error += 0.5 * (label[o] - self.output_cells[o]) ** 2
         return error
 
-    def train(self, cases, labels, limit=10000, learn=0.05, correct=0.1):
+    def train(self, cases, labels, limit=10000):
         for j in range(limit):
             error = 0.0
             for i in range(len(cases)):
                 label = labels[i]
                 case = cases[i]
-                error += self.back_propagate(case, label, learn, correct)
+                error += self.back_propagate(case, label)
 
     def test(self):
         cases = interval(-pi, pi, 0.1)

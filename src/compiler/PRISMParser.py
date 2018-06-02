@@ -326,7 +326,10 @@ class BasicParser(object):
         def f():
             obj = self.vcf_map[name]
             if callable(obj):
-                return obj()
+                try:
+                    return obj()
+                except ZeroDivisionError:
+                    print name
             # if name == "SCREEN_THICKNESS" and int(obj.get_value()) != 4:
             #     logger.info("thickness={}".format(int(obj.get_value())))
             return obj.get_value()
