@@ -1,0 +1,11 @@
+ctmc
+
+const int q_max = 20;
+const double rate_arrival = 1 / 0.78;
+const double rate_service = 1 / 0.01;
+
+module Queue
+    q : [0..q_max] init 0;
+
+    [] q>=0 & q<=q_max -> rate_arrival : (q'=min(q+1, q_max)) + rate_service : (q'=q-1);
+endmodule

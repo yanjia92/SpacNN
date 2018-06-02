@@ -1,9 +1,13 @@
 未完成
-    用户可以选择prism true data to print or not.
+    1. 用户可以选择prism true data to print or not.
         在进入predict界面时用户可以选择要打印的prism数据文本文件
             文本文件格式 第一行是所有数据的文字定义 之后的每一行分别是数据
 
-    bug 设置训练数据,中途退出,依旧进行训练
+    2. bug 设置训练数据,中途退出,依旧进行训练
+
+    3. 用其他模型做实验
+        http://www.prismmodelchecker.org/tutorial/power.php
+
 
 已完成
 如何确保expression的parsing是正确的？ 单元测试成功 testParseExpr.py

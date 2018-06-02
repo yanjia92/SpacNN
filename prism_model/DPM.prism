@@ -1,0 +1,38 @@
+// the dynamic power management system from http://www.prismmodelchecker.org/tutorial/power.php
+
+
+ctmc
+
+// Maximum queue size
+const int q_max = 20;
+
+// request arrival rate
+const double rate_arrive = 1 / 0.72;
+
+// Service Queue Module
+module SQ
+    q_size : [0, q_max] init 0;
+
+    [request] true -> rate_arrive : (q'=min(q+1, q_max));
+
+    [serve] q>1 -> (q'=q-1);
+
+    [serve_last] q==1 -> (q'=q-1);
+endmodule
+
+
+const double rate_serve = 1 / 0.008;
+
+
+// Service Provider
+module SP
+    // power state of SP: 0:sleep, 1:idle, 2:busy
+    sp : [0, 2] init 1;
+
+    [request] sp==1 -> (sp'=2);
+
+    [request] sp!=1 -> (sp'=sp);
+
+    [serve] sp==2 -> rate_serve : (sp'=2);
+    [serve_last] sp==2 -> rate_serve : (sp'=1);
+endmodule
