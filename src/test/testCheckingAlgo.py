@@ -1,13 +1,14 @@
 # -*- coding:utf-8 -*-
 from model.ModelFactory import ModelFactory
 from checker.Checker import Checker
-import logging
 from util.CsvFileHelper import parse_csv
-import sys
 from math import fabs
+from PathHelper import *
+from compiler.PRISMParser import ModelConstructor
+from compiler.LTLParser import LTLParser
 
 
-DURATION = 1*365*2
+DURATION = 5
 c = 0.6
 d = 0.02
 
@@ -44,9 +45,9 @@ def t1(model):
             # logger.info("Failed path found.")
         verified = checker.verify(path)
         if verified is False and len(path) != DURATION:
-            pass
-            # logger.error("path:{}".format(str(path)))
-            # logger.error("path'len={}".format(len(path)))
+            # pass
+            print "path:{}".format(str(path))
+            print "path'len={}".format(len(path))
 
 
 def t2(model=None):
@@ -89,12 +90,24 @@ def t3(model, set_param_func, prism_data_file):
     # logger.info("samples={},c={},d={}".format(samplesize, c, d))
     # logger.info(probs)
     for v1, v2 in zip(probs, prism_result_y[:len(probs)]):
-        print "Diff = %.2f%%" % fabs((v1-v2)/v2*100)
+        print "Diff = %.2f%%" % fabs((v1 - v2) / v2 * 100)
 
 
 if __name__ == "__main__":
     # pass
     # t1()
     # t2()
-    t3()
-
+    model_path = get_prism_model_dir() + get_sep() + "Queue.prism"
+    model_constructor = ModelConstructor()
+    model = model_constructor.parseModelFile(model_path)
+    model.prepare_commands()
+    ltl = LTLParser().build_parser().parse_line("true U<=5 failure")
+    checker = Checker(model, ltl, duration=5, c=0.5, d=0.01)
+    checker.samples = 6000
+    print checker.run_checker()
+    # for _ in range(5000):
+    #     _, path = checker.gen_random_path()
+    #     last_step = path[-1]
+    #     if (last_step.next_move.passed_time + last_step.next_move.holding_time) < DURATION and set(
+    #             ["failure"]) not in last_step.ap_set.union(*[step.ap_set for step in path[:-1]]):
+    #         print path

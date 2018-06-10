@@ -40,6 +40,7 @@ class MyLexer(object):
                  "THEN",  # -> in command statement
                  "NUMBERSIGN",  # '#'
                  "DQ",
+                 "COMM_ADD"
              ] + list(keywords.values())
 
     def t_NUM(self, t):
@@ -92,6 +93,7 @@ class MyLexer(object):
     t_THEN = r"\->"
     t_NUMBERSIGN = r"\#"
     t_DQ = r"\""
+    t_COMM_ADD = r"\+\+"
 
     def t_error(self, t):
         print "Illegal character '{}' ({}) in line {}.".format(t.value[0], hex(ord(t.value[0])), t.lexer.lineno)
@@ -119,7 +121,7 @@ def testPRISMLex():
 
 def testLexString():
     lexer = MyLexer()
-    data = "formula s3r_fail_prob = 1 - stdcdf(s3r_std_cdf_x);"
+    data = "q=q- 1"
     lexer.tokenize_string(data)
 
 # test double quotation parsing
@@ -131,5 +133,5 @@ def testDQ():
 
 if __name__ == "__main__":
     # testPRISMLex()
-    # testLexString()
-    testDQ()
+    testLexString()
+    # testDQ()

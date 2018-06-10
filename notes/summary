@@ -65,4 +65,26 @@ manager 中的实验参数设置的设计
 
 
 打包细则
-    sudo pyinstaller --clean -F PATH_TO_MANAGER.PY
+    sudo pyinstaller --clean -F PATH_TO_MAINUI.PY
+
+系统中的主要模块主要的工作逻辑
+    Director 保存用户对UI操作后的函数逻辑(map),内部调manager的函数
+    Manager 保存了checker prismparser ltlparser对象,负责模型解析接口,ltl解析接口,以及训练接口.
+        系统参数的设置逻辑 在director的option菜单函数中对manager中维护的options map做了更新。manager中的其它函数需要获取某些参数时直接从manager中的map获取即可。
+
+        ltl的解析和设置逻辑 用户输入ltl公式时，不进行任何操作，只有在用户解析train时，才对ltl进行解析，并设置到checker中。
+        关于ltl公式 checker使用的ltl公式是一个ltl解析树的层次遍历结果（list, e.g. ["U[1, 10]", "ap1", "ap2"]）。
+
+        训练逻辑
+        director中的train逻辑
+            1. ltl解析
+            首先会遍历主界面widgets，找到ltl的entry,并获取用户输入进行ltl解析操作
+
+            2. 用户输入训练参数
+            然后获取模型中不确定的参数名列表，并作为参数，提供输入界面供用户输入，输入格式为"start, step, end"形式的三元组，完成输入后将输入结果保存在manager中。
+                训练参数的保存格式多说一句 输入给manager的训练参数是一个map {param_name: [vals]} （在director中进行了转化，interval(start, step, stop)）
+
+            3. 调用manager.train方法
+
+            manager.train函数逻辑
+                

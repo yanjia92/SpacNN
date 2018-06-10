@@ -5,10 +5,8 @@ from PRISMLex import MyLexer
 from module.ModulesFile import *
 from module.Module import *
 from removeComment import clear_comment
-# from util.LogHelper import LogHelper
 from util.MathUtils import *
 from collections import defaultdict
-# import sys
 
 def bin_add(x,y):
     '''bin_add'''
@@ -42,7 +40,9 @@ class ExpressionHelper(object):
     func_map = {
         'stdcdf': pcf,
         'log': log,
-        'powe': powe
+        'powe': powe,
+        'min': min,
+        'max': max
     }
 
     @classmethod
@@ -183,7 +183,7 @@ class BasicParser(object):
         name = p[3]
         value = self.resolvetype(p[5](), p[2])
         obj = Constant(name, value)
-        ModelConstructor.model.addConstant(name, obj)
+        ModelConstructor.model.setConstant(name, obj)
         self.vcf_map[name] = obj
         # self.logger.info("Constant added: {} = {}".format(name, value))
 
@@ -350,6 +350,26 @@ class BasicParser(object):
     def p_factor3(self, p):
         '''factor : LP expr RP'''
         p[0] = p[2]
+
+    def p_factor4(self, p):
+        '''factor : NAME LP params RP'''
+        func = ExpressionHelper.func_map.get(p[1], None)
+        slice = copy.copy(p.slice)
+
+        def f():
+            params = [f() for f in slice[3].value]
+            return func(*tuple(params))
+        p[0] = f
+
+    def p_params(self, p):
+        '''params : params COMMA expr'''
+        p[1].append(p[3])
+        p[0] = p[1]
+
+    def p_params1(self, p):
+        '''params : expr'''
+        p[0] = list()
+        p[0].append(p[1]) # directly append function to list
 
     def p_boolean_expression(self, p):
         '''boolean_expression : boolean_expression AND boolean_expression_unit

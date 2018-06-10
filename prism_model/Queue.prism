@@ -1,13 +1,13 @@
+ctmc
+
 const int q_max = 20;
-
 const double rate_arrival = 1 / 0.78;
-
 const double rate_service;
 
 module Queue
-    q : [0, q_max] init 0;
-
-    [] q>=0 && q<=q_max -> "inqueue" rate_arrival : (q=min(q+1, q_max)) + "dequeue" rate_service : (q=q-1);
+q : [0, q_max] init 0;
+[] q>0&q<=q_max -> "inqueue" rate_arrival : (q=min(q+1, q_max)) + "dequeue" rate_service : (q=q- 1);
+[] q==0 -> "enqueue" rate_arrival : (q=q+1);
 endmodule
 
 label failure = q >= 2;

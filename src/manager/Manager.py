@@ -18,12 +18,6 @@ except ImportError:
     import pickle
 from compiler.LTLParser import LTLParser
 
-# def get_logger(level=logging.INFO):
-#     logger = logging.getLogger("Manager log")
-#     logger.addHandler(logging.StreamHandler(sys.stdout))
-#     logger.setLevel(level)
-#     return logger
-
 
 class Manager(object):
 
@@ -31,7 +25,8 @@ class Manager(object):
         self.manager_params = {
             "隐藏层神经元个数": 5, 
             "输出层神经元个数": 1, 
-            "训练样本取样数": 6000, 
+            "训练样本取样数": 6000,
+            "取样路径时长": 100.0,
             "学习速率": 0.05, 
             "矫正率": 0.1
         }
@@ -41,7 +36,8 @@ class Manager(object):
             "no": "输出层神经元个数",
             "samples": "训练样本取样数",
             "learning_rate": "学习速率",
-            "correct_rate": "矫正率"
+            "correct_rate": "矫正率",
+            "duration": "取样路径时长"
         }
         self.mdl_parser = ModelConstructor()
         self.model = None
@@ -67,20 +63,9 @@ class Manager(object):
     def _setup_model(self, duration=None):
         self.model.duration = duration
 
-    @deprecated
-    def set_model(self, model):
-        self.model = model
-
     def read_model_file(self, file_path):
         self.model = self.mdl_parser.parseModelFile(file_path)
-        self._setup_model(duration=ModulesFile.DEFAULT_DURATION)
         self.checker = Checker(model=self.model)
-
-    @deprecated
-    def async_gen_steps(self):
-        thd = StepGenThd(model=self.model)
-        thd.setDaemon(True)
-        thd.start()
 
     def _set_constants(self, *constants):
         '''constants: ([constant_obj])'''
@@ -92,13 +77,6 @@ class Manager(object):
         '''设置训练时需要的参数
         constant: [(name, val_list)]
         '''
-        # const_objs = []
-        # for name, val_list in constants:
-        #     constants_temp = []
-        #     for val in val_list:
-        #         constants_temp.append(Constant(name, val))
-        #     const_objs.append(constants_temp)
-        # self._set_constants(*const_objs)
         self.expr_params = constants
 
     def set_ltl(self, ltl):
@@ -149,6 +127,7 @@ class Manager(object):
         train_data_y = []
         constant_objs = self._to_constant_objs()
         self.checker.samples = self.get_manager_param("samples")
+        self._setup_model(self.get_manager_param("duration"))
         for constant_list in itertools.product(*constant_objs):
             try:
                 self._set_param(*constant_list)

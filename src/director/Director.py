@@ -58,8 +58,9 @@ class Director(object):
                         tkMessageBox.showerror("Error", "ltl 设置错误")
             # get unsure params
             params_names = self.manager.unsure_param_names()
+            # show dialog for user to input
             vals_map = self._input_unsure_params(
-                params_names)  # show dialog for user to input
+                params_names)
             self.manager.set_train_constants(*vals_map.items())
             self.manager.train_network()
             print "Train finished"

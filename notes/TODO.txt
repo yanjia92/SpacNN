@@ -5,10 +5,6 @@
 
     2. bug 设置训练数据,中途退出,依旧进行训练
 
-    3. 用其他模型做实验
-        http://www.prismmodelchecker.org/tutorial/power.php
-
-
 已完成
 如何确保expression的parsing是正确的？ 单元测试成功 testParseExpr.py
 增加label, 测试label testLabel.py单元测试成功
@@ -32,6 +28,9 @@ ltl解析
     这里的ltl解析放到用户按train的按钮时再调用
 用户输入超参数
     超参数: 取样数目 神经网络隐藏层神经元个数 学习率 矫正率
+测试checker验证CTMC的正确性(finished)
+
+
 
 不足
 目前command的update部分不允许出现boolean_expression

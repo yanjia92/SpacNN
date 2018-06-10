@@ -94,7 +94,8 @@ class ModulesFile(object):
         self.labels = dict()
         self.constants = dict()
         self.modelType = modeltype
-        self.scDict = OrderedDict()  # {sstate: [(comm, prob)]}
+        # self.scDict = OrderedDict()  # {sstate: [(comm, prob)]}
+        self.scDict = defaultdict(lambda: list())
         self.commPrepared = False
         self.stopCondition = stopCondition
         self.failureCondition = failureCondition
@@ -381,12 +382,10 @@ class ModulesFile(object):
         if len(cmd_probs) == 0:
             return self.step_without_move(key, passed_time)
         next_move = self.next_move(cmd_probs, passed_time)
-        # state_id = self.next_state_id()
         ap_set = self.tstate_apset_map[key]
-        # cur_state = State(state_id=state_id, ap_set=ap_set)
 
         # if first move is not possible
-        if int(passed_time) == 0 and next_move.holding_time > duration:
+        if abs(passed_time) < 1e-8 and next_move.holding_time > duration:
             return self.step_without_move(key, passed_time)
 
         # trim next_move.holding_time
@@ -434,17 +433,23 @@ class ModulesFile(object):
         # self.restore_system()
         # return path
 
+
+        if not self.commPrepared:
+            self.prepare_commands()
         path = []
         passed_time = 0.0
         duration = self.duration
         while passed_time < duration:
             step = self.next_step(passed_time)
             path.append(step)
-            if int(step.next_move.holding_time) == 0:
+            # considering CTMC case
+            if abs(step.next_move.holding_time) <= 1e-8:
                 # this step is the end step
                 self.restore_system()
                 return path
             step.next_move.cmd.execAction()
+            # if self.getLocalVar("q").get_value() >= 2:
+            #     print "failure found"
             passed_time += step.next_move.holding_time
         self.restore_system()
         return path
@@ -643,6 +648,7 @@ class ModulesFile(object):
     # ATTENTION: when running experiment, constant value must be set before calling this method
     def prepare_commands(self):
         '''generate enabled commands and probs for each state'''
+
         # first check whether there's a variable of system that is unbounded
         # in that case, prepare_commands can not be executed.
         if sum(map(int,
