@@ -59,7 +59,7 @@ class LTLParser(object):
 
     def p_state_statement5(self, p):
         '''state_statement : NOT state_statement'''
-        p[0] = TreeNode("!", None, p[2])
+        p[0] = TreeNode("!", p[2], None)
 
     def p_state_statement6(self, p):
         '''state_statement : path_statement'''

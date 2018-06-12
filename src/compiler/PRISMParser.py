@@ -106,6 +106,8 @@ class BasicParser(object):
         self.func_map = {
             'stdcdf': pcf
         }
+        # when parsing a command declaration, store the command sync_name in this property
+        self.comm_name = None
         # name : value storage structure for constants
         # name : func object storage structure for variables and formula
         # self.logger = logging.getLogger("BasicParser logging")
@@ -152,7 +154,10 @@ class BasicParser(object):
         '''module_def_end_statement : ENDMODULE'''
         if self.moduledefbegin:
             self.moduledefbegin = False
-            ModelConstructor.model.addModule(self.module)
+            ModelConstructor.model.add_module(self.module)
+        else:
+            # todo throw syntax error message
+            pass
 
     def p_const_expression(self, p):
         '''const_value_statement : CONST INT NAME ASSIGN NUM SEMICOLON
@@ -200,36 +205,47 @@ class BasicParser(object):
         # self.logger.info("Variable_{} added to Module_{}. init={}, range=[{}, {}]".format(var.get_name(), str(self.module), var.initVal, var.valRange[0], var.valRange[-1]))
 
     def p_module_command_statement(self, p):
-        '''module_command_statement : LB RB boolean_expression THEN updates SEMICOLON'''
-        # self.logger.info("command.tokens : {}".format(p.slice))
+        '''module_command_statement : LB NAME RB boolean_expression THEN updates SEMICOLON'''
+        sync_name = p[2]
+        commands = p[6]
+        for comm in commands:
+            comm.name = sync_name
+            self.module.addCommand(comm)
 
     def p_updates(self, p):
         '''updates : updates ADD prob_update'''
-        pass
+        p[0] = list()
+        p[1].append(p[3])
+        p[0].extend(p[1])
 
     def p_updates1(self, p):
         '''updates : prob_update'''
-        pass
+        p[0] = list()
+        p[0].append(p[1])
 
     def p_prob_update(self, p):
-        '''prob_update : DQ NAME DQ expr COLON actions'''
-        prob = p[4]  # prob_expr is a function
-        action = p[6]  # actions is a dict
-        name = copy.copy(p[2])
-        command = Command(name, self.guard, action, self.module, prob)
-        self.module.addCommand(command)
-        # self.logger.info("Command_{} added.".format(name))
+        '''prob_update : expr COLON actions'''
+        prob = p[1]  # prob_expr is a function
+        actions = p[3]  # actions is a dict
+        command = Command("", self.guard, actions, self.module, prob)
+        p[0] = command
+
+    def p_prob_update1(self, p):
+        '''prob_update : actions'''
+        prob = lambda : 1.0 # in CTMC, a prob can be default(not written) equals 1(it must be callable)
+        actions = p[1]
+        command = Command("", self.guard, actions, self.module, prob)
+        p[0] = command
+
+    def p_prob_update2(self, p):
+        '''prob_update : TRUE'''
+        prob = lambda : 1.0
+        actions = dict()
+        command = Command("", self.guard, actions, self.module, prob)
+        p[0] = command
 
     def p_actions(self, p):
         '''actions : actions AND assignment'''
-        # f1 = p[1]
-        # f2 = p[3]
-        #
-        # def f(vs, cs):
-        #     f1(vs, cs)
-        #     f2(vs, cs)
-
-        # p[0] = f
         tokens = copy.copy(p.slice)
         action1 = tokens[1].value  # dict
         action2 = tokens[3].value   # dict
@@ -241,30 +257,18 @@ class BasicParser(object):
         p[0] = p[1]  # a assignment is a function that udpate the variable in model.localVars
 
     def p_assignment(self, p):
-        '''assignment : NAME ASSIGN expr'''
-        update_func = copy.deepcopy(p[3])
+        '''assignment : NAME QUOTE ASSIGN expr'''
+        update_func = copy.deepcopy(p[4])
         var_name = copy.copy(p[1])
-
-        # def f(vs, cs):
-        #     var = vs[var_name]
-        #     if not var or not isinstance(var, Variable):
-        #         raise Exception("invalid variable name")
-        #     var.set_value(update_func())
 
         p[0] = {self.vcf_map[var_name]: update_func}
 
     def p_assignment1(self, p):
-        '''assignment : LP NAME ASSIGN expr RP'''
-        update_func = copy.copy(p[4])
-        key = p[2]
+        '''assignment : LP NAME QUOTE ASSIGN expr RP'''
+        update_func = copy.copy(p[5])
+        var_name = p[2]
 
-        # def f(vs, cs):
-        #     var = vs[key]
-        #     # if not var or not isinstance(var, Variable):
-        #     #     raise Exception("invalid variable name: {}".format(key))
-        #     var.set_value(update_func())
-
-        p[0] = {self.vcf_map[key]: update_func}
+        p[0] = {self.vcf_map[var_name]: update_func}
 
     def p_expr(self, p):
         '''expr : expr ADD term
@@ -464,6 +468,14 @@ class BasicParser(object):
             return inner
 
         p[0] = f(tokens)
+
+    def p_boolean_expression_unit2(self, p):
+        '''boolean_expression_unit : TRUE'''
+        p[0] = lambda vs, cs: True
+
+    def p_boolean_expression_unit3(self, p):
+        '''boolean_expression_unit : FALSE'''
+        p[0] = lambda vs, cs: False
 
     def p_formula_statement(self, p):
         '''formula_statement : FORMULA NAME ASSIGN expr SEMICOLON'''

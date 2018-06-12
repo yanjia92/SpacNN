@@ -93,8 +93,7 @@ class ModulesFile(object):
         self.localVars = OrderedDict()
         self.labels = dict()
         self.constants = dict()
-        self.modelType = modeltype
-        # self.scDict = OrderedDict()  # {sstate: [(comm, prob)]}
+        self.model_type = modeltype
         self.scDict = defaultdict(lambda: list())
         self.commPrepared = False
         self.stopCondition = stopCondition
@@ -140,16 +139,15 @@ class ModulesFile(object):
     def init(self, modules, labels):
         if modules:
             for module in modules:
-                self.addModule(module)
+                self.add_module(module)
         if labels:
             for name, label in labels.items():
                 self.addLabel(name, label)
             self._fillInStates()
 
     # module: module instance
-    def addModule(self, module):
+    def add_module(self, module):
         if module is None:
-            # raise Exception("module cannot be None")
             return
         self.modules[module.name] = module
         # add variables
@@ -164,9 +162,14 @@ class ModulesFile(object):
         # add constants
         self.constants.update(module.constants)
         module.modulesFile = self
-        for _, comm in module.allCommands().items():
-            comm.vs = self.localVars
-            comm.cs = self.constants
+        for _, comms in module.allCommands().items():
+            if isinstance(comms, list):
+                for comm in comms:
+                    comm.vs = self.localVars
+                    comm.cs = self.constants
+            else:
+                comms.vs = self.localVars
+                comms.cs = self.constants
 
     def getModuleByName(self, name):
         if name in self.modules.keys():
@@ -281,7 +284,7 @@ class ModulesFile(object):
                     holdingTime = MathUtils.randomExpo(
                         exitRate, t=duration)
                 else:
-                    if self.modelType == ModelType.CTMC:
+                    if self.model_type == ModelType.CTMC:
                         holdingTime = MathUtils.randomExpo(exitRate)
                     else:
                         holdingTime = 1
@@ -318,16 +321,37 @@ class ModulesFile(object):
             holding_time = MathUtils.randomExpo(
                 exit_rate, t=duration)
         else:
-            if self.modelType == ModelType.CTMC:
+            if self.model_type == ModelType.CTMC:
                 holding_time = MathUtils.randomExpo(exit_rate)
             else:
                 holding_time = 1
         return holding_time
 
+    def _sync_commmands(self, cmd_probs):
+        '''将同名的commands进行合并,并将rates相乘'''
+        cmd_map = defaultdict(list)
+        for cmd_prob in cmd_probs:
+            cmd_map[cmd_prob[0].name].append(cmd_prob)
+
+        def f(v1, v2):
+            cmd1, prob1 = v1
+            cmd2, prob2 = v2
+            cmd1.action.update(cmd2.action)
+            prob1 *= prob2
+            return (tuple([cmd1, prob1]))
+
+        # reduce
+        for name, cmd_prob_list in cmd_map.items():
+            cmd_prob = reduce(f, cmd_prob_list)
+            cmd_map[name] = cmd_prob
+        return cmd_map.values()
+
     # @profileit(get_log_dir() + get_sep() + "next_move")
     def next_move(self, cmd_probs, time_passed):
         rnd_num = random.random()
         prob_sum = 0
+
+        cmd_probs = self._sync_commmands(cmd_probs)
 
         cmds = [v[0] for v in cmd_probs]
         probs = [v[1] for v in cmd_probs]
@@ -396,44 +420,7 @@ class ModulesFile(object):
 
     # @profileit(get_log_dir() + get_sep() + "pathgenV2")
     def get_random_path_V2(self):
-        '''return path: [Step]'''
-        # 思路：
-        # get key of current local vars as key
-        # loop until duration met:
-        #     get enabled commands
-        #     if no enabled commands found:
-        #          append empty step to path and restore_system
-        #          return path
-        #     generate next move info
-        #     generate cur state info
-        #     construct the step instance
-        #     if first move is not possible(holding_time > duration):
-        #           add empty step to path and restore_system and return
-        #     timesum += holdingtime
-        #     if timesum > duration:
-        #           trim holdingtime to (duration - timesum)
-        #     path.append(step)
-        #     next_move.cmd.action()
-
-        # use generator
-        # path = []
-        # duration = self.duration
-        # if len(self.scDict) == 0:
-        #     logger.error("Unbounded variables not supported!")
-        #     return None
-        # # step = self.steps_queue.get()  # async
-        # generator = self.gen_next_step(passed_time=0.0)
-        # step = next(generator)
-        # path.append(step)
-        # while int(
-        #         step.next_move.holding_time) != 0 and int(step.next_move.passed_time) + int(step.next_move.holding_time) < duration:
-        #     step.next_move.cmd.execAction()
-        #     step = next(generator)
-        #     path.append(step)
-        # self.restore_system()
-        # return path
-
-
+        ''':return [Step]'''
         if not self.commPrepared:
             self.prepare_commands()
         path = []
@@ -448,8 +435,6 @@ class ModulesFile(object):
                 self.restore_system()
                 return path
             step.next_move.cmd.execAction()
-            # if self.getLocalVar("q").get_value() >= 2:
-            #     print "failure found"
             passed_time += step.next_move.holding_time
         self.restore_system()
         return path
@@ -661,19 +646,20 @@ class ModulesFile(object):
                 self.localVars[v.get_name()].set_value(v.get_value())
             cmd_probs = list()  # [(cmd, prob)]
             for _, module in self.modules.items():
-                for _, command in module.commands.items():
-                    if command.evalGuard():
-                        # make a copy of Command instance
-                        # in failure biasing situation when command's rate
-                        # needs to be modified.
-                        p = None
-                        if callable(command.prob):
-                            p = command.prob()
-                        if p is None:
-                            msg = traceback.format_exc()
-                            # logger.error("command's prob must be callable")
-                            # logger.error(msg)
-                        cmd_probs.append((copy.copy(command), p))
+                for _, commands in module.commands.items():
+                    for command in commands:
+                        if command.evalGuard():
+                            # make a copy of Command instance
+                            # in failure biasing situation when command's rate
+                            # needs to be modified.
+                            p = None
+                            if callable(command.prob):
+                                p = command.prob()
+                            if p is None:
+                                msg = traceback.format_exc()
+                                # logger.error("command's prob must be callable")
+                                # logger.error(msg)
+                            cmd_probs.append((copy.copy(command), p))
             key = tuple([v.value for v in self.localVarsList])
             # sort cmd_probs by prob desc to accerate speed of
             # ModulesFile@nextState
@@ -813,6 +799,7 @@ class ModulesFile(object):
         comms = self.scDict[key]
         return sum(map(lambda comm: comm.prob, comms))
 
+    @deprecated
     def updateconstant(self):
         # 当self.constants进行更新时,更新每个command中的constants
         for _, module in self.modules.items():

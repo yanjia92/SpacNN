@@ -18,9 +18,9 @@ def test():
     day_vals = range(1, 311, 50)
     logger.info("day_vals = {}".format(day_vals))
     sb_module = built.getModuleByName("SB")
-    sb_fail_cmd = sb_module.getCommand("sb_fail_cmd")
+    sb_fail_cmd = sb_module.get_commands_with_name("sb_fail_cmd")
     s3r_module = built.getModuleByName("S3R")
-    s3r_fail_cmd = s3r_module.getCommand("s3r_fail_cmd")
+    s3r_fail_cmd = s3r_module.get_commands_with_name("s3r_fail_cmd")
     for day_val in day_vals:
         built.setVariable("day", day_val)
         sb_fail_prob = sb_fail_cmd.prob()/4.0

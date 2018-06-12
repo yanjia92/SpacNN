@@ -40,7 +40,8 @@ class MyLexer(object):
                  "THEN",  # -> in command statement
                  "NUMBERSIGN",  # '#'
                  "DQ",
-                 "COMM_ADD"
+                 "COMM_ADD",
+                 "VAL_SEP", # ..
              ] + list(keywords.values())
 
     def t_NUM(self, t):
@@ -94,6 +95,7 @@ class MyLexer(object):
     t_NUMBERSIGN = r"\#"
     t_DQ = r"\""
     t_COMM_ADD = r"\+\+"
+    t_VAL_SEP = r"\.\."
 
     def t_error(self, t):
         print "Illegal character '{}' ({}) in line {}.".format(t.value[0], hex(ord(t.value[0])), t.lexer.lineno)

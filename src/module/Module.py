@@ -3,6 +3,8 @@ import logging
 logging.basicConfig(level=logging.DEBUG)
 from collections import OrderedDict
 import copy
+from collections import defaultdict
+from util.AnnotationHelper import *
 
 # class represents a DTMC/CTMC module in PRISM
 
@@ -10,9 +12,7 @@ class Module(object):
     # name: module name
     def __init__(self, name):
         self.name = name
-        # TODO change to commName and comms implemention because commands may
-        # have same name
-        self.commands = OrderedDict()
+        self.commands = defaultdict(list)
         self.variables = OrderedDict()
         self.constants = dict()
         self.modulesFile = None
@@ -27,23 +27,16 @@ class Module(object):
         self.variables.pop(varname)
 
     def addCommand(self, command):
-        self.commands[command.name] = command
+        self.commands[command.name].append(command)
         command.module = self
 
-    def removeCommand(self, name):
-        if not self.commands.has_key(name):
-            # todo throws null pointer exception
-            return
-        return self.commands.pop(name)
-
-    def getCommand(self, name):
+    def get_commands_with_name(self, name):
+        ''':return a list contains commands with same name'''
         if name not in self.commands.keys():
-            # todo throws null pointer exception
             return
-        return self.commands.get(name)
+        return self.commands[name]
 
     def allCommands(self):
-        # return a OrderedDict with the command name as key and command as value
         return self.commands
 
     # a value is not needed when executing an do_expe over this constant

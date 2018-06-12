@@ -88,3 +88,15 @@ manager 中的实验参数设置的设计
 
             manager.train函数逻辑
                 
+
+
+关于如何实现sync command
+    1. 关于command书写的语法参照prism语言的写法,允许command带上action_name,并且允许同一个module中包含同名command.
+       为了实现这一点,module中保存commands的数据结构从OrderedDict改为defaultdict(list),即将同名commands存在一个数组中.
+    2. 更改了这一点而后,哪些地方需要进行修改?
+        ModulesFile
+            add_module
+
+
+关于何时使用OrderedDict
+    ModulesFile.localVars 需要使用变量的值组成的tuple作为scDict等结构的key,所以需要确保每次遍历的顺序一致.
