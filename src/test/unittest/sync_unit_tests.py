@@ -13,7 +13,8 @@ from checker.Checker import Checker
 
 logger = logging.getLogger("syncunittest_logging")
 logger.setLevel(logging.INFO)
-logger.addHandler(logging.StreamHandler(sys.stdout))
+# logger.addHandler(logging.StreamHandler(sys.stdout))
+logger.addHandler(logging.FileHandler(get_log_dir() + get_sep() + "paths.log"))
 
 class TestSyncCommands(unittest.TestCase):
 
@@ -33,6 +34,25 @@ class TestSyncCommands(unittest.TestCase):
                 else:
                     logger.info("comm {} from module {}".format(comm.name, module.name))
 
+    def test_gen_path(self):
+        # 测试生成路径的正确性
+        # 生成的路径要么总长为duration,要么出现failure
+
+        # 结果:虽然测试通过,但是验证结果仍旧不同于PRISM(低于)
+
+        failure_cnt = 0
+        for _ in range(100):
+            self.model.duration = 10
+            path = self.model.get_random_path_V2()
+            for step in path:
+                logger.info(step)
+            logger.info("----------------")
+            passed_time = path[-1].next_move.passed_time + path[-1].next_move.holding_time
+            if set(["failure"]) in [step.ap_set for step in path]:
+                failure_cnt += 1
+                continue
+            self.assertTrue(int(passed_time) >= 10)
+        print "failure_cnt={}".format(failure_cnt)
 
     def test_checking(self):
         # 测试模型检测的成功,从而检测模型解析和SMC算法的正确性

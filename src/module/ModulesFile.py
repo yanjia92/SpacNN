@@ -128,6 +128,8 @@ class ModulesFile(object):
         self.steps_queue = Queue.Queue(maxsize=STEPS_QUEUE_MAX_SIZE)
         self.STEPS_QUEUE_MAX_SIZE = STEPS_QUEUE_MAX_SIZE
 
+        self.command_synced = False
+
     def init_queue(self):
         # why here using list is thread-safe?
         # first, there's only consumer and producer.
@@ -145,31 +147,54 @@ class ModulesFile(object):
                 self.addLabel(name, label)
             self._fillInStates()
 
+    @deprecated
+    def _sync_two_commands(self, cmds1, cmds2):
+        # cmds1, cmds2是两个同名commands 两个列表
+        # sync操作需要将少的commands中的cmd的action和guard合并到多的list中去
+        # 假设cmds1的长度小于cmds2
+        assert len(cmds1) == 1 and len(cmds2) >= 1
+        cmd1 = cmds1[0]
+        for cmd in cmds2:
+            copied_cmd_guard = copy.copy(cmd.guard)
+            def guard(vs, cs):
+                return cmd1.guard(vs, cs) and copied_cmd_guard(vs, cs)
+            cmd.guard = guard
+            cmd.action.update(cmd1.action)
+            assert callable(cmd.prob)
+            copied_prob = copy.copy(cmd.prob)
+            def prob():
+                return copied_prob() * cmd1.prob()
+            cmd.prob = prob
+
     # module: module instance
-    def add_module(self, module):
-        if module is None:
+    def add_module(self, added_mod):
+        if added_mod is None:
             return
-        self.modules[module.name] = module
+
         # add variables
-        for k, v in module.variables.items():
+        for k, v in added_mod.variables.items():
             self.localVars[k] = v
             if hasattr(
                     self, "localVarsList") and v not in set(
                     self.localVarsList):
                 self.localVarsList.append(v)
-        for k, v in module.variables.items():
+        for k, v in added_mod.variables.items():
             self.initLocalVars[k] = copy.copy(v)
+
         # add constants
-        self.constants.update(module.constants)
-        module.modulesFile = self
-        for _, comms in module.allCommands().items():
-            if isinstance(comms, list):
-                for comm in comms:
-                    comm.vs = self.localVars
-                    comm.cs = self.constants
-            else:
-                comms.vs = self.localVars
-                comms.cs = self.constants
+        self.constants.update(added_mod.constants)
+        added_mod.modulesFile = self
+
+        # add vs,cs to cmds
+        for _, cmds in added_mod.allCommands().items():
+            if not isinstance(cmds, list):
+                # todo add system-level logger
+                print "command stored in module must be list"
+            for comm in cmds:
+                comm.vs = self.localVars
+                comm.cs = self.constants
+
+        self.modules[added_mod.name] = added_mod
 
     def getModuleByName(self, name):
         if name in self.modules.keys():
@@ -327,11 +352,14 @@ class ModulesFile(object):
                 holding_time = 1
         return holding_time
 
+    @deprecated
     def _sync_commmands(self, cmd_probs):
         '''将同名的commands进行合并,并将rates相乘'''
         cmd_map = defaultdict(list)
-        for cmd_prob in cmd_probs:
-            cmd_map[cmd_prob[0].name].append(cmd_prob)
+        for cmd, prob in cmd_probs:
+            copied_cmd = copy.copy(cmd)
+            copied_cmd.action = copy.copy(cmd.action)
+            cmd_map[copied_cmd.name].append((copied_cmd, prob))
 
         def f(v1, v2):
             cmd1, prob1 = v1
@@ -351,7 +379,7 @@ class ModulesFile(object):
         rnd_num = random.random()
         prob_sum = 0
 
-        cmd_probs = self._sync_commmands(cmd_probs)
+        # cmd_probs = self._sync_commmands(cmd_probs)
 
         cmds = [v[0] for v in cmd_probs]
         probs = [v[1] for v in cmd_probs]

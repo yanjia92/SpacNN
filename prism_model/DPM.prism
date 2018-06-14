@@ -23,6 +23,9 @@ module SQ
     q : [0..q_max] init 0;
     
     // A request arrives
+    // LP NAME RP boolean_expression THEN updates SEMICOLON
+    // updates : updates add prob_update
+    // update : expr COLON actions
     [request] true -> rate_arrive : (q'=min(q+1,q_max));
     // A request is served
     [serve] q>1 -> (q'=q-1);
@@ -71,30 +74,3 @@ module SP
     [serve_last] sp=2 -> rate_serve : (sp'=1); 
     
 endmodule
-
-//-----------------------------------------------------
-
-// Power Manager (PM)
-// Controls power state of service provider
-// (this is done via synchronisation on idle2sleep/sleep2idle actions)
-
-// Bound on queue size, above which sleep2idle command is sent
-const int q_trigger=3;
-
-module PM
-    
-    // Send sleep2idle command to SP (when queue is of size q_trigger or greater)
-    [sleep2idle] q>=q_trigger -> true;
-    
-    // Send idle2sleep command to SP (when queue is empty)
-    [idle2sleep] q=0 -> true;
-    
-endmodule
-
-//-----------------------------------------------------
-
-// Reward structures
-
-rewards "queue_size"
-    true : q;
-endrewards

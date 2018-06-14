@@ -13,45 +13,16 @@ class Step(object):
         self.next_move = next_move
         self.ap_set = ap_set
 
-    # def init(
-    #         self,
-    #         state_id,
-    #         ap_set,
-    #         holding_time,
-    #         passed_time,
-    #         transition,
-    #         rate,
-    #         biasing_rate,
-    #         exit_rate,
-    #         biasing_exit_rate):
-    #     self.state_id = state_id
-    #     # current state's apSet of State before transition happen
-    #     self.apSet = ap_set
-    #     # time duration before transfer to next state
-    #     self.holdingTime = holding_time
-    #     # time(steps) passed before entering current state
-    #     self.passedTime = passed_time
-    #     # transition name to be taken
-    #     self.transition = transition
-    #     # original rate of the chosen transition
-    #     # used to compute the likelihood ratio of original distribution and the
-    #     # biased distribution
-    #     self.rate = rate
-    #     self.exitRate = exit_rate
-    #     # biasing rate(probability of DTMC actually)
-    #     # by failure biasing methods, such as SFB, BFB, ...
-    #     self.biasingRate = biasing_rate
-    #     self.biasingExitRate = biasing_exit_rate
-
     def __str__(self):
-        return str(self.ap_set)
+        return self.__repr__()
 
     def __repr__(self):
-        if not hasattr(self.prob, '__call__'):
-            return 'Step:(ap={}, command={}, prob={})'.format(
-                str(self.ap_set), self.name, self.prob)
-        return 'Step:(ap={}, command={}, prob={})'.format(
-            str(self.ap_set), self.name, self.prob())
+        # if not hasattr(self.prob, '__call__'):
+        #     return 'Step:(ap={}, command={}, prob={})'.format(
+        #         str(self.ap_set), self.name, self.prob)
+        # return 'Step:(ap={}, command={}, prob={})'.format(
+        #     str(self.ap_set), self.name, self.prob())
+        return "{} of module_{}, action={}".format(self.name, self.cmd.module, [var.name for var in self.cmd.action.keys()])
 
     def __getattr__(self, item):
         # owner = self.map[item]

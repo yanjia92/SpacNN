@@ -97,6 +97,17 @@ manager 中的实验参数设置的设计
         ModulesFile
             add_module
 
+    3. sync的实现
+        1. 不同模块之间的同名command要么全部执行,要么全部不执行
+        2. 同个模块内部的同名command不进行merge
+        设计
+            在每次将module添加到ModulesFile的时候进行merge(也符合数据库进行join的实现)
+            实际上就是一个join操作.
+
 
 关于何时使用OrderedDict
     ModulesFile.localVars 需要使用变量的值组成的tuple作为scDict等结构的key,所以需要确保每次遍历的顺序一致.
+
+actions是如何保存的?
+一个actions对应var = expr & var1 = expr1
+底层存储使用字典,key为var, value为function

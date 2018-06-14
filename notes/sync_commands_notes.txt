@@ -1,0 +1,28 @@
+sync commands设计文档
+====================
+
+
+0. 具体sync的策略是什么?
+1. command在Module中的存储
+2. 如何实现?
+
+
+0. sync的策略
+sync的策略不是guard全做and合并,action全合并,而是在任意一个cmd执行的时候
+需要判断其他模块的同名cmds,如果条件满足,则也要执行.
+并且,执行的rate是所有不同模块间同名cmds的乘积.
+
+
+1. command在Module中的存储
+    在同一个Module中，允许存在同名的 command，所以在 Module中使用 defaultdict(list)对 commands 进行存储。
+
+
+2. 如何实现?
+    2.1 几点假设
+        2.1.1 同一个module内部的同名cmds在任何一个状态下均不可能同时满足guard
+            这样可以确保在进行了prepare_commands之后,得到的同名cmds全是来自于不同modules
+
+    2.2 实现
+        在生成[0,1]之间的随机数从而判断运行哪个cmd之前应该已经做好了同名cmds的合并,并且要将prob相乘
+        执行的cmd_probs应该是这样的结构:([cmds_with_same_name],merged_prob)
+        根据随机数挑选执行的cmd的逻辑不变,只是现在每个cmds都是一个list,并且选中后要依次对每个cmd进行guard的判断,满足的化则要进行action的执行.

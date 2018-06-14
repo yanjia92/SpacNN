@@ -116,11 +116,6 @@ class Command(object):
     def execAction(self):
         for var, update_func in self.action.items():
             var.value = update_func()
-        # self.action(self.vs, self.cs)
-        # if 'vs' in dir(self) and 'cs' in dir(self):
-        #     self.action(self.vs, self.cs)
-        # else:
-        #     logging.info('vs,cs not exist in Module %s' % self.module.name)
 
     def __str__(self):
         return 'comm %s of module %s' % (self.name, self.module.name)
