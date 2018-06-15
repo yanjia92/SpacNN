@@ -22,15 +22,15 @@ class Step(object):
         #         str(self.ap_set), self.name, self.prob)
         # return 'Step:(ap={}, command={}, prob={})'.format(
         #     str(self.ap_set), self.name, self.prob())
-        return "{} of module_{}, action={}".format(self.name, self.cmd.module, [var.name for var in self.cmd.action.keys()])
+        return "{} of module_{}, action={}".format(self.name, self.cmds[0].module, [var.name for var in self.cmds[0].action.keys()])
 
     def __getattr__(self, item):
         # owner = self.map[item]
         # return object.__getattribute__(owner, item)
         if item in self.next_move._fields:
             return getattr(self.next_move, item)
-        if self.next_move.cmd is not None and item in self.next_move.cmd.__dict__.keys():
-            return self.next_move.cmd.__dict__[item]
+        if self.next_move.cmds is not None and item in self.next_move.cmds[0].__dict__.keys():
+            return self.next_move.cmds[0].__dict__[item]
 
     def asKey(self):
         lAPSet = sorted(list(self.ap_set))

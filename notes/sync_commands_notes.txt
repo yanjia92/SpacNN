@@ -8,13 +8,22 @@ sync commands设计文档
 
 
 0. sync的策略
+'''
 sync的策略不是guard全做and合并,action全合并,而是在任意一个cmd执行的时候
 需要判断其他模块的同名cmds,如果条件满足,则也要执行.
 并且,执行的rate是所有不同模块间同名cmds的乘积.
-
+所以,执行sync的步骤是:
+1. 在prepare_commands中得出每一状态下的所有满足其guard的commands后,将同名的commands进行合并,具体的说就是
+    1.1 将同名cmds合为一个list
+    1.2 将对应的prob进行相乘并作为list当中所有的cmds执行的rate.
 
 1. command在Module中的存储
     在同一个Module中，允许存在同名的 command，所以在 Module中使用 defaultdict(list)对 commands 进行存储。
+'''
+根据在PRISM中进行simulate的结果可以看到,sync commands要么全部执行,要么全部不执行.
+所以,sync的策略应该是:
+1. 不同模块同名commands guard合并,action合并.
+2. 合并的实现 在添加module的时候,和已有的模块的同名commands进行合并. 并且是少的合并到多的.
 
 
 2. 如何实现?

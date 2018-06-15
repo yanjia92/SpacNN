@@ -152,6 +152,7 @@ class ModulesFile(object):
         # cmds1, cmds2是两个同名commands 两个列表
         # sync操作需要将少的commands中的cmd的action和guard合并到多的list中去
         # 假设cmds1的长度小于cmds2
+        # 更新guard action prob
         assert len(cmds1) == 1 and len(cmds2) >= 1
         cmd1 = cmds1[0]
         for cmd in cmds2:
@@ -194,7 +195,23 @@ class ModulesFile(object):
                 comm.vs = self.localVars
                 comm.cs = self.constants
 
+        if len(self.modules) == 0:
+            return
+        for added_cmds in added_mod.allCommands().values():
+            name = added_cmds[0].name
+            for mod in self.modules.values():
+                if not name in mod.allCommands().keys():
+                    continue
+                cmds = mod.allCommands()[name]
+                if len(added_cmds) == 1 and len(cmds) >= 1:
+                    self._sync_two_commands(added_cmds, cmds)
+                    added_mod.allCommands().clear()
+                elif len(cmds) == 1 and len(added_cmds) >= 1:
+                    self._sync_two_commands(cmds, added_cmds)
+                    mod.allCommands().clear()
+
         self.modules[added_mod.name] = added_mod
+
 
     def getModuleByName(self, name):
         if name in self.modules.keys():
@@ -376,12 +393,12 @@ class ModulesFile(object):
 
     # @profileit(get_log_dir() + get_sep() + "next_move")
     def next_move(self, cmd_probs, time_passed):
+        # cmd_probs: [(cmds, sync_prob)]
+        # 所有的cmds的guard均满足,故无需判断
         rnd_num = random.random()
         prob_sum = 0
 
-        # cmd_probs = self._sync_commmands(cmd_probs)
-
-        cmds = [v[0] for v in cmd_probs]
+        cmds_list = [v[0] for v in cmd_probs] # list of list
         probs = [v[1] for v in cmd_probs]
         exit_rate = sum(probs)
         actual_probs = [p/exit_rate for p in probs]
@@ -395,13 +412,13 @@ class ModulesFile(object):
         for i, p in enumerate(actual_probs):
             prob_sum += p
             if prob_sum >= rnd_num:
-                chosen_cmd = cmds[i]
+                chosen_cmds = cmds_list[i]
                 holding_time = self.gen_holding_time(
                     exit_rate, self.duration - time_passed, int(time_passed) == 0)
                 return NextMove(
                     passed_time=time_passed,
                     holding_time=holding_time,
-                    cmd=chosen_cmd,
+                    cmds=chosen_cmds,
                     exit_rate=exit_rate,
                     biasing_exit_rate=biasing_exit_rate)
 
@@ -462,7 +479,9 @@ class ModulesFile(object):
                 # this step is the end step
                 self.restore_system()
                 return path
-            step.next_move.cmd.execAction()
+            assert isinstance(step.next_move.cmds, list)
+            for cmd in step.next_move.cmds:
+                cmd.execAction()
             passed_time += step.next_move.holding_time
         self.restore_system()
         return path
@@ -662,8 +681,7 @@ class ModulesFile(object):
     def prepare_commands(self):
         '''generate enabled commands and probs for each state'''
 
-        # first check whether there's a variable of system that is unbounded
-        # in that case, prepare_commands can not be executed.
+        # none of the variables can be unbounded.
         if sum(map(int,
                    map(lambda __var: not __var[1].bounded,
                        self.localVars.items()))):
@@ -672,7 +690,7 @@ class ModulesFile(object):
                 *[v.allVarsList() for _, v in self.localVars.items()]):
             for v in vsList:
                 self.localVars[v.get_name()].set_value(v.get_value())
-            cmd_probs = list()  # [(cmd, prob)]
+            cmd_probs = defaultdict(list)
             for _, module in self.modules.items():
                 for _, commands in module.commands.items():
                     for command in commands:
@@ -684,15 +702,21 @@ class ModulesFile(object):
                             if callable(command.prob):
                                 p = command.prob()
                             if p is None:
-                                msg = traceback.format_exc()
-                                # logger.error("command's prob must be callable")
-                                # logger.error(msg)
-                            cmd_probs.append((copy.copy(command), p))
+                                # todo call system-level logger
+                                print "prob must be a function, cmd: {}".format(command)
+
+                            cmd_probs[command.name].append((copy.copy(command), p))
             key = tuple([v.value for v in self.localVarsList])
             # sort cmd_probs by prob desc to accerate speed of
             # ModulesFile@nextState
-            cmd_probs.sort(key=lambda t: t[1], reverse=True)
-            self.scDict[key] = cmd_probs
+            # cmd_probs.sort(key=lambda t: t[1], reverse=True)
+
+            # sync name-same cmds
+            # for name, cmd_prob_tuples in cmd_probs.items():
+            #     cmds = [cmd_prob_tuple[0] for cmd_prob_tuple in cmd_prob_tuples]
+            #     sync_prob = reduce(lambda v1, v2: v1 * v2, [t[1] for t in cmd_prob_tuples])
+            #     cmd_probs[name] = (cmds, sync_prob)
+            # self.scDict[key] = cmd_probs.values()
 
             vs = self.localVars
             cs = self.constants
