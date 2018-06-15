@@ -49,7 +49,7 @@ module PM
     [sleep2idle] q>=q_trigger -> true;
 
     // Send idle2sleep command to SP (when queue is empty)
-    [idle2sleep] q=0 -> true;
+    [idle2sleep] q==0 -> true;
 
 endmodule
 

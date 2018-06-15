@@ -1,16 +1,17 @@
 from collections import namedtuple
+from module.Module import Command
 
 fileds = [
     "passed_time",
     "holding_time",
-    "cmds",
+    "cmd",
     "exit_rate",
     "biasing_exit_rate"
 ]
 
 NextMove = namedtuple("NextMove", fileds)
 # allow default value for NextMove
-NextMove.__new__.__defaults__ = (None, 0.0, list(), 0.0, 0.0)
+NextMove.__new__.__defaults__ = (None, 0.0, None, 0.0, 0.0)
 
 
 def test():

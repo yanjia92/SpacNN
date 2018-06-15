@@ -41,7 +41,6 @@ sp : [0, 2] init 0;
 
 endmodule
 
-
 const int q_trigger=3;
 
 module PM

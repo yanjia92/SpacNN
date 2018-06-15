@@ -70,6 +70,11 @@ class Module(object):
 class CommandKind:
     FAILURE, REPAIR, NONE = range(3)
 
+class Commands(object):
+
+    @staticmethod
+    def none_command():
+        return Command()
 
 class Command(object):
     # name: name of the command

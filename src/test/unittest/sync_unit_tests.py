@@ -39,26 +39,24 @@ class TestSyncCommands(unittest.TestCase):
         # 生成的路径要么总长为duration,要么出现failure
 
         # 结果:虽然测试通过,但是验证结果仍旧不同于PRISM(低于)
+        failure_cnt = 0
 
-        failure = False
-        while not failure:
-            for _ in range(5000):
-                failure_cnt = 0
-                self.model.duration = 10
-                path = self.model.get_random_path_V2()
+        for _ in range(5000):
+            self.model.duration = 10
+            path = self.model.get_random_path_V2()
+            for step in path:
+                logger.info(step)
+            logger.info("----------------")
+            passed_time = path[-1].next_move.passed_time + path[-1].next_move.holding_time
+            if set(["failure"]) in [step.ap_set for step in path]:
+                failure_cnt += 1
+                continue
+            if int(passed_time) < 10:
+                failure = True
                 for step in path:
-                    logger.info(step)
-                logger.info("----------------")
-                passed_time = path[-1].next_move.passed_time + path[-1].next_move.holding_time
-                if set(["failure"]) in [step.ap_set for step in path]:
-                    failure_cnt += 1
-                    continue
-                if int(passed_time) < 10:
-                    failure = True
-                    for step in path:
-                        logger.error(step)
-                    logger.error("-------------")
-            print "failure_cnt={}".format(failure_cnt)
+                    logger.error(step)
+                logger.error("-------------")
+        print "failure_cnt={}".format(failure_cnt)
 
     def test_checking(self):
         # 测试模型检测的成功,从而检测模型解析和SMC算法的正确性
