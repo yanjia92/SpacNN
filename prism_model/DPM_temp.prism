@@ -1,0 +1,56 @@
+ctmc
+
+const int q_max = 20;
+
+const double rate_arrive = 1/0.72;
+
+module SQ
+
+q : [0, q_max] init 0;
+
+[request] true -> rate_arrive : (q'=min(q+1,q_max));
+
+[serve] q>1 -> (q'=q- 1);
+
+[serve_last] q==1 -> (q'=q- 1);
+
+endmodule
+
+const double rate_serve = 1/0.008;
+
+const double rate_s2i = 1/1.6;
+
+const double rate_i2s = 1/0.67;
+
+module SP
+
+sp : [0, 2] init 0;
+
+[sleep2idle] sp==0 & q==0 -> rate_s2i : (sp'=1);
+[sleep2idle] sp==0 & q>0 -> rate_s2i : (sp'=2);
+
+[idle2sleep] sp==1 -> rate_i2s : (sp'=0);
+
+
+[request] sp==1  -> (sp'=2);
+
+[request] sp!=1 -> (sp'=sp);
+
+[serve]      sp==2 -> rate_serve : (sp'=2);
+[serve_last] sp==2 -> rate_serve : (sp'=1);
+
+endmodule
+
+
+const int q_trigger=3;
+
+module PM
+
+[sleep2idle] q>=q_trigger -> true;
+
+[idle2sleep] q==0 -> true;
+
+endmodule
+
+label failure = q >= 7;
+

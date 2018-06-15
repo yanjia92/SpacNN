@@ -83,6 +83,7 @@ class Checker(threading.Thread):
         self.model.duration = duration
         self.fb = fb # specify whether failure biasing is enabled
         self.model.fb = fb
+        self.samples_size = None # for test use
 
         # self.logger = logging.getLogger("Checker logging")
         # self.logger.addHandler(logging.FileHandler(get_log_dir() + get_sep() + "checker.log", "w"))
@@ -110,6 +111,9 @@ class Checker(threading.Thread):
                           self.d) - self.a - self.b - 1)
         # print "Checker is going to generates {} paths".format(sz)
         return sz
+
+    def set_sample_size(self, size):
+        self.samples_size = size
 
     # path: list of Step instance
     # step: current steps(which contains current state)
@@ -387,6 +391,8 @@ class Checker(threading.Thread):
     # @profileit(filepath=get_log_dir() + get_sep() + "checker_mc2_prof")
     def mc2(self):
         sz = int(self.get_sample_size())
+        if self.samples_size:
+            sz = self.samples_size
         print "samples: {}".format(sz)
         x, n = 0, 0
         hitTimes = 0
