@@ -74,3 +74,15 @@ module SP
     [serve_last] sp=2 -> rate_serve : (sp'=1); 
     
 endmodule
+
+const int q_trigger=3;
+
+module PM
+
+    // Send sleep2idle command to SP (when queue is of size q_trigger or greater)
+    [sleep2idle] q>=q_trigger -> true;
+
+    // Send idle2sleep command to SP (when queue is empty)
+    [idle2sleep] q=0 -> true;
+
+endmodule

@@ -41,7 +41,7 @@ class TestSyncCommands(unittest.TestCase):
         # 结果:虽然测试通过,但是验证结果仍旧不同于PRISM(低于)
 
         failure_cnt = 0
-        for _ in range(100):
+        for _ in range(1000):
             self.model.duration = 10
             path = self.model.get_random_path_V2()
             for step in path:
