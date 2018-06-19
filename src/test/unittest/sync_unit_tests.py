@@ -12,9 +12,9 @@ from checker.Checker import Checker
 
 
 logger = logging.getLogger("syncunittest_logging")
-logger.setLevel(logging.ERROR)
-# logger.addHandler(logging.StreamHandler(sys.stdout))
+logger.setLevel(logging.INFO)
 logger.addHandler(logging.FileHandler(get_log_dir() + get_sep() + "paths.log"))
+
 
 class TestSyncCommands(unittest.TestCase):
 

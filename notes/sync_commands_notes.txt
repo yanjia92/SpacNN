@@ -1,25 +1,14 @@
 sync commands设计文档
 ====================
 
-
+OUTLINES
+========
 0. 具体sync的策略是什么?
 1. command在Module中的存储
 2. 如何实现?
 
 
 0. sync的策略
-'''
-sync的策略不是guard全做and合并,action全合并,而是在任意一个cmd执行的时候
-需要判断其他模块的同名cmds,如果条件满足,则也要执行.
-并且,执行的rate是所有不同模块间同名cmds的乘积.
-所以,执行sync的步骤是:
-1. 在prepare_commands中得出每一状态下的所有满足其guard的commands后,将同名的commands进行合并,具体的说就是
-    1.1 将同名cmds合为一个list
-    1.2 将对应的prob进行相乘并作为list当中所有的cmds执行的rate.
-
-1. command在Module中的存储
-    在同一个Module中，允许存在同名的 command，所以在 Module中使用 defaultdict(list)对 commands 进行存储。
-'''
 根据在PRISM中进行simulate的结果可以看到,sync commands要么全部执行,要么全部不执行.
 所以,sync的策略应该是:
 1. 不同模块同名commands guard合并,action合并.
@@ -35,3 +24,9 @@ sync的策略不是guard全做and合并,action全合并,而是在任意一个cmd
         在生成[0,1]之间的随机数从而判断运行哪个cmd之前应该已经做好了同名cmds的合并,并且要将prob相乘
         执行的cmd_probs应该是这样的结构:([cmds_with_same_name],merged_prob)
         根据随机数挑选执行的cmd的逻辑不变,只是现在每个cmds都是一个list,并且选中后要依次对每个cmd进行guard的判断,满足的化则要进行action的执行.
+
+
+3. Bug的修复
+    问题出在sync_two_commands方法
+    关键的问题在于在循环中,如果一个local变量在一个循环当中定义的函数中引用的话,即作为一个闭包引用的话,那么这个局部变量在下次循环开始之前依旧存在,不会消失,因为它被一个函数引用.
+    已在closure_test.py#loop_func_test中验证.

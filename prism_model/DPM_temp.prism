@@ -51,5 +51,5 @@ module PM
 
 endmodule
 
-label failure = q >= 7;
+label failure = q >= 6;
 

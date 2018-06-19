@@ -7,6 +7,8 @@ from module.Module import *
 from removeComment import clear_comment
 from util.MathUtils import *
 from collections import defaultdict
+from util.ListUtils import shallow_cpy
+
 
 def bin_add(x,y):
     '''bin_add'''
@@ -195,7 +197,7 @@ class BasicParser(object):
     def p_module_var_def_statement(self, p):
         '''module_var_def_statement : NAME COLON LB expr COMMA expr RB INIT NUM SEMICOLON'''
         #  让var的lowbound和upperbound支持expression
-        tokens = copy.copy(p.slice)
+        tokens = shallow_cpy(p.slice)
         min = tokens[4].value()
         max = tokens[6].value()
         var = Variable(p[1], p[len(p) - 2], range(min, max + 1),
@@ -227,26 +229,29 @@ class BasicParser(object):
         '''prob_update : expr COLON actions'''
         prob = p[1]  # prob_expr is a function
         actions = p[3]  # actions is a dict
-        command = Command("", self.guard, actions, self.module, prob)
+        guard = copy.copy(self.guard)
+        command = Command("", guard, actions, self.module, prob)
         p[0] = command
 
     def p_prob_update1(self, p):
         '''prob_update : actions'''
         prob = lambda : 1.0 # in CTMC, a prob can be default(not written) equals 1(it must be callable)
         actions = p[1]
-        command = Command("", self.guard, actions, self.module, prob)
+        guard = copy.copy(self.guard)
+        command = Command("", guard, actions, self.module, prob)
         p[0] = command
 
     def p_prob_update2(self, p):
         '''prob_update : TRUE'''
         prob = lambda : 1.0
         actions = dict()
-        command = Command("", self.guard, actions, self.module, prob)
+        guard = copy.copy(self.guard)
+        command = Command("", guard, actions, self.module, prob)
         p[0] = command
 
     def p_actions(self, p):
         '''actions : actions AND assignment'''
-        tokens = copy.copy(p.slice)
+        tokens = shallow_cpy(p.slice)
         action1 = tokens[1].value  # dict
         action2 = tokens[3].value   # dict
         action2.update(action1)
@@ -273,7 +278,7 @@ class BasicParser(object):
     def p_expr(self, p):
         '''expr : expr ADD term
                 | expr MINUS term'''
-        slice_copy = copy.copy(p.slice)
+        slice_copy = shallow_cpy(p.slice)
         op = slice_copy[2].value
 
         def f():
@@ -297,7 +302,7 @@ class BasicParser(object):
     def p_term(self, p):
         '''term : term MUL factor
                 | term DIV factor'''
-        slice_copy = copy.copy(p.slice)
+        slice_copy = shallow_cpy(p.slice)
         op = slice_copy[2].value
 
         def f():
@@ -324,7 +329,7 @@ class BasicParser(object):
 
     def p_factor1(self, p):
         '''factor : NAME'''
-        slice_cpy = copy.copy(p.slice)
+        slice_cpy = shallow_cpy(p.slice)
         name = slice_cpy[1].value
 
         def f():
@@ -341,7 +346,7 @@ class BasicParser(object):
 
     def p_factor2(self, p):
         '''factor : NAME LP expr RP'''
-        slice = copy.copy(p.slice)
+        slice = shallow_cpy(p.slice)
         func = ExpressionHelper.func_map.get(slice[1].value, None)
         # if not func:
         #     raise Exception("Not supported function {}".format(slice[1].value))
@@ -358,7 +363,7 @@ class BasicParser(object):
     def p_factor4(self, p):
         '''factor : NAME LP params RP'''
         func = ExpressionHelper.func_map.get(p[1], None)
-        slice = copy.copy(p.slice)
+        slice = shallow_cpy(p.slice)
 
         def f():
             params = [f() for f in slice[3].value]
@@ -380,7 +385,7 @@ class BasicParser(object):
                               | boolean_expression OR boolean_expression_unit
                               | boolean_expression_unit'''
         # print "boolean_expression detached."
-        slices = copy.copy(p.slice)
+        slices = shallow_cpy(p.slice)
         if len(slices) == 4:
             if slices[2].value == "&":
                 def f(vs, cs):
@@ -397,7 +402,6 @@ class BasicParser(object):
             # 否则要么是解析formula,要么是label
             self.guard = p[0]
 
-
     def p_boolean_expression_unit(self, p):
         '''boolean_expression_unit : NAME GT NUM
                                    | NAME LT NUM
@@ -406,16 +410,17 @@ class BasicParser(object):
                                    | NAME EQ NUM
                                    | NAME NEQ NUM'''
         # 解析单个变量与某个常量进行比较
-        tokens = copy.copy(p.slice)
+        tokens = shallow_cpy(p.slice)
+        op = copy.deepcopy(tokens[2])
 
-        def f(tokens):
+        def f(tokens, op_token):
             def inner(vs ,cs):
                 var = vs[tokens[1].value]
                 # if not var or not isinstance(var, Variable):
                 #     raise Exception("invalid variable name")
                 val1 = var.get_value()
                 val2 = tokens[3]
-                op = tokens[2]
+                op = op_token.value
                 if '<' == op:
                     return val1 < val2
                 if '>' == op:
@@ -431,7 +436,7 @@ class BasicParser(object):
 
             return inner
 
-        p[0] = f(tokens)
+        p[0] = f(tokens, op)
 
     def p_boolean_expression_unit1(self, p):
         '''boolean_expression_unit : NAME GT expr
@@ -441,18 +446,17 @@ class BasicParser(object):
                                    | NAME EQ expr
                                    | NAME NEQ expr'''
         # 解析某个变量与一个表达式进行比较
-        tokens = copy.copy(p.slice)
+        # 一个重大bug
+        # 因为slice是list,所以在进行copy的时候不会对每个元素进行拷贝
+        tokens = shallow_cpy(p.slice)
+        optoken = copy.deepcopy(tokens[2])
 
-        def f(t):
-            # handler is a boolean_expression_resolver : handler(val1, val2,
-            # op)
+        def f(t, op_token):
             def inner(vs, cs):
                 var = vs[t[1].value]
-                # if not var or not isinstance(var, Variable):
-                #     raise Exception("invalid var name")
                 val1 = var.get_value()
                 val2 = t[3].value()
-                op = t[2].value
+                op = op_token.value
                 if '<' == op:
                     return val1 < val2
                 if '>' == op:
@@ -467,7 +471,7 @@ class BasicParser(object):
                     return val1 != val2
             return inner
 
-        p[0] = f(tokens)
+        p[0] = f(tokens, optoken)
 
     def p_boolean_expression_unit2(self, p):
         '''boolean_expression_unit : TRUE'''
@@ -479,7 +483,7 @@ class BasicParser(object):
 
     def p_formula_statement(self, p):
         '''formula_statement : FORMULA NAME ASSIGN expr SEMICOLON'''
-        slices = copy.copy(p.slice)
+        slices = shallow_cpy(p.slice)
         frml_name = slices[2].value
         self.vcf_map[frml_name] = slices[4].value
         # self.logger.info("Formula_{} added.".format(slices[2].value))

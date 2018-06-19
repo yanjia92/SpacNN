@@ -155,10 +155,7 @@ class ModulesFile(object):
         assert len(cmds1) == 1 and len(cmds2) >= 1
         cmd1 = cmds1[0]
         for cmd in cmds2:
-            copied_cmd_guard = copy.copy(cmd.guard)
-            def guard(vs, cs):
-                return cmd1.guard(vs, cs) and copied_cmd_guard(vs, cs)
-            cmd.guard = guard
+            cmd.add_guards(cmd1.get_guards())
             cmd.action.update(cmd1.action)
             assert callable(cmd.prob)
             copied_prob = copy.copy(cmd.prob)
@@ -200,18 +197,19 @@ class ModulesFile(object):
         for added_cmds in added_mod.allCommands().values():
             name = added_cmds[0].name
             for mod in self.modules.values():
-                if not name in mod.allCommands().keys():
+                if name not in mod.allCommands().keys():
                     continue
                 cmds = mod.allCommands()[name]
                 if len(added_cmds) == 1 and len(cmds) >= 1:
+                    # handle both-size-eq-one situation
                     self._sync_two_commands(added_cmds, cmds)
-                    added_mod.allCommands().pop(name)
-                elif len(cmds) == 1 and len(added_cmds) >= 1:
+                    # can not pop added_mod's commands because of three-mods-have-same-name-command situation
+                    added_mod.allCommands()[name] = mod.allCommands().pop(name)
+                elif len(cmds) == 1 and len(added_cmds) > 1:
                     self._sync_two_commands(cmds, added_cmds)
                     mod.allCommands().pop(name)
 
         self.modules[added_mod.name] = added_mod
-
 
     def getModuleByName(self, name):
         if name in self.modules.keys():
@@ -476,6 +474,10 @@ class ModulesFile(object):
             path.append(step)
             # considering CTMC case
             if abs(step.next_move.holding_time) <= 1e-8:
+                last_step = path[-1]
+                if last_step.holding_time + last_step.passed_time <= self.duration:
+                    # todo system-level logger
+                    print "ERROR: a path-length-le-duration path generated"
                 # this step is the end step
                 self.restore_system()
                 return path

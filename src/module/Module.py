@@ -76,6 +76,7 @@ class Commands(object):
     def none_command():
         return Command()
 
+
 class Command(object):
     # name: name of the command
     # about guard and action in Command:
@@ -90,14 +91,19 @@ class Command(object):
     def __init__(
             self,
             name = "",
-            guard = None,
+            # [func(vs, cs)]
+            guards = list(),
             action = None,
             module = None,
             prob = None,
             kind=None,
             biasing_rate=None):
         self.name = name
-        self.guard = guard
+        self.guards = list()
+        if isinstance(guards, list):
+            self.guards.extend(guards)
+        else:
+            self.guards.append(guards)
         # change action type from function to dict
         # e.g. {var_name : var_new_value_func}
         self.action = action
@@ -112,11 +118,12 @@ class Command(object):
         # print "Guard is None ? : " + str(self.guard is None)
 
     def evalGuard(self):
-        return self.guard(self.vs, self.cs)
-        # if 'cs' in dir(self) and 'vs' in dir(self):
-        #     return self.guard(self.vs, self.cs)
-        # else:
-        #     logging.info('vs,cs not exist in Module %s' % self.module.name)
+        result = True
+        for guard in self.guards:
+            result = guard(self.vs, self.cs)
+            if not result:
+                return False
+        return result
 
     def execAction(self):
         for var, update_func in self.action.items():
@@ -128,11 +135,12 @@ class Command(object):
     def __repr__(self):
         return "cmd {} of module {}".format(self.name, self.module.name)
 
-    def setGuard(self, guard):
-        if not guard:
-            # todo throws null pointer exception
-            return
-        self.guard = guard
+    def add_guards(self, guards):
+        assert isinstance(guards, list)
+        self.guards.extend(guards)
+
+    def get_guards(self):
+        return self.guards
 
     def setAction(self, action):
         if not action:
