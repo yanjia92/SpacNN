@@ -214,6 +214,14 @@ class BasicParser(object):
             comm.name = sync_name
             self.module.addCommand(comm)
 
+    def p_module_command_statement1(self, p):
+        '''module_command_statement : LB RB boolean_expression THEN updates SEMICOLON'''
+        sync_name = ""
+        commands = p[5]
+        for comm in commands:
+            comm.name = sync_name
+            self.module.addCommand(comm)
+
     def p_updates(self, p):
         '''updates : updates ADD prob_update'''
         p[0] = list()

@@ -196,6 +196,9 @@ class ModulesFile(object):
             return
         for added_cmds in added_mod.allCommands().values():
             name = added_cmds[0].name
+            # Don't synchronize over empty-cmd-name commands
+            if len(name) == 0:
+                continue
             for mod in self.modules.values():
                 if name not in mod.allCommands().keys():
                     continue
@@ -475,9 +478,8 @@ class ModulesFile(object):
             # considering CTMC case
             if abs(step.next_move.holding_time) <= 1e-8:
                 last_step = path[-1]
-                if last_step.holding_time + last_step.passed_time <= self.duration:
-                    # todo system-level logger
-                    print "ERROR: a path-length-le-duration path generated"
+                # if last_step.holding_time + last_step.passed_time <= self.duration:
+                #     pass
                 # this step is the end step
                 self.restore_system()
                 return path

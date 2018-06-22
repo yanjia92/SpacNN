@@ -1,7 +1,7 @@
 dtmc
 
-const int YEAR = 5;
-const double SCREEN_THICKNESS;
+const double YEAR = 0.5;
+const double SCREEN_THICKNESS = 8;
 const double S3R_K = 66.8333333333;
 const double SB_K = 0.0039;
 formula IEL_YEAR= S3R_K / SCREEN_THICKNESS;
@@ -10,13 +10,14 @@ formula NIEL_YEAR = SB_K * SCREEN_THICKNESS;
 module TIME
 t_turn : [0, 1] init 1;
 day: [1, YEAR*365] init 1;
-[] t_turn==1&day<=YEAR*365 -> "inc_day_cmd" 1.0 : (day=day+1)&(t_turn=0);
+[] t_turn==1&day<YEAR*365 -> 1.0 : (day'=day+1)&(t_turn'=0);
 endmodule
 
 const double SB_P_THRESHOLD = 0.819;
 const double SB_A_MU = 0.1754;
 const double SB_A_SIGMA = 0.48699609;
-const double SB_B = 1.8;
+// const double SB_B = 1.8;
+const double SB_B = 10;
 formula sb_dose = (day / 365.0) * NIEL_YEAR;
 formula sb_cdf_x = (1 - SB_P_THRESHOLD) / log(1 + sb_dose * SB_B);
 formula sb_std_cdf_x = (sb_cdf_x - SB_A_MU) / SB_A_SIGMA;
@@ -24,7 +25,7 @@ formula sb_fail_prob = 1 - stdcdf(sb_std_cdf_x);
 
 module SB
 sb_status: [0, 1] init 1;
-[] sb_status==1&t_turn==0&bcr_status==1&bdr_status==1&s3r_status==1 -> "sb_fail_cmd" sb_fail_prob : (sb_status=0) & (t_turn=1) + "sb_nrl_cmd" (1.0-sb_fail_prob) : (sb_status=1) & (t_turn=1);
+[] sb_status==1&t_turn==0&bcr_status==1&bdr_status==1&s3r_status==1 ->  sb_fail_prob : (sb_status'=0) & (t_turn'=1) + (1.0-sb_fail_prob) : (sb_status'=1) & (t_turn'=1);
 endmodule
 
 const double S3R_DELTAV_THRESHOLD = 10.0;
@@ -38,17 +39,17 @@ formula s3r_fail_prob = 1 - stdcdf(s3r_std_cdf_x);
 
 module S3R
 s3r_status: [0, 1] init 1;
-[] s3r_status==1&t_turn==0&bcr_status==1&bdr_status==1&sb_status==1 -> "s3r_fail_cmd" s3r_fail_prob:(s3r_status=0)&(t_turn=1) + "s3r_nrl_cmd" (1 - s3r_fail_prob):(s3r_status=1)&(t_turn=1);
+[] s3r_status==1&t_turn==0&bcr_status==1&bdr_status==1&sb_status==1 -> s3r_fail_prob:(s3r_status'=0)&(t_turn'=1) + (1 - s3r_fail_prob):(s3r_status'=1)&(t_turn'=1);
 endmodule
 
 module BCR
 bcr_status: [0, 1] init 1;
-[] bcr_status==1&t_turn==0&sb_status==1&s3r_status==1&bdr_status==1 -> "bcr_fail_cmd" s3r_fail_prob:(bcr_status=0)&(t_turn=1) + "bcr_nrl_cmd" (1 - s3r_fail_prob):(bcr_status=1)&(t_turn=1);
+[] bcr_status==1&t_turn==0&sb_status==1&s3r_status==1&bdr_status==1 -> s3r_fail_prob:(bcr_status'=0)&(t_turn'=1) + (1 - s3r_fail_prob):(bcr_status'=1)&(t_turn'=1);
 endmodule
 
 module BDR
 bdr_status: [0, 1] init 1;
-[] bdr_status==1&t_turn==0&sb_status==1&s3r_status==1&bcr_status==1 -> "bdr_fail_cmd" s3r_fail_prob:(bdr_status=0)&(t_turn=1) + "bdr_nrl_cmd" (1 - s3r_fail_prob):(bdr_status=1)&(t_turn=1);
+[] bdr_status==1&t_turn==0&sb_status==1&s3r_status==1&bcr_status==1 -> s3r_fail_prob:(bdr_status'=0)&(t_turn'=1) + (1 - s3r_fail_prob):(bdr_status'=1)&(t_turn'=1);
 endmodule
 
 label failure = sb_status == 0 | s3r_status == 0 | bcr_status == 0 | bdr_status == 0;

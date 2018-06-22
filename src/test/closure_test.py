@@ -15,7 +15,7 @@ def loop_func_test():
     from random import Random
     fs = []
     for _ in range(2):
-        rnd = Random().randint(0,2)
+        rnd = Random().randint(0,5)
         def f():
             print rnd
         fs.append(f)

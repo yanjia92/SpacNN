@@ -51,6 +51,12 @@ class Manager(object):
     def set_manager_param(self, name, param):
         self.manager_params[name] = param
 
+    def set_manager_param_simple(self, name, value):
+        if name not in self._params_map.keys():
+            # todo system-level logger
+            pass
+        self.manager_params[self._params_map[name]] = value
+
     def get_manager_param(self, name):
         if name not in self._params_map.keys():
             print "key not exist when get manager parameter: {}".format(name)
@@ -75,7 +81,7 @@ class Manager(object):
 
     def set_train_constants(self, *constants):
         '''设置训练时需要的参数
-        constant: [(name, val_list)]
+        constant: (name, val_list)
         '''
         self.expr_params = constants
 
@@ -103,7 +109,7 @@ class Manager(object):
     def set_test_xs(self, test_xs):
         '''
         设置回归分析时参数的值
-        :param test_xs: [(vals)]
+        :param test_xs: [(param1_value, param2_val, ...)]
         :return: None
         '''
         self.test_xs = test_xs
@@ -156,8 +162,7 @@ class Manager(object):
         pickle.dump(network_obj, f)
         f.close()
 
-
-    def run_test(self, prism_data=None):
+    def run_test(self, prism_data_path=None):
         '''对给定测试参数运行神经网络进行预测'''
         # try loading dumped network
         f = open("nn.txt", "rb")
@@ -172,15 +177,17 @@ class Manager(object):
             results = self.regressor.predict(list(test_x))
             # results is of length 1
             test_expr_ys.append(results[0])
-        print "test_expr_x: {}".format(str(test_xs))
-        print "test_expr_y: {}".format(str(test_expr_ys))
+        print "test_expr_xs: {}".format(str(test_xs))
+        print "test_expr_ys: {}".format(str(test_expr_ys))
+
+        params = {"prism_data_path": ""}
 
         # get true value returned from PRISM
-        if prism_data:
-            if not os.path.exists(prism_data):
+        if prism_data_path:
+            if not os.path.exists(prism_data_path):
                 print "Specify a prism true data to print if you want to. "
             else:
-                test_prism_xs, test_prism_ys = parse_csv(prism_data)
+                test_prism_xs, test_prism_ys = parse_csv(prism_data_path)
                 plot_multi((test_xs, test_expr_ys, "experiment"), (test_prism_xs, test_prism_ys, "prism"))
         else:
             plot_multi((test_xs, test_expr_ys, "experiment"))

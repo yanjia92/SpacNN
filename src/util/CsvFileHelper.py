@@ -3,6 +3,7 @@ from PathHelper import *
 
 
 def parse_csv(file_path, parse_line1=False, default_type=float):
+    ''':return '''
     results = []
     with open(file_path, "r") as f:
         is_line1 = True

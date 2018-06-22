@@ -88,9 +88,10 @@ class Director(object):
             # self.manager.set_test_x(vals_map.values())
             test_xs = [test_x for test_x in product(*vals_map.values())]
             self.manager.set_test_xs(test_xs)
-            # self.manager.run_test(prism_data="C:\\Users\\yanjia\\Documents\\proj\\SpacNN\\prism_model\\YEAR1_T_1_10_1")
-            # self.manager.run_test()
-            self.manager.run_test("YEAR1_T_1_10_1")
+
+            prism_file_path = tkFileDialog.askopenfilename(title="Specify a prism-checked-data if there is one")
+            print "prism_file_path:{}".format(prism_file_path)
+            self.manager.run_test(prism_file_path)
         return inner
 
     def option(self):

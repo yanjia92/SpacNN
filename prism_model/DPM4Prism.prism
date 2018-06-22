@@ -80,7 +80,7 @@ endmodule
 // (this is done via synchronisation on idle2sleep/sleep2idle actions)
 
 // Bound on queue size, above which sleep2idle command is sent
-const int q_trigger = 3;
+const int q_trigger;
 
 module PM
 	

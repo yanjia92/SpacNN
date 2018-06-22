@@ -7,6 +7,10 @@ import sys
 from PathHelper import *
 from compiler.LTLParser import LTLParser
 from checker.Checker import Checker
+from manager.Manager import Manager
+from util.util import interval
+from util.CsvFileHelper import parse_csv
+from itertools import product
 
 # 同步command的单元测试
 
@@ -19,8 +23,16 @@ logger.addHandler(logging.FileHandler(get_log_dir() + get_sep() + "paths.log"))
 class TestSyncCommands(unittest.TestCase):
 
     def setUp(self):
+        self.manager = Manager()
         filepath = get_prism_model_dir() + get_sep() + "DPM.prism"
-        self.model = ModelConstructor().parseModelFile(filepath)
+        self.manager.read_model_file(filepath)
+        self.model = self.manager.model
+        ltl = "true U<=10 failure"
+        parsed_ltl = LTLParser().build_parser().parse_line(ltl)
+        self.manager.set_manager_param_simple("duration", 10.0)
+        self.checker = Checker(model=self.model, ltl=parsed_ltl, duration=10.0)
+        self.manager.set_ltl(parsed_ltl)
+        self.prism_x, self.prism_y = parse_csv(get_prism_model_dir() + get_sep() + "Q_TRIGGER_1_20_1.csv")
 
     def test_parsing(self):
         # 测试解析成功
@@ -38,7 +50,6 @@ class TestSyncCommands(unittest.TestCase):
         # 测试生成路径的正确性
         # 生成的路径要么总长为duration,要么出现failure
 
-        # 结果:虽然测试通过,但是验证结果仍旧不同于PRISM(低于)
         failure_cnt = 0
 
         for _ in range(5000):
@@ -60,9 +71,12 @@ class TestSyncCommands(unittest.TestCase):
 
     def test_checking(self):
         # 测试模型检测的成功,从而检测模型解析和SMC算法的正确性
-        ltl = "true U<=10 failure"
-        parsed_ltl = LTLParser().build_parser().parse_line(ltl)
-        checker = Checker(model=self.model, ltl=parsed_ltl, duration=10.0)
-        logger.info("checker'result is {}".format(checker.run_checker()))
+        logger.info("checker'result is {}".format(self.checker.run_checker()))
 
+    def test_regression(self):
+        constants = [("q_trigger", [v for v in range(1, 6, 2)])]
+        self.manager.set_train_constants(*constants)
+        self.manager.train_network()
+        self.manager.set_test_xs([test_x for test_x in product(self.prism_x)])
+        self.manager.run_test(prism_data_path=get_prism_model_dir() + get_sep() + "Q_TRIGGER_1_20_1.csv")
 
