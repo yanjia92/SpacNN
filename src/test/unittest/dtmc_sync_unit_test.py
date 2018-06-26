@@ -53,6 +53,7 @@ class DTMCSyncUnittest(unittest.TestCase):
         for obj in constant_objs:
             self.model_constructor.parser.vcf_map[obj.get_name()].set_value(
                 obj.get_value())
+            self.model.commPrepared = False
             logger.info(
                 "param={}, checker's result={}".format(
                     obj.get_value(),
