@@ -1,0 +1,17 @@
+展示文稿
+=======
+
+CTMC展示
+    1. model file ../prism_model/DPM.prism
+    2. 验证的LTL性质 true U<=10 failure
+    3. 需要设置的option {duration=10}
+    4. 训练时的参数设定为[1, 20, 2]
+    4. 计算误差，暂定为输出到terminal：在每次用户进行预测时，将平方差误差输出到终端。
+    5. 要验证的参数 [1, 20, 1]
+
+DTMC展示
+    1. model file prism_model/smalltest.prism
+    2. ltl true U<=180 failure
+    3. 需要设置的option duration=180
+    4. 训练时指定的参数 [1, 10, 0.5]
+    5. 要验证的参数 [1, 10, 0.2] 

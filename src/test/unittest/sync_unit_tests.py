@@ -1,15 +1,12 @@
 # -*- coding:utf-8 -*-
 import unittest
 from compiler.PRISMParser import *
-from PathHelper import *
 import logging
-import sys
 from PathHelper import *
 from compiler.LTLParser import LTLParser
 from checker.Checker import Checker
 from manager.Manager import Manager
-from util.util import interval
-from util.CsvFileHelper import parse_csv
+from util.CsvFileHelper import parse_csv_cols
 from itertools import product
 
 # 同步command的单元测试
@@ -32,7 +29,7 @@ class TestSyncCommands(unittest.TestCase):
         self.manager.set_manager_param_simple("duration", 10.0)
         self.checker = Checker(model=self.model, ltl=parsed_ltl, duration=10.0)
         self.manager.set_ltl(parsed_ltl)
-        self.prism_x, self.prism_y = parse_csv(get_prism_model_dir() + get_sep() + "Q_TRIGGER_1_20_1.csv")
+        self.prism_x, self.prism_y = parse_csv_cols(get_prism_model_dir() + get_sep() + "Q_TRIGGER_1_20_1.csv")
 
     def test_parsing(self):
         # 测试解析成功
@@ -74,7 +71,7 @@ class TestSyncCommands(unittest.TestCase):
         logger.info("checker'result is {}".format(self.checker.run_checker()))
 
     def test_regression(self):
-        constants = [("q_trigger", [v for v in range(1, 6, 2)])]
+        constants = [("q_trigger", [v for v in range(1, 20, 2)])]
         self.manager.set_train_constants(*constants)
         self.manager.train_network()
         self.manager.set_test_xs([test_x for test_x in product(self.prism_x)])

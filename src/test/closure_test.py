@@ -30,8 +30,8 @@ def main():
     # f2 = out(obj)
     # f1()
     # f2()
-    # local_func_test()
-    loop_func_test()
+    local_func_test()
+    # loop_func_test()
 
 
 if __name__ == "__main__":

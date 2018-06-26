@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 from model.ModelFactory import ModelFactory
 from checker.Checker import Checker
-from util.CsvFileHelper import parse_csv
+from util.CsvFileHelper import parse_csv_cols
 from math import fabs
 from PathHelper import *
 from compiler.PRISMParser import ModelConstructor
@@ -14,7 +14,7 @@ d = 0.02
 
 
 def get_prism_checking_result(filepath):
-    return parse_csv(filepath)
+    return parse_csv_cols(filepath)
 
 
 # def get_logger():

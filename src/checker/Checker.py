@@ -80,7 +80,6 @@ class Checker(threading.Thread):
         self.cachedPrefixes = dict()
         self.checkingType = checkingType
         self.duration = duration
-        self.model.duration = duration
         self.fb = fb # specify whether failure biasing is enabled
         self.model.fb = fb
         self.samples_size = None # for test use

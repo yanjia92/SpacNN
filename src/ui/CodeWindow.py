@@ -1,4 +1,4 @@
-from Tkinter import Scrollbar, TOP, X, Text
+from Tkinter import *
 
 
 class CodeWindow:
@@ -10,18 +10,32 @@ class CodeWindow:
 
         return
 
-    def textPad(self, master):
-        scroll = Scrollbar(master, borderwidth=1, name="cw_scroll")
-        scroll.pack(side=TOP, fill=X)
+    def textPad(self, root):
+        # scroll = Scrollbar(master, borderwidth=1, name="cw_scroll")
+        # scroll.pack(side=TOP, fill=X)
 
-        self.text = Text(master, {"name": "cw_text"})
-        self.text.configure(yscrollcommand=scroll.set)
-        scroll.config(command=self.text.yview)
+        # self.text = Text(master, {"name": "cw_text"})
+        # self.text.configure(yscrollcommand=scroll.set)
+        # scroll.config(command=self.text.yview)
+        # self.text.pack(side=TOP, fill=X)
+           
+        # return
+        self.scrollbar = Scrollbar(root)
+        self.text = Text(root, {"name": "cw_text"})
+        self.scrollbar.pack(side=RIGHT, fill=X)
         self.text.pack(side=TOP, fill=X)
+        self.scrollbar.config(command=self.text.yview)
+        self.text.config(yscrollcommand=self.scrollbar.set, state=NORMAL)
+
         return
 
     def insert(self, index, chars, *args):
         self.text.insert(index, chars, *args)
+
+    def clear(self):
+        self.text.delete('1.0', END)
+
+
 
 
 

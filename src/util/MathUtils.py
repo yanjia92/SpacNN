@@ -68,3 +68,6 @@ def sigmoid(x):
 
 def sigmoid_derivative(x):
     return x * (1 - x)
+
+class ErrorType():
+    SQ_DIFF = 0

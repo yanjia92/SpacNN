@@ -8,6 +8,7 @@ from removeComment import clear_comment
 from util.MathUtils import *
 from collections import defaultdict
 from util.ListUtils import shallow_cpy
+from math import floor, ceil
 
 
 def bin_add(x,y):
@@ -44,7 +45,9 @@ class ExpressionHelper(object):
         'log': log,
         'powe': powe,
         'min': min,
-        'max': max
+        'max': max,
+        'floor': int,
+        'ceil': int
     }
 
     @classmethod
@@ -106,7 +109,9 @@ class BasicParser(object):
             '/': lambda x, y: x / y
         }
         self.func_map = {
-            'stdcdf': pcf
+            'stdcdf': pcf,
+            'floor' : floor,
+            'ceil'  : ceil
         }
         # when parsing a command declaration, store the command sync_name in this property
         self.comm_name = None
@@ -342,6 +347,8 @@ class BasicParser(object):
 
         def f():
             obj = self.vcf_map[name]
+            if not obj:
+                print name
             if callable(obj):
                 try:
                     return obj()
@@ -360,6 +367,7 @@ class BasicParser(object):
         #     raise Exception("Not supported function {}".format(slice[1].value))
 
         def f():
+            assert callable(func)
             return func(slice[3].value())
         f.func_doc = "func_{}".format(func.__name__)
         p[0] = f

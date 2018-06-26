@@ -6,7 +6,7 @@ from util.util import *
 from itertools import product
 from ui.testInputDialog import ManagerParamInputDialog
 from Tkinter import *
-
+from util.CsvFileHelper import *
 
 class Director(object):
 
@@ -23,6 +23,8 @@ class Director(object):
             self.manager.read_model_file(filename)
             if hasattr(self, "root"):
                 cw_text = self.root.children["cw_text"]
+                # cw_text.clear()
+                cw_text.delete("1.0", END)
                 with open(filename, "r") as f:
                     for l in f:
                         cw_text.insert(END, l)
@@ -30,11 +32,6 @@ class Director(object):
 
     def _input_unsure_params(self, names):
         ''':return {name: values_list}'''
-        if len(names) == 0:
-            tkMessageBox.showerror(
-                "Error", "Open a .prism model or your model contains no unsure parameters. ")
-            return
-            # display dialog
         if not hasattr(self, "root"):
             print "Please add root to the Director. "
         vals_map = ParamInputDialog(self.root, "Specify parameters to train",
@@ -83,6 +80,9 @@ class Director(object):
         def inner():
             #  get unsure parameter names
             unsure_names = self.manager.unsure_param_names()
+            if len(unsure_names) == 0:
+                tkMessageBox.showerror("Your model contains no unsure parameters.")
+                return
             vals_map = self._input_unsure_params(
                 unsure_names)  # show dialog for user to input
             # self.manager.set_test_x(vals_map.values())
@@ -91,7 +91,10 @@ class Director(object):
 
             prism_file_path = tkFileDialog.askopenfilename(title="Specify a prism-checked-data if there is one")
             print "prism_file_path:{}".format(prism_file_path)
-            self.manager.run_test(prism_file_path)
+            test_ys = self.manager.run_test()
+            true_xs, true_ys = parse_csv_cols(prism_file_path, float)
+            print "error: {}".format(self.manager.compute_error(lambda vals: (vals[0]-vals[1])**2, test_ys, true_ys))
+            self.manager.plot_expr_datas(test_ys, true_ys, true_xs)
         return inner
 
     def option(self):

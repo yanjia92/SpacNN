@@ -1,7 +1,7 @@
 dtmc
 
 const double YEAR = 0.5;
-const double SCREEN_THICKNESS = 8;
+const double SCREEN_THICKNESS;
 const double S3R_K = 66.8333333333;
 const double SB_K = 0.0039;
 formula IEL_YEAR= S3R_K / SCREEN_THICKNESS;

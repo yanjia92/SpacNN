@@ -7,7 +7,7 @@ from nn.NNRegressor import BPNeuralNetwork as BPNN
 from util.PlotHelper import plot_multi
 from PathHelper import get_prism_model_dir, get_sep, get_log_dir
 import logging
-from util.CsvFileHelper import parse_csv
+from util.CsvFileHelper import parse_csv_cols
 
 logger = logging.getLogger("test parsed regressor log")
 logger.addHandler(logging.FileHandler(get_log_dir() + get_sep() + "testparsedregre.log", "w"))
@@ -15,7 +15,7 @@ logger.setLevel(logging.INFO)
 
 
 def get_expr_result_prism(filepath):
-    return parse_csv(filepath)
+    return parse_csv_cols(filepath)
 
 
 TIME_LIMIT_IN_DAYS = 365

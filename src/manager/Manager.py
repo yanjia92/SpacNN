@@ -6,7 +6,7 @@ from test.testCheckingAlgo import *
 from module.Module import Constant
 import itertools
 from nn.NNRegressor import BPNeuralNetwork as BPNN
-from util.CsvFileHelper import parse_csv
+from util.CsvFileHelper import *
 from util.PlotHelper import plot_multi
 from util.AnnotationHelper import deprecated
 import sys
@@ -17,7 +17,8 @@ try:
 except ImportError:
     import pickle
 from compiler.LTLParser import LTLParser
-
+from util.MathUtils import ErrorType
+from util.CsvFileHelper import *
 
 class Manager(object):
 
@@ -162,7 +163,12 @@ class Manager(object):
         pickle.dump(network_obj, f)
         f.close()
 
-    def run_test(self, prism_data_path=None):
+    def compute_error(self, err_func, values1, values2):
+        # param of red_func: val1, val2)计算val1和val2之间的误差，并将所有的误差相加
+        errors = sum(map(err_func, [t for t in zip(values1, values2)])) 
+        return errors
+
+    def run_test(self):
         '''对给定测试参数运行神经网络进行预测'''
         # try loading dumped network
         f = open("nn.txt", "rb")
@@ -179,21 +185,16 @@ class Manager(object):
             test_expr_ys.append(results[0])
         print "test_expr_xs: {}".format(str(test_xs))
         print "test_expr_ys: {}".format(str(test_expr_ys))
-
-        params = {"prism_data_path": ""}
-
-        # get true value returned from PRISM
-        if prism_data_path:
-            if not os.path.exists(prism_data_path):
-                print "Specify a prism true data to print if you want to. "
-            else:
-                test_prism_xs, test_prism_ys = parse_csv(prism_data_path)
-                plot_multi((test_xs, test_expr_ys, "experiment"), (test_prism_xs, test_prism_ys, "prism"))
-        else:
-            plot_multi((test_xs, test_expr_ys, "experiment"))
+        return test_expr_ys
 
     def unsure_param_names(self):
         return self.mdl_parser.parser.constname_unsure()
+
+    def plot_expr_datas(self, expr_ys, true_ys, xs=None):
+        if xs:
+            plot_multi((xs, expr_ys, "experiment"), (xs, true_ys, "prism"))
+        else:
+            plot_multi((self.test_xs, expr_ys, "experiment"), (self.test_xs, true_ys, "prism"))
 
 
 def main():
