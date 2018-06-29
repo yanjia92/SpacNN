@@ -7,6 +7,7 @@ from itertools import product
 from ui.testInputDialog import ManagerParamInputDialog
 from Tkinter import *
 from util.CsvFileHelper import *
+import re
 
 class Director(object):
 
@@ -49,6 +50,11 @@ class Director(object):
             for widget in self.root.pack_slaves():
                 if isinstance(widget, Entry) and widget._name == "eLTL":
                     strLTL = widget.get()
+                    for token in strLTL.split(" "):
+                        if token.startswith("U"):
+                            duration = re.findall(r"\d+", token)[0]
+                            if duration > 0:
+                                self.manager.set_model_duration(duration)
                     parsed_ltl = self.manager.ltl_parser.parse_line(strLTL)
                     result = self.manager.set_ltl(parsed_ltl)
                     if not result:

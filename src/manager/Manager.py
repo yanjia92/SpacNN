@@ -23,8 +23,7 @@ class Manager(object):
             "隐藏层神经元个数": 5, 
             "输出层神经元个数": 1, 
             "训练样本取样数": 6000,
-            "取样路径时长": 100.0,
-            "学习速率": 0.05, 
+            "学习速率": 0.05,
             "矫正率": 0.1
         }
 
@@ -33,8 +32,7 @@ class Manager(object):
             "no": "输出层神经元个数",
             "samples": "训练样本取样数",
             "learning_rate": "学习速率",
-            "correct_rate": "矫正率",
-            "duration": "取样路径时长"
+            "correct_rate": "矫正率"
         }
         self.mdl_parser = ModelConstructor()
         self.model = None
@@ -63,8 +61,8 @@ class Manager(object):
         self.set_manager_param("duration", duration)
         self.model.duration = duration
 
-    def _setup_model(self, duration=None):
-        self.model.duration = duration
+    # def _setup_model(self, duration=None):
+    #     self.model.duration = duration
 
     def read_model_file(self, file_path):
         self.model = self.mdl_parser.parseModelFile(file_path)
@@ -88,6 +86,9 @@ class Manager(object):
             return ltl
         else:
             return
+
+    def set_model_duration(self, duration):
+        self.model.duration = duration
 
     def _set_param(self, *constants):
         '''
@@ -130,7 +131,6 @@ class Manager(object):
         train_data_y = []
         constant_objs = self._to_constant_objs()
         self.checker.samples = self.get_manager_param("samples")
-        self._setup_model(self.get_manager_param("duration"))
         for constant_list in itertools.product(*constant_objs):
             try:
                 self._set_param(*constant_list)
