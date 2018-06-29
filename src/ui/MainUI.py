@@ -3,6 +3,9 @@ from Tkinter import *
 from manager.Manager import Manager
 from director.Director import Director
 from ui.CodeWindow import CodeWindow
+from util.SystemUtil import *
+
+
 
 '''
 设计思路: 一个dict维护从command_name到command的映射
@@ -37,6 +40,12 @@ class UIOperator(object):
     def __init__(self, comm_map):
         self.comm_map = comm_map
         self.root = Tk()
+
+        # bind key event
+        if on_windows_platform():
+            self.root.bind("<Control-s>", self.comm_map["save"])
+        if on_mac_platform():
+            self.root.bind("<Command-s>", self.comm_map["save"])
         self.root.title("SpacNN")
         self.frame_width = 800
         self.frame_height = 1000

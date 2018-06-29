@@ -1,24 +1,20 @@
 # -*- coding:utf-8 -*-
-from compiler.PRISMParser import ModelConstructor
-from module.ModulesFile import StepGenThd
-from module.ModulesFile import ModulesFile
-from test.testCheckingAlgo import *
-from module.Module import Constant
-import itertools
-from nn.NNRegressor import BPNeuralNetwork as BPNN
-from util.CsvFileHelper import *
-from util.PlotHelper import plot_multi
-from util.AnnotationHelper import deprecated
-import sys
 import getopt
+import itertools
+import sys
+
+from module.Module import Constant
+from nn.NNRegressor import BPNeuralNetwork as BPNN
+from test.testCheckingAlgo import *
+from util.PlotHelper import plot_multi
 import os
+
 try:
     import cPickle as pickle
 except ImportError:
     import pickle
 from compiler.LTLParser import LTLParser
-from util.MathUtils import ErrorType
-from util.CsvFileHelper import *
+
 
 class Manager(object):
 
@@ -159,9 +155,12 @@ class Manager(object):
         # dump the network
         network_obj = self.regressor
         dump_file = "nn.txt"
-        f = open(dump_file, "wb")
-        pickle.dump(network_obj, f)
-        f.close()
+        try:
+            f = open(dump_file, "wb")
+            pickle.dump(network_obj, f)
+            f.close()
+        except IOError:
+            print "IOError when dumping network object. Please check your access permission"
 
     def compute_error(self, err_func, values1, values2):
         # param of red_func: val1, val2)计算val1和val2之间的误差，并将所有的误差相加
@@ -171,11 +170,13 @@ class Manager(object):
     def run_test(self):
         '''对给定测试参数运行神经网络进行预测'''
         # try loading dumped network
-        f = open("nn.txt", "rb")
-        network_obj = pickle.load(f)
-        if network_obj:
-            self.regressor = network_obj
-        f.close()
+
+        if os.path.exists("nn.txt") and os.access("nn.txt", os.R_OK):
+            f = open("nn.txt", "rb")
+            network_obj = pickle.load(f)
+            if network_obj:
+                self.regressor = network_obj
+            f.close()
 
         test_xs = self.test_xs  # [(vals)]
         test_expr_ys = []

@@ -1,9 +1,9 @@
 import os
-import platform
+from util.SystemUtil import on_windows_platform
 
 
 def get_sep():
-    if "Windows" in platform.system():
+    if on_windows_platform():
         return '\\'
     else:
         return '/'

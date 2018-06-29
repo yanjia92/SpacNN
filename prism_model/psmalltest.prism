@@ -27,8 +27,10 @@ day: [1..time_upper_bound] init 1;
 endmodule
 
 const double SB_P_THRESHOLD = 0.819;
-const double SB_A_MU = 0.1754;
-const double SB_A_SIGMA = 0.48699609;
+// const double SB_A_MU = 0.1754;
+const double SB_A_MU = 0.8;
+// const double SB_A_SIGMA = 0.48699609;
+const double SB_A_SIGMA = 1.4;
 const double SB_B = 10;
 formula sb_dose = (day / 365.0) * NIEL_YEAR;
 formula sb_cdf_x = (1 - SB_P_THRESHOLD) / log(1 + sb_dose * SB_B, e);

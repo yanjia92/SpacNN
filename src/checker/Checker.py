@@ -6,9 +6,6 @@ import math
 import re
 import threading
 import time
-from PathHelper import *
-import sys
-from util.AnnotationHelper import profileit, setresult
 
 
 # class represent an interval in DTMC/CTMC
@@ -410,7 +407,7 @@ class Checker(threading.Thread):
             n += 1
             if n & 511 == 0:
                 t2 = time.time()
-                print "Verifying {} paths, causing {}s".format(n, t2 - begin)
+                print "Verifying %d paths, causing %.2fs" % (n, t2 - begin)
             if isinstance(satisfied, bool):
                 hitTimes += 1
                 if satisfied:

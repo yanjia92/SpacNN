@@ -1,0 +1,5 @@
+1 - aln(1 + d/b) < th
+a > (1 - th) / ln(1 + d/b)  -> x
+(x - std) / div -> std_x
+p up >_> std_x down >_> div up or std up or x down >_> th up or b up
+>_< p up >_> div up or std up or th up or b up

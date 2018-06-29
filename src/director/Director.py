@@ -108,9 +108,18 @@ class Director(object):
             self.manager.manager_params.update(custom_options)
         return inner
 
+    def save(self):
+        def inner(event):
+            widget = event.widget
+            text = widget.get("1.0", END)
+            print "enter save function"
+        return inner
+
+
     def init_comm_map(self):
         self.comm_map["open"] = self.open_file()
         self.comm_map["train"] = self.train()
         self.comm_map["ltl_input"] = self.ltl_input()
         self.comm_map["predict"] = self.predict()
         self.comm_map["option"] = self.option()
+        self.comm_map["save"] = self.save()
