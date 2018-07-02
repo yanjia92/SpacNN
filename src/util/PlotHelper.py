@@ -1,7 +1,6 @@
-try:
-    import matplotlib.pyplot as plt
-except ImportError:
-    print "Couldn't import matplotlib.pyplot"
+import matplotlib
+matplotlib.use("TkAgg")
+import matplotlib.pyplot as plt
 from math import *
 
 

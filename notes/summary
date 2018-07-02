@@ -109,5 +109,11 @@ manager 中的实验参数设置的设计
     ModulesFile.localVars 需要使用变量的值组成的tuple作为scDict等结构的key,所以需要确保每次遍历的顺序一致.
 
 actions是如何保存的?
-一个actions对应var = expr & var1 = expr1
-底层存储使用字典,key为var, value为function
+    一个actions对应var = expr & var1 = expr1
+    底层存储使用字典,key为var, value为function
+
+打包过程中遇到的import matplotlib时的问题 no module named backend_macosx
+解决方法是在每个使用matplotlib的程序开始加
+import matplotlib
+matplotlib.use("TkAgg")
+import matplotlib.pyplot as plt

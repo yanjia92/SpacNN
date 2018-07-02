@@ -1,5 +1,29 @@
 # -*- coding:utf-8 -*-
-from PathHelper import *
+from SystemUtil import on_windows_platform
+
+
+def write_csv_rows(file_path, datas, headers=None, sep=","):
+    assert len(datas) > 0
+    lens = map(len, datas)
+    assert len(set(lens)) == 1
+    if headers:
+        assert len(headers) == len(datas[0])
+    with open(file_path, "w") as f:
+        if headers:
+            header_line = sep.join(headers)
+            f.write(header_line)
+            if on_windows_platform():
+                f.write("\r\n")
+            else:
+                f.write("\n")
+        for data in datas:
+            data = map(str, data)
+            f.write(sep.join(data))
+            if on_windows_platform():
+                f.write("\r\n")
+            else:
+                f.write("\n")
+    return len(datas)
 
 
 def parse_csv_cols(file_path, types, has_headers=True, sep=','):
@@ -48,11 +72,15 @@ def _parse_line(line, results, sep=',', data_type=float):
         results[index].append(data_type(value))
 
 
-def test():
-    file_path = get_prism_model_dir() + get_sep() + "YEAR1_T_1_5_1"
-    results = parse_csv_rows(file_path, float)
-    print results
+def test_write():
+    write_to = "/Users/bitbook/Documents/temp.csv"
+    datas = []
+    for _ in range(3):
+        datas.append(tuple(range(3)))
+    headers = ["col1", "col2", "col3"]
+    write_csv_rows(write_to, datas, headers)
 
 
 if __name__ == "__main__":
-    test()
+    # test()
+    test_write()

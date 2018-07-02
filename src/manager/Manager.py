@@ -8,6 +8,7 @@ from nn.NNRegressor import BPNeuralNetwork as BPNN
 from test.testCheckingAlgo import *
 from util.PlotHelper import plot_multi
 import os
+from module.ModulesFile import ModelType
 
 try:
     import cPickle as pickle
@@ -42,6 +43,8 @@ class Manager(object):
         self.regressor = BPNN()
         self.test_xs = []  # [(vals)]
         self.ltl_parser = LTLParser().build_parser()
+        self.predict_xs = None
+        self.predict_ys = None
 
     def set_manager_param(self, name, param):
         self.manager_params[name] = param
@@ -60,9 +63,6 @@ class Manager(object):
     def set_random_path_duration(self, duration):
         self.set_manager_param("duration", duration)
         self.model.duration = duration
-
-    # def _setup_model(self, duration=None):
-    #     self.model.duration = duration
 
     def read_model_file(self, file_path):
         self.model = self.mdl_parser.parseModelFile(file_path)
@@ -88,7 +88,12 @@ class Manager(object):
             return
 
     def set_model_duration(self, duration):
-        self.model.duration = duration
+        '''duration: str_valued duration'''
+        if self.model.model_type == ModelType.DTMC:
+            self.model.duration = int(duration)
+        else:
+            # CTMC case
+            self.model.duration = float(duration)
 
     def _set_param(self, *constants):
         '''
@@ -184,18 +189,25 @@ class Manager(object):
             results = self.regressor.predict(list(test_x))
             # results is of length 1
             test_expr_ys.append(results[0])
-        print "test_expr_xs: {}".format(str(test_xs))
-        print "test_expr_ys: {}".format(str(test_expr_ys))
+        print "Predict results: "
+        for (x, y) in zip(test_xs, test_expr_ys):
+            print "x={}, predict={}".format(x, y)
         return test_expr_ys
 
     def unsure_param_names(self):
         return self.mdl_parser.parser.constname_unsure()
 
-    def plot_expr_datas(self, expr_ys, true_ys, xs=None):
-        if xs:
-            plot_multi((xs, expr_ys, "experiment"), (xs, true_ys, "prism"))
+    def plot_expr_datas(self, expr_xs, expr_ys, true_ys=None):
+        if true_ys:
+            plot_multi((expr_xs, expr_ys, "predict"), (expr_xs, true_ys, "prism"))
         else:
-            plot_multi((self.test_xs, expr_ys, "experiment"), (self.test_xs, true_ys, "prism"))
+            param = (expr_xs, expr_ys, "predict")
+            plot_multi(param)
+
+    def save_predict_results(self, xs, ys):
+        assert len(ys) == len(xs)
+        self.predict_xs = xs
+        self.predict_ys = ys
 
 
 def main():

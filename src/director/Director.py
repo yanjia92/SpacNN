@@ -6,8 +6,10 @@ from util.util import *
 from itertools import product
 from ui.testInputDialog import ManagerParamInputDialog
 from Tkinter import *
-from util.CsvFileHelper import *
 import re
+from util.CsvFileHelper import write_csv_rows
+from tkMessageBox import showinfo
+
 
 class Director(object):
 
@@ -38,7 +40,7 @@ class Director(object):
         vals_map = ParamInputDialog(self.root, "Specify parameters to train",
                                     names).show()  # name: [begin, step, end]
         for name, vlist in vals_map.items():
-            begin, step, end = vlist
+            begin, end, step = vlist
             vals_map[name] = interval(begin, end, step)
         return vals_map
 
@@ -52,8 +54,8 @@ class Director(object):
                     strLTL = widget.get()
                     for token in strLTL.split(" "):
                         if token.startswith("U"):
-                            duration = re.findall(r"\d+", token)[0]
-                            if duration > 0:
+                            duration = re.findall(r"\d+\.?\d*", token)[0]
+                            if duration:
                                 self.manager.set_model_duration(duration)
                     parsed_ltl = self.manager.ltl_parser.parse_line(strLTL)
                     result = self.manager.set_ltl(parsed_ltl)
@@ -95,12 +97,14 @@ class Director(object):
             test_xs = [test_x for test_x in product(*vals_map.values())]
             self.manager.set_test_xs(test_xs)
 
-            prism_file_path = tkFileDialog.askopenfilename(title="Specify a prism-checked-data if there is one")
-            print "prism_file_path:{}".format(prism_file_path)
+            # prism_file_path = tkFileDialog.askopenfilename(title="Specify a prism-checked-data if there is one")
+            # print "prism_file_path:{}".format(prism_file_path)
             test_ys = self.manager.run_test()
-            true_xs, true_ys = parse_csv_cols(prism_file_path, float)
-            print "error: {}".format(self.manager.compute_error(lambda vals: (vals[0]-vals[1])**2, test_ys, true_ys))
-            self.manager.plot_expr_datas(test_ys, true_ys, true_xs)
+            self.manager.save_predict_results(test_xs, test_ys)
+            # true_xs, true_ys = parse_csv_cols(prism_file_path, float)
+            # print "error: {}".format(self.manager.compute_error(lambda vals: (vals[0]-vals[1])**2, test_ys, true_ys))
+            # self.manager.plot_expr_datas(test_ys, true_ys, true_xs)
+            self.manager.plot_expr_datas(test_xs, test_ys)
         return inner
 
     def option(self):
@@ -121,6 +125,27 @@ class Director(object):
             print "enter save function"
         return inner
 
+    def export(self):
+        def inner():
+            export_to = tkFileDialog.asksaveasfilename(title="export result to")
+            xs = self.manager.predict_xs
+            ys = self.manager.predict_ys
+            datas = []
+            for index, y in enumerate(ys):
+                row = list(xs[index])
+                row.append(y)
+                datas.append(row)
+            param_names = list(self.manager.unsure_param_names())
+            param_names.append("result")
+            written = write_csv_rows(export_to, datas, param_names)
+            if written == len(datas):
+                showinfo("Info", "Result exported to {}".format(export_to))
+        return inner
+
+    def help(self):
+        def inner():
+            pass
+        return inner
 
     def init_comm_map(self):
         self.comm_map["open"] = self.open_file()
@@ -129,3 +154,5 @@ class Director(object):
         self.comm_map["predict"] = self.predict()
         self.comm_map["option"] = self.option()
         self.comm_map["save"] = self.save()
+        self.comm_map["export"] = self.export()
+        self.comm_map["help"] = self.help()

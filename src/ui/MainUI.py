@@ -12,6 +12,18 @@ from util.SystemUtil import *
 '''
 
 
+def add_help_menu(f):
+    def wrapper(*args, **kwargs):
+        comm_map = args[0].comm_map
+        menu_bar = f(*args, **kwargs)
+
+        help_menu = Menu(menu_bar, tearoff=0)
+        help_menu.add_command(label="Help", command=comm_map["help"])
+        menu_bar.add_cascade(label="Help", menu=help_menu)
+        return menu_bar
+    return wrapper
+
+
 def add_file_menu(f):
     def wrapper(*args, **kwargs):
         comm_map = args[0].comm_map
@@ -68,10 +80,10 @@ class UIOperator(object):
         train_button.pack()
         predict_button = Button(self.root, text="predict", command=self.comm_map["predict"])
         predict_button.pack()
+        export_button = Button(self.root, text="export", command=self.comm_map["export"])
+        export_button.pack()
 
-        # children = self.root.winfo_children()
-        # print children
-
+    @add_help_menu
     @add_option_menu
     @add_file_menu
     def _get_menu_bar(self):

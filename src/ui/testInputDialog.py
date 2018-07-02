@@ -86,41 +86,36 @@ class ManagerParamInputDialog(object):
 
 
 class ParamInputDialog(object):
+    # param input dialog
+    # every param must have [start, end, step] value
     def __init__(self, parent, prompt, param_names):
         self.toplevel = tk.Toplevel(parent)
         lprompt = tk.Label(self.toplevel, text=prompt)
         lprompt.pack(side="top", fill="x")
         self.vars_map = OrderedDict()  # name : [begin_val, step_val, end_val]
         for name in param_names:
-            self._add_le(name, self.toplevel)
+            self._input_param(name, self.toplevel)
         button = tk.Button(self.toplevel, text="Finish", command=self.toplevel.destroy)
         button.pack(side="bottom", anchor="e", padx=4, pady=4)
         self.toplevel.protocol("WM_DELETE_WINDOW", self.toplevel.destroy)
 
-    def _add_le(self, name, toplevel):
+    def _add_entry_with_label(self, label_text, var_type, var_name):
+        '''var_type: 'f' for float or 'd' for integer'''
+        label = tk.Label(self.toplevel, text=label_text)
+        variable = (tk.DoubleVar(), tk.IntVar())['d' == var_type]
+        entry = tk.Entry(self.toplevel, textvariable=variable)
+        self.vars_map[var_name].append(variable)
+        label.pack(side="top", fill="x")
+        entry.pack(side="top", fill="x")
+
+    def _input_param(self, name, toplevel):
         self.vars_map[name] = list()
         '''add label entry for each parameter'''
-        lname = tk.Label(toplevel, text=name)
-        lbeginvalue = tk.Label(toplevel, text="Begin Value")
-        varbeginvalue = tk.DoubleVar()
-        ebeginvalue = tk.Entry(toplevel, textvariable=varbeginvalue)
-        self.vars_map[name].append(varbeginvalue)
-        lstep = tk.Label(toplevel, text="Step")
-        varstep = tk.DoubleVar()
-        estep = tk.Entry(toplevel, textvariable=varstep)
-        self.vars_map[name].append(varstep)
-        lendvalue = tk.Label(toplevel, text="End Value")
-        varendvalue = tk.DoubleVar()
-        eendvalue = tk.Entry(toplevel, textvariable=varendvalue)
-        self.vars_map[name].append(varendvalue)
-
-        lname.pack(side="top", fill="x")
-        lbeginvalue.pack(side="top", fill="x")
-        ebeginvalue.pack(side="top", fill="x")
-        lstep.pack(side="top", fill="x")
-        estep.pack(side="top", fill="x")
-        lendvalue.pack(side="top", fill="x")
-        eendvalue.pack(side="top", fill="x")
+        label = tk.Label(toplevel, text=name)
+        label.pack(side="top", fill="x")
+        self._add_entry_with_label("Begin Value", 'f', name)
+        self._add_entry_with_label("End Value", 'f', name)
+        self._add_entry_with_label("Step Value", 'f', name)
 
     def show(self):
         self.toplevel.grab_set()
@@ -130,6 +125,7 @@ class ParamInputDialog(object):
             val_list = map(lambda var: var.get(), var_list)
             self.vars_map[name] = val_list
         return self.vars_map
+
 
 class Example(tk.Frame):
     def __init__(self, parent):
