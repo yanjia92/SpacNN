@@ -17,12 +17,15 @@ class Director(object):
         self.manager = manager
         self.comm_map = {}
         self.init_comm_map()
+        self.widget_var_map ={}
 
     def open_file(self):
         def inner():
             filename = tkFileDialog.askopenfilename(
                 title="Select your PRISM model")
-            # print filename
+            var = self.widget_var_map["model_file_path"]
+            if var:
+                var.set(filename)
             self.manager.read_model_file(filename)
             if hasattr(self, "root"):
                 cw_text = self.root.children["cw_text"]
@@ -46,7 +49,6 @@ class Director(object):
 
     def train(self):
         def inner():
-            # get ltl from root
             if not hasattr(self, "root"):
                 pass
             for widget in self.root.pack_slaves():
@@ -86,35 +88,27 @@ class Director(object):
 
     def predict(self):
         def inner():
-            #  get unsure parameter names
             unsure_names = self.manager.unsure_param_names()
             if len(unsure_names) == 0:
-                tkMessageBox.showerror("Your model contains no unsure parameters.")
+                tkMessageBox.showerror(
+                    "Your model contains no unsure parameters.")
                 return
             vals_map = self._input_unsure_params(
-                unsure_names)  # show dialog for user to input
-            # self.manager.set_test_x(vals_map.values())
+                unsure_names)
             test_xs = [test_x for test_x in product(*vals_map.values())]
             self.manager.set_test_xs(test_xs)
 
-            # prism_file_path = tkFileDialog.askopenfilename(title="Specify a prism-checked-data if there is one")
-            # print "prism_file_path:{}".format(prism_file_path)
             test_ys = self.manager.run_test()
             self.manager.save_predict_results(test_xs, test_ys)
-            # true_xs, true_ys = parse_csv_cols(prism_file_path, float)
-            # print "error: {}".format(self.manager.compute_error(lambda vals: (vals[0]-vals[1])**2, test_ys, true_ys))
-            # self.manager.plot_expr_datas(test_ys, true_ys, true_xs)
             self.manager.plot_expr_datas(test_xs, test_ys)
         return inner
 
     def option(self):
         def inner():
-            # get manager parameter names
             if not hasattr(self, "root"):
                 print "Error in Director. Specify ui root to Director"
             custom_options = ManagerParamInputDialog(
                 self.root, "custom options", self.manager.manager_params).show()
-            # set customer options
             self.manager.manager_params.update(custom_options)
         return inner
 
@@ -127,7 +121,8 @@ class Director(object):
 
     def export(self):
         def inner():
-            export_to = tkFileDialog.asksaveasfilename(title="export result to")
+            export_to = tkFileDialog.asksaveasfilename(
+                title="export result to")
             xs = self.manager.predict_xs
             ys = self.manager.predict_ys
             datas = []
@@ -144,7 +139,33 @@ class Director(object):
 
     def help(self):
         def inner():
-            pass
+            help_text = """
+                                    Spacc使用说明
+            1. 打开模型
+            使用菜单: Model -> Open 打开一个以prism作为后缀的模型文件,模型文件的语法采用PRISM模型语言一样的语法,用户可以直接使用PRISM软件的模型文件.
+            2. 设定LTL公式
+            用户可以在LTL输入框内输入模型应该满足的LTL公式,LTL公式的语法和PRISM语言支持的保持一致.
+            3. 进行训练
+            软件假设用户打开的模型文件中包含不确定参数,此时软件可以针对此模型进行训练.点击Train按钮,软件展示出非确定参数录入对话框,用户可以输入每个参数的起始值,结束值以及步长值,点击Finish即可开始训练.
+            4. 进行预测
+            点击Predict按钮即可进行预测.软件会根据训练的结果对模型在未知参数下的模型预测,并会画出模型在不同参数下满足LTL性质的曲线图.
+            5. 导出结果
+            用户可以点击Export按钮导出预测结果
+            """
+            tkMessageBox.showinfo("help", help_text)
+        return inner
+
+    def register_widget_var(self, key, variable):
+        """将一个widget对应的变量注册到map"""
+        if key in self.widget_var_map.keys():
+            # todo system level logger
+            print "Error: key {} has been registered in Director object. ".format(key)
+            return
+        self.widget_var_map[key] = variable
+
+    def on_model_edited(self):
+        def inner():
+            print "model edited"
         return inner
 
     def init_comm_map(self):
@@ -156,3 +177,4 @@ class Director(object):
         self.comm_map["save"] = self.save()
         self.comm_map["export"] = self.export()
         self.comm_map["help"] = self.help()
+        self.comm_map["on_model_edited"] = self.on_model_edited()

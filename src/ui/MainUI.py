@@ -49,8 +49,9 @@ def add_option_menu(f):
 
 
 class UIOperator(object):
-    def __init__(self, comm_map):
-        self.comm_map = comm_map
+    def __init__(self, director):
+        self.director = director
+        self.comm_map = director.comm_map
         self.root = Tk()
 
         # bind key event
@@ -63,8 +64,10 @@ class UIOperator(object):
         self.frame_height = 1000
         self.root.geometry("{}x{}".format(self.frame_width, self.frame_height))
         self.root.config(menu=self._get_menu_bar())
-        lcode_window = Label(self.root, text="Model")
-        lcode_window.pack()
+        var_path = StringVar()
+        l_model_file_path = Label(self.root, textvariable=var_path)
+        self.director.register_widget_var("model_file_path", var_path)
+        l_model_file_path.pack()
         self._add_code_window()
         # print self.root.children.keys()
         lLTL = Label(self.root, text="LTL formula for the path")
@@ -87,10 +90,10 @@ class UIOperator(object):
     @add_option_menu
     @add_file_menu
     def _get_menu_bar(self):
-         return Menu(self.root, name="menu")
+        return Menu(self.root, name="menu")
 
     def _add_code_window(self):
-        CodeWindow(self.root)
+        self.code_window = CodeWindow(self.root, self.director)
 
     def start_ui_loop(self):
         self.root.mainloop()
@@ -99,6 +102,6 @@ class UIOperator(object):
 if __name__ == '__main__':
     manager = Manager()
     director = Director(manager)
-    ui_operator = UIOperator(director.comm_map)
+    ui_operator = UIOperator(director)
     director.root = ui_operator.root
     ui_operator.start_ui_loop()
