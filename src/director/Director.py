@@ -9,6 +9,7 @@ from Tkinter import *
 import re
 from util.CsvFileHelper import write_csv_rows
 from tkMessageBox import showinfo
+from util.FileHelper import write_2_file
 
 
 class Director(object):
@@ -18,6 +19,7 @@ class Director(object):
         self.comm_map = {}
         self.init_comm_map()
         self.widget_var_map ={}
+        self.model_edit_flag = False
 
     def open_file(self):
         def inner():
@@ -114,9 +116,16 @@ class Director(object):
 
     def save(self):
         def inner(event):
-            widget = event.widget
-            text = widget.get("1.0", END)
-            print "enter save function"
+            if self.model_edit_flag:
+                widget = event.widget
+                model_content = widget.get("1.0", END)
+                self.model_edit_flag = False
+                path_var = self.widget_var_map["model_file_path"]
+                path = path_var.get()
+                if path[-1] == "*":
+                    path = path[:-1]
+                    path_var.set(path)
+                write_2_file(model_content, path)
         return inner
 
     def export(self):
@@ -163,9 +172,27 @@ class Director(object):
             return
         self.widget_var_map[key] = variable
 
+    def _get_widget_var(self, key):
+        '''
+        获取通过UIOperator注册的widget对应的variable
+        :return: variable
+        '''
+        if key not in self.widget_var_map.keys():
+            # todo add system level logger
+            print "Error key {} not exist in Director.widget_var_map"
+            return
+        return self.widget_var_map[key]
+
     def on_model_edited(self):
-        def inner():
-            print "model edited"
+        def inner(event):
+            if self.model_edit_flag:
+                return
+            self.model_edit_flag = True
+            file_path_var = self._get_widget_var("model_file_path")
+            if file_path_var:
+                path = file_path_var.get()
+                path += "*"
+                file_path_var.set(path)
         return inner
 
     def init_comm_map(self):
