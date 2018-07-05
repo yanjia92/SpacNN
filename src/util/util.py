@@ -20,4 +20,3 @@ def interval(a, b, step):
         a += step
     return result
 
-

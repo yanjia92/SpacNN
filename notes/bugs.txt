@@ -1,0 +1,7 @@
+BUGS
+====
+
+1. parsing duration from ltl bug
+解析需要同时考虑U<=和num之间是否存在空格两种情况.
+目前的做法是对'U[0, 10]'取','的位置然后取slice的算法.
+

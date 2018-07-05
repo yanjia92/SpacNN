@@ -87,13 +87,13 @@ class Manager(object):
         else:
             return
 
-    def set_model_duration(self, duration):
+    def set_model_duration(self, str_duration):
         '''duration: str_valued duration'''
         if self.model.model_type == ModelType.DTMC:
-            self.model.duration = int(duration)
+            self.model.duration = int(str_duration)
         else:
             # CTMC case
-            self.model.duration = float(duration)
+            self.model.duration = float(str_duration)
 
     def _set_param(self, *constants):
         '''
