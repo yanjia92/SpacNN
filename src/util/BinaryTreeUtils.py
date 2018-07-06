@@ -26,3 +26,4 @@ def BT_level_traverse(root):
         if right:
             queue.append(right)
     return result
+

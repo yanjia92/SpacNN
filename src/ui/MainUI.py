@@ -6,7 +6,6 @@ from ui.CodeWindow import CodeWindow
 from util.SystemUtil import *
 
 
-
 '''
 设计思路: 一个dict维护从command_name到command的映射
 '''

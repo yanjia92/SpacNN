@@ -2,10 +2,8 @@ import ply.yacc as yacc
 from LTLLexer import LTLLexer
 from collections import namedtuple
 import os
-from util.BinaryTreeUtils import BT_level_traverse
 import copy
-
-
+from util.BinaryTreeUtils import BT_level_traverse
 TreeNode = namedtuple("TreeNode", ["object", "left", "right"])
 
 
@@ -100,6 +98,7 @@ class LTLParser(object):
     def _clear_results(self):
         while len(self.parsed_results) > 0:
             self.parsed_results.pop(0)
+
 
 def main():
     parser = LTLParser().build_parser()
