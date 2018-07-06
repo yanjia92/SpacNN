@@ -19,11 +19,13 @@ class Director(object):
         self.manager = manager
         self.comm_map = {}
         self.init_comm_map()
-        self.widget_var_map ={}
-        self.model_edit_flag = False
+        self.widget_var_map = {}
+        self.model_edited = False
+        self.model_opened = False
 
     def open_file(self):
         def inner():
+            self.model_opened = False
             filename = tkFileDialog.askopenfilename(
                 title="Select your PRISM model")
             var = self.widget_var_map["model_file_path"]
@@ -37,6 +39,7 @@ class Director(object):
                 with open(filename, "r") as f:
                     for l in f:
                         cw_text.insert(END, l)
+            self.model_opened = True
         return inner
 
     def _input_unsure_params(self, names):
@@ -112,17 +115,23 @@ class Director(object):
         return inner
 
     def save(self):
+        '''
+        write model back to file system and rm * from file path
+        :return: None
+        '''
         def inner(event):
-            if self.model_edit_flag:
+            if self.model_edited:
                 widget = event.widget
                 model_content = widget.get("1.0", END)
-                self.model_edit_flag = False
                 path_var = self.widget_var_map["model_file_path"]
                 path = path_var.get()
+                # rm * from path
                 if path[-1] == "*":
                     path = path[:-1]
                     path_var.set(path)
+                # save to file system
                 write_2_file(model_content, path)
+                self.model_edited = False
         return inner
 
     def export(self):
@@ -181,15 +190,19 @@ class Director(object):
         return self.widget_var_map[key]
 
     def on_model_edited(self):
+        '''
+        append * to file path when file is edited.
+        :return: None
+        '''
         def inner(event):
-            if self.model_edit_flag:
+            if self.model_edited or (not self.model_opened):
                 return
-            self.model_edit_flag = True
             file_path_var = self._get_widget_var("model_file_path")
             if file_path_var:
                 path = file_path_var.get()
                 path += "*"
                 file_path_var.set(path)
+            self.model_edited = True
         return inner
 
     def init_comm_map(self):
