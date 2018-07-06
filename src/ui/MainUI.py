@@ -29,7 +29,13 @@ def add_file_menu(f):
         menu_bar = f(*args, **kwargs)
 
         file_menu = Menu(menu_bar, tearoff=0)
-        file_menu.add_command(label="Open", command=comm_map["open"])
+        if on_windows_platform():
+            open_label = "Open  Ctrl+o"
+            save_label = "Save Ctrl+s"
+        elif on_mac_platform():
+            open_label = "Open  Cmd+o"
+            save_label = "Save  Cmd+s"
+        file_menu.add_command(label=open_label, command=comm_map["open"])
         menu_bar.add_cascade(label="Model", menu=file_menu)
         return menu_bar
     return wrapper

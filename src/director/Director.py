@@ -134,6 +134,26 @@ class Director(object):
                 self.model_edited = False
         return inner
 
+    def menu_save(self, widget):
+        '''
+        menu save的command
+        :param widget: label widget for file path
+        :return: None
+        '''
+        def inner():
+            if widget:
+                model_content = widget.get("1.0", END)
+                path_var = self.widget_var_map["model_file_path"]
+                path = path_var.get()
+                # rm * from path
+                if path[-1] == "*":
+                    path = path[:-1]
+                    path_var.set(path)
+                # save to file system
+                write_2_file(model_content, path)
+                self.model_edited = False
+        return inner
+
     def export(self):
         def inner():
             export_to = tkFileDialog.asksaveasfilename(
@@ -215,3 +235,4 @@ class Director(object):
         self.comm_map["export"] = self.export()
         self.comm_map["help"] = self.help()
         self.comm_map["on_model_edited"] = self.on_model_edited()
+        self.comm_map["menu_save"] = self.menu_save
