@@ -22,7 +22,6 @@ class Manager(object):
     def __init__(self):
         self.manager_params = {
             "隐藏层神经元个数": 5, 
-            "输出层神经元个数": 1, 
             "训练样本取样数": 6000,
             "学习速率": 0.05,
             "矫正率": 0.1
@@ -30,7 +29,6 @@ class Manager(object):
 
         self._params_map = {
             "nh": "隐藏层神经元个数",
-            "no": "输出层神经元个数",
             "samples": "训练样本取样数",
             "learning_rate": "学习速率",
             "correct_rate": "矫正率"
@@ -149,7 +147,7 @@ class Manager(object):
 
         self.regressor.setup(len(self.expr_params),
                              int(self.get_manager_param("nh")),
-                             int(self.get_manager_param("no")),
+                             1,
                              self.get_manager_param("learning_rate"),
                              self.get_manager_param("correct_rate"))
 

@@ -13,7 +13,15 @@ def sigmond_prime(x):
 
 
 def interval(a, b, step):
-    # 返回[a,b]之间的一系列数值组成的数组,数组之间的step为step
+    '''
+    return a list of data specified by start(a), end(b), and step
+    :param a: start
+    :param b: end
+    :param step: step
+    :return: [datas]
+    '''
+    if step == 0 or a == b:
+        return list()
     result = []
     while a <= b:
         result.append(a)
