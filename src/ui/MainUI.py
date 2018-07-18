@@ -30,11 +30,9 @@ def add_file_menu(f):
 
         file_menu = Menu(menu_bar, tearoff=0)
         if on_windows_platform():
-            open_label = "Open  Ctrl+o"
-            save_label = "Save Ctrl+s"
+            open_label = "Open"
         elif on_mac_platform():
-            open_label = "Open  Cmd+o"
-            save_label = "Save  Cmd+s"
+            open_label = "Open"
         file_menu.add_command(label=open_label, command=comm_map["open"])
         menu_bar.add_cascade(label="Model", menu=file_menu)
         return menu_bar

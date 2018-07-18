@@ -120,6 +120,7 @@ class Director(object):
         :return: None
         '''
         def inner(event):
+            print "save key event caught."
             if self.model_edited:
                 widget = event.widget
                 model_content = widget.get("1.0", END)
