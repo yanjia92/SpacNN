@@ -27,7 +27,9 @@ def write_csv_rows(file_path, datas, headers=None, sep=","):
 
 
 def parse_csv_cols(file_path, types, has_headers=True, sep=','):
-    ''':return [[col]]'''
+    '''
+    :return [[col]]
+    '''
     data_rows = parse_csv_rows(file_path, types, has_headers, sep)
     return _as_cols(data_rows)
 
@@ -44,7 +46,14 @@ def _as_cols(data_matrix):
 
 
 def parse_csv_rows(path, types, has_headers=True, sep=','):
-    ''':return [[row]]'''
+    '''
+    parse csv file row by row
+    :param path: path to csv file
+    :param types: single type or type list
+    :param has_headers: False or True
+    :param sep: separator
+    :return: rows of data(list)
+    '''
     results = []
     with open(path, "r") as f:
         first_line = True
@@ -79,6 +88,8 @@ def test_write():
         datas.append(tuple(range(3)))
     headers = ["col1", "col2", "col3"]
     write_csv_rows(write_to, datas, headers)
+    datas = parse_csv_rows(write_to, [int])
+    print data
 
 
 if __name__ == "__main__":

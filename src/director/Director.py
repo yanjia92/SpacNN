@@ -6,11 +6,11 @@ from util.util import *
 from itertools import product
 from ui.testInputDialog import ManagerParamInputDialog
 from Tkinter import *
-import re
 from util.CsvFileHelper import write_csv_rows
 from tkMessageBox import showinfo
 from util.FileHelper import write_2_file
 from LTLHelper import LTLHelper
+from util.CsvFileHelper import parse_csv_cols
 
 
 class Director(object):
@@ -22,6 +22,7 @@ class Director(object):
         self.widget_var_map = {}
         self.model_edited = False
         self.model_opened = False
+        self.prism_true_datas = []
 
     def open_file(self):
         def inner():
@@ -102,6 +103,10 @@ class Director(object):
 
             test_ys = self.manager.run_test()
             self.manager.save_predict_results(test_xs, test_ys)
+            if len(self.prism_true_datas) > 0:
+                error = self._mse(test_ys, self.prism_true_datas[1])
+                if error:
+                    print "predict mse: {}".format(error)
             self.manager.plot_expr_datas(test_xs, test_ys)
         return inner
 
@@ -226,6 +231,13 @@ class Director(object):
             self.model_edited = True
         return inner
 
+    def on_adding_prism_true_data(self):
+        def inner():
+            path = tkFileDialog.askopenfilename(title="Select your true data from PRISM")
+            self.prism_true_datas = parse_csv_cols(path, float)
+            print "PRISM true data added. "
+        return inner
+
     def init_comm_map(self):
         self.comm_map["open"] = self.open_file()
         self.comm_map["train"] = self.train()
@@ -237,3 +249,19 @@ class Director(object):
         self.comm_map["help"] = self.help()
         self.comm_map["on_model_edited"] = self.on_model_edited()
         self.comm_map["menu_save"] = self.menu_save
+        self.comm_map["atdfp"] = self.on_adding_prism_true_data()
+
+    def _mse(self, y1s, y2s):
+        '''
+        compute the mean square error of y1 and y2
+        :param y1: list of datas
+        :param y2: list of datas
+        :return:
+        '''
+        if len(y1s) == 0 or len(y2s) == 0:
+            return
+        if len(y1s) != len(y2s):
+            return
+        temp = [(v1 - v2) ** 2 for (v1, v2) in zip(y1s, y2s)]
+        return sum(temp) / len(temp)
+

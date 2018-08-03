@@ -10,7 +10,7 @@ module SQ
 
     [request] true -> rate_arrive : (q'=min(q+1,q_max));
 
-    [serve] q>1 -> (q'=q- 1); // f: 44a28 
+    [serve] q>1 -> (q'=q- 1); // f: 44a28
 
     [serve_last] q==1 -> (q'=q- 1);
     // test comment 11
@@ -55,6 +55,7 @@ module PM
 endmodule
 
 label failure = q >= 6;
+
 
 
 

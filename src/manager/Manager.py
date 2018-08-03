@@ -43,6 +43,7 @@ class Manager(object):
         self.ltl_parser = LTLParser().build_parser()
         self.predict_xs = None
         self.predict_ys = None
+        self.prism_test_datas = []
 
     def set_manager_param(self, name, param):
         self.manager_params[name] = param
