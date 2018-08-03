@@ -20,8 +20,8 @@ def interval(a, b, step):
     :param step: step
     :return: [datas]
     '''
-    if step == 0 or a == b:
-        return list()
+    if a > b or step < 0:
+        return
     result = []
     while a <= b:
         result.append(a)

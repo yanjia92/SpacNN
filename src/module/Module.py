@@ -3,7 +3,6 @@ import logging
 logging.basicConfig(level=logging.DEBUG)
 from collections import OrderedDict
 import copy
-from collections import defaultdict
 from util.AnnotationHelper import *
 
 # class represents a DTMC/CTMC module in PRISM

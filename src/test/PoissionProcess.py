@@ -34,8 +34,9 @@ def poission_model():
         return vs['n'] >= 4
     labels['nge4'] = nge4
 
-    model = ModulesFile.ModulesFile(ModelType.CTMC, modules=[module], labels=labels)
+    model = ModulesFile(ModelType.CTMC, modules=[module], labels=labels)
     return model
+
 
 def test_run():
     model = poission_model()

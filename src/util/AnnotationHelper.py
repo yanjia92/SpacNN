@@ -110,6 +110,7 @@ def testname(name):
         return f
     return wrapper
 
+
 def testname2(name):
     def decorator(func):
         print name
@@ -118,6 +119,7 @@ def testname2(name):
         return wrapper1
     return decorator
 
+
 def setresult(value):
     def decorator(func):
         def wrapper(*args, **kwargs):
@@ -125,9 +127,26 @@ def setresult(value):
         return wrapper
     return decorator
 
+
 @profileit("./profileit_test")
 def test(a):
     return a
+
+
+def singleton(cls):
+    '''
+    使用注解实现单例模式
+    :param cls:
+    :return:
+    '''
+    instances = {}
+
+    def _singleton(*args, **kwargs):
+        if cls not in instances:
+            instances[cls] = cls(*args, **kwargs)
+        return instances[cls]
+    return _singleton
+
 
 if __name__ == "__main__":
     print test(1)

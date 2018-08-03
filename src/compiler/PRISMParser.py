@@ -9,6 +9,9 @@ from util.MathUtils import *
 from collections import defaultdict
 from util.ListUtils import shallow_cpy
 from math import floor, ceil
+import logging, sys
+from os.path import *
+from util.AnnotationHelper import singleton
 
 
 def bin_add(x,y):
@@ -502,7 +505,6 @@ class BasicParser(object):
         slices = shallow_cpy(p.slice)
         frml_name = slices[2].value
         self.vcf_map[frml_name] = slices[4].value
-        # self.logger.info("Formula_{} added.".format(slices[2].value))
 
     def p_label_statement(self, p):
         '''label_statement : LABEL NAME ASSIGN boolean_expression SEMICOLON'''
@@ -525,7 +527,6 @@ class BasicParser(object):
 
     def parse_model(self, filepath):
         commentremoved = clear_comment(filepath)
-        # self.logger.info("Parsing model file : {}".format(commentremoved))
         lines = []
 
         with open(commentremoved) as f:
@@ -557,18 +558,34 @@ class LTLParser(object):
 class ModelConstructor(object):
     model = None
 
-    def __init__(self):
+    def __init__(self, base_dir=None):
         self.parser = BasicParser()
         self.parser.build()
         ModelConstructor.model = ModulesFile(ModelType.DTMC)
-        # self.logger = logging.getLogger("model_constructor's logger")
-        # self.logger.addHandler(logging.StreamHandler(sys.stdout))
-        # self.logger.setLevel(logging.INFO)
+        self.logger = logging.getLogger(__name__)
+        self.logger.addHandler(logging.StreamHandler(sys.stdout))
+        self.logger.setLevel(logging.DEBUG)
+        if base_dir:
+            if not exists(base_dir) or not isdir(base_dir):
+                return
+            self._base_dir = base_dir
+
+    def set_base_dir(self, base_dir):
+        if not exists(base_dir) or not isdir(base_dir):
+            return False
+        self._base_dir = base_dir
+        return True
 
     def parseModelFile(self, filepath):
         self.parser.parse_model(filepath)
-        # self.logger.info("Model parsing finished.")
-        print "Parse finished."
         return ModelConstructor.model
 
+    def get_model(self, filename):
+        if not hasattr(self, "_base_dir"):
+            self.logger.error("先设置模型所在路径")
+            return
+        path = join(self._base_dir, filename + ".prism")
+        if not exists(path):
+            self.logger.error("%s.prism 不存在", filename)
+        return self.parseModelFile(path)
 

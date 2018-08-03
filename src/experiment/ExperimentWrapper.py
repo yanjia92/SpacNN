@@ -14,6 +14,7 @@ from model.ModelFactory import ModelFactory
 # 使用simulation的方法对模型进行experiment
 # 为模型中的未定参数设定一组值,并进行simulation验证实验,返回多次simulation的期望值(平均值)
 
+
 class ExperimentWrapper(object):
     def __init__(self, checker, samples_per_param=None):
         # checker: Checker typed instance
@@ -97,6 +98,7 @@ class ExperimentWrapper(object):
             # logger.info("params: {0}, prob: {1}".format(str(params), (low+high)/2.0))
         return results
 
+
 def main():
     from test.PoissionProcess import poission_model
     from util.util import interval
@@ -109,9 +111,8 @@ def main():
     for value in interval(0.5, 5, 0.1):
         constants.append(Constant('r', value))
     wrapper.setconstants([constants])
-    # results = wrapper.do_expe()
+    results = wrapper.do_expe()
     wrapper.modelcheck()
-
 
 
 # 根据给定的参数值进行实验
@@ -126,6 +127,7 @@ def executepoissionexpe(params):
     wrapper.setconstants(params)
     results = wrapper.do_expe()
     return results
+
 
 # 根据给定的参数进行模型检验
 # params: [[constant1s], ...[constantns]] e.g. list of list of constant instance

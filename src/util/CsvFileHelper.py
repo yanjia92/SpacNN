@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*-
 from SystemUtil import on_windows_platform
+from os.path import exists, isfile
 
 
 def write_csv_rows(file_path, datas, headers=None, sep=","):
@@ -55,11 +56,13 @@ def parse_csv_rows(path, types, has_headers=True, sep=','):
     :return: rows of data(list)
     '''
     results = []
+    if not exists(path) or not isfile(path):
+        return results
     with open(path, "r") as f:
-        first_line = True
+        is_first_line = True
         for _line in f:
-            if first_line and has_headers:
-                first_line = False
+            if is_first_line and has_headers:
+                is_first_line = False
                 continue
             results.append(_parse_line_row(_line, types, sep))
     return results
