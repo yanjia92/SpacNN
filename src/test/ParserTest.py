@@ -55,7 +55,7 @@ class ParserTest(unittest.TestCase):
         for k, v in checked_result_map.items():
             error_map[float(k)] = fabs(v - self.prism_data_map[float(k)])
         self.logger.info("error_map: %s", str(error_map))
-        self.assertGreaterEqual(0.001, sum(error_map.values()) / len(checked_result_map))
+        self.assertGreaterEqual(0.01, sum(error_map.values()) / len(checked_result_map))
 
     def testGenRandomPath(self):
         '''
