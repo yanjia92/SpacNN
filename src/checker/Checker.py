@@ -5,7 +5,8 @@ import logging
 import math
 import re
 import threading
-import time
+import sys
+from util.AnnotationHelper import *
 
 
 # class represent an interval in DTMC/CTMC
@@ -78,13 +79,14 @@ class Checker(threading.Thread):
         self.checkingType = checkingType
         self.duration = duration
         self.fb = fb # specify whether failure biasing is enabled
-        self.model.fb = fb
+        if self.model:
+            self.model.fb = fb
+            self.model.duration = self.duration
         self.samples_size = None # for test use
 
-        # self.logger = logging.getLogger("Checker logging")
-        # self.logger.addHandler(logging.FileHandler(get_log_dir() + get_sep() + "checker.log", "w"))
-        # self.logger.addHandler(logging.StreamHandler(sys.stdout))
-        # self.logger.setLevel(logging.INFO)
+        self.logger = logging.getLogger(__name__)
+        self.logger.addHandler(logging.StreamHandler(sys.stdout))
+        self.logger.setLevel(logging.DEBUG)
 
     # Get upper-bound of variance
     def __getVar_m(self, n, a, b):
@@ -99,13 +101,12 @@ class Checker(threading.Thread):
         d2 = p * p * (p + 1.0)
         return d1 / d2
 
-    # @setresult(6000)
+    @setresult(2000)
     def get_sample_size(self):
         if hasattr(self, "samples"):
             return self.samples
         sz = int(1.0 / ((1 - self.c) * 4 * self.d *
                           self.d) - self.a - self.b - 1)
-        # print "Checker is going to generates {} paths".format(sz)
         return sz
 
     def set_sample_size(self, size):
@@ -216,12 +217,14 @@ class Checker(threading.Thread):
     # return: boolean
     # path: list of Step instance
     def verify(self, path, ltl=None):
-        step0 = path[0]
-        satisfiedSteps = self._rverify(path, 0, ltl)
-        # result = 0 in map(lambda step: step.state_id, satisfiedSteps)
-        result = step0 in list(satisfiedSteps)
-        # logging.info('path verified result: %s' % str(result))
-        return result
+        if not path or len(path) <= 0:
+            self.logger.debug("generating a zero-length path")
+            return False
+        else:
+            step0 = path[0]
+            satisfiedSteps = self._rverify(path, 0, ltl)
+            result = step0 in list(satisfiedSteps)
+            return result
 
     '''
     path: list of Step instance

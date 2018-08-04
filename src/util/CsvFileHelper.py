@@ -46,7 +46,7 @@ def _as_cols(data_matrix):
     return datas
 
 
-def parse_csv_rows(path, types, has_headers=True, sep=','):
+def parse_csv_rows(path, types=float, has_headers=True, sep=','):
     '''
     parse csv file row by row
     :param path: path to csv file

@@ -1,6 +1,6 @@
 dtmc
 
-const double YEAR = 0.5;
+const double YEAR = 1;
 const double SCREEN_THICKNESS;
 const double S3R_K = 66.8333333333;
 const double SB_K = 0.0039;
@@ -8,13 +8,14 @@ formula IEL_YEAR= S3R_K / SCREEN_THICKNESS;
 formula NIEL_YEAR = SB_K * SCREEN_THICKNESS;
 
 module TIME
-t_turn : [0, 1] init 1;
+t_turn : [0, 1] init 0;
 day: [1, floor(YEAR*365)] init 1;
 [] t_turn==1&day<YEAR*365 -> 1.0 : (day'=day+1)&(t_turn'=0);
 endmodule
 
 const double SB_P_THRESHOLD = 0.819;
-const double SB_A_MU = 0.1754;
+// const double SB_A_MU = 0.1754;
+const double SB_A_MU = 0.8;
 // const double SB_A_SIGMA = 0.48699609;
 const double SB_A_SIGMA = 1.4;
 // const double SB_B = 1.8;

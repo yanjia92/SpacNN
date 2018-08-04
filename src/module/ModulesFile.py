@@ -240,6 +240,21 @@ class ModulesFile(object):
             return
         self.constants.update({name: val_or_obj})
 
+    def set_constant(self, obj):
+        if isinstance(obj, Constant):
+            name = obj.get_name()
+            if name in self.constants:
+                self.constants[name].set_value(obj.get_value())
+                return True
+        return False
+
+    def set_constant_name_value(self, name, value):
+        if name not in self.constants:
+            return False
+        else:
+            obj = self.constants[name]
+            obj.set_value(value)
+
     def setVariable(self, name, val_or_obj):
         if not self.localVars[name]:
             return
@@ -464,7 +479,6 @@ class ModulesFile(object):
         #                                next_move.holding_time - duration)
         return Step(ap_set, next_move)
 
-    # @profileit(get_log_dir() + get_sep() + "pathgenV2")
     def get_random_path_V2(self):
         ''':return [Step]'''
         if not self.commPrepared:
@@ -731,8 +745,6 @@ class ModulesFile(object):
             self.tstate_apset_map[key] = apset
         self.restoreSystem()
         self.commPrepared = True
-        # self.logger.info("prepare_commands finished")
-
 
     def exportPathTo(self, path, filename):
         f = file(filename, 'w')
