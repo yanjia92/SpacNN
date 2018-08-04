@@ -96,13 +96,14 @@ class Manager(object):
 
     def _set_param(self, *constants):
         '''
-        将参数设置到parser中
+        将参数设置到ModulesFile中
         :param constants: [constant_obj]
         :return: None
         '''
-        for constant_obj in constants:
-            self.mdl_parser.parser.vcf_map[constant_obj.get_name()].set_value(
-                constant_obj.get_value())
+        model = self.checker.model
+        if model:
+            for constant_obj in constants:
+                model.set_constant(constant_obj)
 
     def _clear_param(self, *constants):
         for constant_obj in constants:

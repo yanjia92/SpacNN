@@ -171,11 +171,15 @@ class BasicParser(object):
                                  | CONST DOUBLE NAME ASSIGN NUM SEMICOLON
                                  | CONST BOOL NAME ASSIGN NUM SEMICOLON'''
         name = p[3]
-        value = self.resolvetype(p[5], p[2])
+        _value = p[5]
+        _type = p[2]
+        value = self.resolvetype(_value, _type)
+        if not value:
+            # todo log unrecognized type name
+            pass
         obj = Constant(name, value)
         ModelConstructor.model.setConstant(name, obj)
         self.vcf_map[p[3]] = obj
-        # self.logger.info("Constant added: {} = {}".format(name, value))
 
     def p_const_expression1(self, p):
         '''const_value_statement : CONST INT NAME SEMICOLON
@@ -186,7 +190,6 @@ class BasicParser(object):
         obj = Constant(name)
         ModelConstructor.model.setConstant(name, obj)
         self.vcf_map[name] = obj
-        # self.logger.info("Unspecified constant added: {}".format(name))
 
     def p_const_expression2(self, p):
         '''const_value_statement : CONST INT NAME ASSIGN expr SEMICOLON
@@ -197,7 +200,6 @@ class BasicParser(object):
         obj = Constant(name, value)
         ModelConstructor.model.setConstant(name, obj)
         self.vcf_map[name] = obj
-        # self.logger.info("Constant added: {} = {}".format(name, value))
 
     def p_module_var_def_statement(self, p):
         '''module_var_def_statement : NAME COLON LB expr COMMA expr RB INIT NUM SEMICOLON'''
@@ -209,7 +211,6 @@ class BasicParser(object):
                        int)  # 目前默认变量的类型是int p[index] index不能是负数
         self.module.addVariable(var)
         self.vcf_map[var.get_name()] = var
-        # self.logger.info("Variable_{} added to Module_{}. init={}, range=[{}, {}]".format(var.get_name(), str(self.module), var.initVal, var.valRange[0], var.valRange[-1]))
 
     def p_module_command_statement(self, p):
         '''module_command_statement : LB NAME RB boolean_expression THEN updates SEMICOLON'''
@@ -348,15 +349,16 @@ class BasicParser(object):
         def f():
             obj = self.vcf_map[name]
             if not obj:
+                # todo log unknown token name
                 print name
             if callable(obj):
                 try:
                     return obj()
                 except ZeroDivisionError:
                     print name
-            # if name == "SCREEN_THICKNESS" and int(obj.get_value()) != 4:
-            #     logger.info("thickness={}".format(int(obj.get_value())))
-            return obj.get_value()
+            else:
+                # constant or variable
+                return obj.get_value()
         p[0] = f
 
     def p_factor2(self, p):
@@ -511,12 +513,11 @@ class BasicParser(object):
         ModelConstructor.model.labels[lbl_name] = lbl_func
 
     def resolvetype(self, strval, type):
-        if 'int' == type:
-            return int(strval)
-        if 'double' == type:
-            return float(strval)
-        if 'bool' == type:
-            return bool(strval)
+        type_map = {"int": int, "double": float, "bool": bool}
+        if type in type_map:
+            return type_map[type](strval)
+        else:
+            return None
 
     def resolvenum(self, strval):
         if strval.find(r"\.") == -1:
@@ -549,11 +550,6 @@ class BasicParser(object):
         self.parser = yacc.yacc(module=self, outputdir=cur_dir)
 
 
-class LTLParser(object):
-    '''P=? [True U<=NUM statement_prop]'''
-    pass
-
-
 class ModelConstructor(object):
     model = None
 
@@ -570,5 +566,10 @@ class ModelConstructor(object):
         # self.logger.info("Model parsing finished.")
         print "Parse finished."
         return ModelConstructor.model
+
+
+if __name__ == "__main__":
+    modelConstructor = ModelConstructor()
+    model = modelConstructor.parseModelFile("/Users/bitbook/Documents/SpacNN/prism_model/DPM.prism")
 
 

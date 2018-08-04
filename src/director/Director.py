@@ -11,6 +11,7 @@ from tkMessageBox import showinfo
 from util.FileHelper import write_2_file
 from LTLHelper import LTLHelper
 from util.CsvFileHelper import parse_csv_cols
+import logging
 
 
 class Director(object):
@@ -23,6 +24,9 @@ class Director(object):
         self.model_edited = False
         self.model_opened = False
         self.prism_true_datas = []
+        self.logger = logging.getLogger(__name__)
+        self.logger.setLevel(logging.DEBUG)
+        self.logger.addHandler(logging.StreamHandler(sys.stdout))
 
     def open_file(self):
         def inner():
@@ -57,7 +61,8 @@ class Director(object):
     def train(self):
         def inner():
             if not hasattr(self, "root"):
-                pass
+                self.logger.error("root not attached to Director instance")
+                return
             for widget in self.root.pack_slaves():
                 if isinstance(widget, Entry) and widget._name == "eLTL":
                     strLTL = widget.get()
@@ -66,6 +71,7 @@ class Director(object):
                     result = self.manager.set_ltl(parsed_ltl)
                     if not result:
                         tkMessageBox.showerror("Error", "ltl 设置错误")
+                    break
             # get unsure params
             params_names = self.manager.unsure_param_names()
             # show dialog for user to input

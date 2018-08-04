@@ -1,6 +1,6 @@
 dtmc
 
-const double YEAR = 0.5;
+const double YEAR = 1;
 const double SCREEN_THICKNESS;
 const double S3R_K = 66.8333333333;
 const double SB_K = 0.0039;
