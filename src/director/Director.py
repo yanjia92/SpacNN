@@ -260,8 +260,8 @@ class Director(object):
     def _mse(self, y1s, y2s):
         '''
         compute the mean square error of y1 and y2
-        :param y1: list of datas
-        :param y2: list of datas
+        :param y1: list of data
+        :param y2: list of data
         :return:
         '''
         if len(y1s) == 0 or len(y2s) == 0:

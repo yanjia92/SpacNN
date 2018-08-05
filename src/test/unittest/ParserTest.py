@@ -19,10 +19,10 @@ class ParserTest(unittest.TestCase):
     def setUp(self):
         self.modelConstructor = ModelConstructor()
         self.model = self.modelConstructor.parseModelFile(get_prism_model_dir() + get_sep() + "smalltest.prism")
-        prism_data_rows = parse_csv_rows(get_prism_model_dir() + get_sep() + "screen_thickness_1_10_01.csv")
-        if prism_data_rows:
+        self.prism_data_rows = parse_csv_rows(get_prism_model_dir() + get_sep() + "screen_thickness_1_10_01.csv")
+        if self.prism_data_rows:
             self.prism_data_map = {}
-            for thickness, prob in prism_data_rows:
+            for thickness, prob in self.prism_data_rows:
                 self.prism_data_map[thickness] = prob
         ltl = "true U<=180 failure"
         ltl_parser = LTLParser().build_parser()

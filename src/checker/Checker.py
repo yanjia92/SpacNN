@@ -101,7 +101,7 @@ class Checker(threading.Thread):
         d2 = p * p * (p + 1.0)
         return d1 / d2
 
-    @setresult(2000)
+    @setresult(3421)
     def get_sample_size(self):
         if hasattr(self, "samples"):
             return self.samples

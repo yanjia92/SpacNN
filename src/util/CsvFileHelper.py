@@ -6,7 +6,7 @@ from os.path import exists, isfile
 def write_csv_rows(file_path, datas, headers=None, sep=","):
     assert len(datas) > 0
     lens = map(len, datas)
-    assert len(set(lens)) == 1
+    assert len(set(lens)) == 1  #  确保每一行数据数相等
     if headers:
         assert len(headers) == len(datas[0])
     with open(file_path, "w") as f:

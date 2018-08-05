@@ -10,22 +10,9 @@ import random
 def randomExpo(lamda, t=None, forcing=True):
     rnd = random.uniform(0, 1)
     if forcing and t:
-        return log(1-rnd*(1-math.exp(-1*lamda*t)))/(-1*lamda)
+        return log(1-rnd*(1-exp(-1*lamda*t)))/(-1*lamda)
     else:
         return log(1-rnd)/(-1*lamda)
-
-
-# const double a1 =  0.254829592;
-# const double a2 = -0.284496736;
-# const double a3 =  1.421413741;
-# const double a4 = -1.453152027;
-# const double a5 =  1.061405429;
-# const double p  =  0.3275911;
-# formula s3r_sign = s3r_std_cdf_x < 0 ? -1 : 1;
-# formula s3r_std_cdf_x_2 = s3r_sign * s3r_std_cdf_x / pow(2.0, 0.5);
-# formula s3r_t = 1.0/(1.0 + p * s3r_std_cdf_x_2);
-# formula s3r_y = 1.0 - (((((a5*s3r_t + a4)*s3r_t) + a3)*s3r_t + a2)*s3r_t + a1)*s3r_t*pow(e, -s3r_std_cdf_x_2 * s3r_std_cdf_x_2);
-# formula s3r_fail_prob = 1 - 0.5 * (1.0 + s3r_sign * s3r_y);  // 根据s3r所受电离能损剂量计算出的失效概率
 
 
 # 计算标准正态分布的累积分布函数
@@ -68,6 +55,30 @@ def sigmoid(x):
 
 def sigmoid_derivative(x):
     return x * (1 - x)
+
+
+def format_float(v, n):
+    '''
+    将浮点数v保留n位小数
+    :param v: float
+    :param n: int
+    :return:
+    '''
+    if not isinstance(n, int) or n < 0:
+        return None
+    str_v = str(v)
+    is_float = isinstance(v, float)
+    if not is_float:
+        str_v += "."
+        str_v += "0" * n
+        return float(str_v)
+    else:
+        int_part, float_part = str_v.split(".")
+        while len(float_part) < n:
+            float_part += "0"
+        float_part = float_part[:n]
+        return float(int_part + "." + float_part)
+
 
 class ErrorType():
     SQ_DIFF = 0
