@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 class MLPRegressorTest(ParserTest):
     def setUp(self):
         ParserTest.setUp(self)
-        self.mlp_regressor = MLPRegressor(alpha=0.0001, hidden_layer_sizes=(15, ), max_iter=40000,
+        self.mlp_regressor = MLPRegressor(alpha=0.00005, hidden_layer_sizes=(10, ), max_iter=40000,
                              activation="logistic", verbose='True', learning_rate="adaptive", solver="sgd", tol=1e-9)
         self.train_data_rows = parse_csv_rows("/Users/bitbook/Documents/SpacNN/data/smalltest_smc_1_10_01.csv")
 
@@ -72,7 +72,7 @@ class MLPRegressorTest(ParserTest):
     def testGenTrainData(self):
         '''
         对于smalltest.prism，产生其在[1, 10, 0.1]上的所有的模型检验结果
-        samples: 6433
+        samples: 500
         :return: 写入csv文件
         '''
         filepath = "/Users/bitbook/Documents/SpacNN/data/smalltest_smc_1_10_01.csv"
