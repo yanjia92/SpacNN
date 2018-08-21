@@ -62,7 +62,8 @@ class Checker(threading.Thread):
         d=0.02,
         duration=1.0,
             checkingType=CheckingType.QUANTATIVE,
-        fb = False):
+        fb = False,
+        samples=None):
         threading.Thread.__init__(self)
         self.model = model
         self.ltl = ltl
@@ -82,7 +83,8 @@ class Checker(threading.Thread):
         if self.model:
             self.model.fb = fb
             self.model.duration = self.duration
-        self.samples_size = None # for test use
+        if samples:
+            self.samples_size = samples # for test use
 
         self.logger = logging.getLogger(__name__)
         self.logger.addHandler(logging.StreamHandler(sys.stdout))
@@ -103,8 +105,8 @@ class Checker(threading.Thread):
 
     @setresult(521)
     def get_sample_size(self):
-        if hasattr(self, "samples"):
-            return self.samples
+        if hasattr(self, "samples_size"):
+            return self.samples_size
         sz = int(1.0 / ((1 - self.c) * 4 * self.d *
                           self.d) - self.a - self.b - 1)
         return sz

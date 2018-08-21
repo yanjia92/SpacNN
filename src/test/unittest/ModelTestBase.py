@@ -14,13 +14,13 @@ class ModelTestBase(unittest.TestCase):
         self.logger = logging.getLogger(__name__)
         self.logger.addHandler(sys.stdout)
         self.logger.setLevel(logging.INFO)
-        path = self._get_model_path()
+        path = self._get_model_root_path()
         # check whether path exist
         if not isdir(path):
             self.logger.error("model path not exist: %s", path)
         else:
             self.constructor.set_base_dir(base_dir=path)
-        self.model = self.constructor.get_model(self._get_model_name())
+        self._model = self.constructor.get_model(self._get_model_name())
 
     def _get_model_name(self):
         '''
@@ -30,7 +30,7 @@ class ModelTestBase(unittest.TestCase):
         '''
         pass
 
-    def _get_model_path(self):
+    def _get_model_root_path(self):
         '''
         implemented by subclass extends ModelTestBase
         :return:

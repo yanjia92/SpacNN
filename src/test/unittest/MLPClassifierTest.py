@@ -11,7 +11,7 @@ class TestMLPClassifier(ModelTestBase):
         self.duration = 20
         self.ltl = "true U<={} result_4".format(self.duration)
         self.ltl = self.ltl_parser.parse_line(self.ltl)
-        self.checker = Checker(model=self.model, ltl=self.ltl)
+        self.checker = Checker(model=self._model, ltl=self.ltl)
 
     def get_training_data(self):
         pass
