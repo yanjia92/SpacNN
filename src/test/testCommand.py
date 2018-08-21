@@ -3,7 +3,7 @@ from compiler.PRISMParser import ModelConstructor as Constructor
 
 def buildCommand():
     constructor = Constructor()
-    model = constructor.parseModelFile("../../prism_model/CommandTest.prism")
+    model = constructor._parseModelFile("../../prism_model/CommandTest.prism")
     return model.modules.values()[0].commands.values()[0]
 
 

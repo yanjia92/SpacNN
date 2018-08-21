@@ -14,7 +14,7 @@ def test():
     # get model object
     constructor = Constructor()
     model_file_path = "../../prism_model/smalltest.prism"
-    constructor.parseModelFile(model_file_path)
+    constructor._parseModelFile(model_file_path)
     model = constructor.model
     # set day's value
     days = range(1, 365*5)

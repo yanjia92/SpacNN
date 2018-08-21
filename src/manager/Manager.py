@@ -64,7 +64,7 @@ class Manager(object):
         self.model.duration = duration
 
     def read_model_file(self, file_path):
-        self.model = self.mdl_parser.parseModelFile(file_path)
+        self.model = self.mdl_parser._parseModelFile(file_path)
         self.checker = Checker(model=self.model)
 
     def _set_constants(self, *constants):

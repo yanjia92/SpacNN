@@ -50,7 +50,7 @@ class TestCase(unittest.TestCase):
 
     def get_parsed(self):
         constructor = ModelConstructor()
-        model = constructor.parseModelFile("../../prism_model/smalltest.prism")
+        model = constructor._parseModelFile("../../prism_model/smalltest.prism")
         return model
 
     # 测试同样的数据for parsed model

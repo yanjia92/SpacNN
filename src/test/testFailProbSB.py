@@ -143,7 +143,7 @@ def test():
 
 def get_parsed():
     constructor = ModelConstructor()
-    model = constructor.parseModelFile("../../prism_model/smalltest.prism")
+    model = constructor._parseModelFile("../../prism_model/smalltest.prism")
     return model
 
 

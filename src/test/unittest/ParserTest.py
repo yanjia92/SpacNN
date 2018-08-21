@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import unittest
 from compiler.PRISMParser import ModelConstructor
-from PathHelper import *
 from util.CsvFileHelper import *
 from util.util import interval
 from checker.Checker import Checker
@@ -10,42 +9,61 @@ from module.Module import Constant
 import logging
 import sys
 from math import fabs
+from experiment.ExperimentWrapper import ExperimentWrapper
 
 
 class ParserTest(unittest.TestCase):
     '''
     单元测试：测试parser出的模型运转良好
     '''
-    def setUp(self):
+
+    def __init__(self, model_path, ltl, path_length, params,  checking_delta=0.01, prism_data_path=None):
+        '''
+        :param model_path:
+        :param ltl:
+        :param path_length:
+        :param params: value of unsure parameters: map with key to be param_name, value to be value list
+        :param prism_data_path:
+        '''
+        unittest.TestCase.__init__(self)
+        # todo check path exist and is a file
+        self.model_path = model_path
+        self.prism_data_path = prism_data_path
+        self.ltl = ltl
+        self.parsed_ltl = None
         self.modelConstructor = ModelConstructor()
-        self.model = self.modelConstructor.parseModelFile(get_prism_model_dir() + get_sep() + "smalltest.prism")
-        self.prism_data_rows = parse_csv_rows(get_prism_model_dir() + get_sep() + "screen_thickness_1_10_01.csv")
+        self.ltl_parser = LTLParser().build_parser()
+        self.duration = path_length
+        self.checking_delta = checking_delta
+        self.params = params
+
+    def setUp(self):
+        self.model = self.modelConstructor._parseModelFile(self.model_path)
+        self.parsed_ltl = self.ltl_parser.parse_line(self.ltl)
+
+        if self.prism_data_path:
+            self.prism_data_rows = parse_csv_rows(self.prism_data_path)
         if self.prism_data_rows:
             self.prism_data_map = {}
-            for thickness, prob in self.prism_data_rows:
-                self.prism_data_map[thickness] = prob
-        ltl = "true U<=180 failure"
-        ltl_parser = LTLParser().build_parser()
-        parsed_ltl = ltl_parser.parse_line(ltl)
-        self.duration = 180
-        self.checker = Checker(self.model, parsed_ltl, duration=self.duration)
-        self.PARAM_NAME = "SCREEN_THICKNESS"
-        self.checking_delta = 0.01
-        self.thicknesses = interval(1, 10, 1)
+            for row in self.prism_data_rows:
+                attr = row[:-1]
+                label = row[-1]
+                self.prism_data_map[tuple(attr)] = label
+        checker = Checker(self.model, self.parsed_ltl, duration=self.duration)
+        self.experiment_wrapper = ExperimentWrapper(checker, self.params)
         self.logger = logging.getLogger(__name__)
         self.logger.addHandler(logging.StreamHandler(sys.stdout))
         self.logger.setLevel(logging.DEBUG)
 
     def testChecking(self):
         '''
-        验证checker的算法结果和prism的结果的平均误差在0.01范围内
+        verify the difference between smc and provided prism_data is within checking_delta
         :return: None
         '''
-        thicknesses = self.thicknesses
         checked_result_map = {}
-        for thickness in thicknesses:
+        for name, values in self.params.items():
             self.model.commPrepared = False
-            constant_obj = Constant(self.PARAM_NAME, thickness)
+            constant_obj = Constant(name, )
             set_result = self.model.set_constant(constant_obj)
             assert set_result
             result = self.checker.run_checker()

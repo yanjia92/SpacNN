@@ -19,7 +19,7 @@ class DTMCSyncUnittest(unittest.TestCase):
     def setUp(self):
         filepath = get_prism_model_dir() + get_sep() + "smalltest.prism"
         self.model_constructor = ModelConstructor()
-        self.model = self.model_constructor.parseModelFile(filepath)
+        self.model = self.model_constructor._parseModelFile(filepath)
         self.duration = 180
         self.model.duration = self.duration
         ltl = "true U<={} failure".format(self.duration)

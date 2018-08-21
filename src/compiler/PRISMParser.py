@@ -572,7 +572,7 @@ class ModelConstructor(object):
         self._base_dir = base_dir
         return True
 
-    def parseModelFile(self, filepath):
+    def _parseModelFile(self, filepath):
         self.parser.parse_model(filepath)
         return ModelConstructor.model
 
@@ -583,10 +583,10 @@ class ModelConstructor(object):
         path = join(self._base_dir, filename + ".prism")
         if not exists(path):
             self.logger.error("%s.prism 不存在", filename)
-        return self.parseModelFile(path)
+        return self._parseModelFile(path)
 
 if __name__ == "__main__":
     modelConstructor = ModelConstructor()
-    model = modelConstructor.parseModelFile("/Users/bitbook/Documents/SpacNN/prism_model/DPM.prism")
+    model = modelConstructor._parseModelFile("/Users/bitbook/Documents/SpacNN/prism_model/DPM.prism")
 
 

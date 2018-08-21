@@ -100,6 +100,23 @@ class LTLParser(object):
             self.parsed_results.pop(0)
 
 
+class LTLParserFacade(object):
+    def __init__(self):
+        self._parser = LTLParser().build_parser()
+
+    def parse_line(self, ltl):
+        '''
+        :param ltl: ltl forumla in string, e.g. True U<=100 someAP
+        :return: parsed_ltl represented in a array containing tokens
+        '''
+        if self._parser:
+            return self._parser.parse_line(ltl)
+
+    def parse_file(self, path):
+        if self._parser:
+            return self._parser.parse_file(path)
+
+
 def main():
     parser = LTLParser().build_parser()
     print parser.parse_file("../../prism_model/LTLTest.props")
