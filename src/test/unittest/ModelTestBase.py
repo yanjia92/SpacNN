@@ -8,6 +8,7 @@ import sys
 
 
 class ModelTestBase(unittest.TestCase):
+
     def setUp(self):
         self.constructor = ModelConstructor()
         self.ltl_parser = LTLParser()
@@ -32,7 +33,7 @@ class ModelTestBase(unittest.TestCase):
 
     def _get_model_root_path(self):
         '''
-        implemented by subclass extends ModelTestBase
+        could be overrided if necessary
         :return:
         '''
         return get_prism_model_dir()

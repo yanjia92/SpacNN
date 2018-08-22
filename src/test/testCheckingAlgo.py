@@ -50,7 +50,7 @@ def t2(model=None):
     # logger = get_logger()
     for t in thickness:
         ModelFactory.setParam("SCREEN_THICKNESS", t)
-        checker.model.prepare_commands()
+        checker.model.prepare()
         probs.append(checker.run_checker())
     # logger.info("samples={},c={},d={}".format(samplesize, c, d))
     # logger.info(probs)
@@ -75,7 +75,7 @@ def t3(model, set_param_func, prism_data_file):
     probs = []
     for t in thickness:
         set_param_func("SCREEN_THICKNESS", t)
-        checker.model.prepare_commands()
+        checker.model.prepare()
         probs.append(checker.run_checker())
     # logger.info("samples={},c={},d={}".format(samplesize, c, d))
     # logger.info(probs)

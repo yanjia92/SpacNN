@@ -46,6 +46,10 @@ class Step(object):
     def isInitState(self, all_up_label):
         return all_up_label in self.ap_set
 
+    def execute(self):
+        if self.next_move and self.next_move.cmd:
+            self.next_move.cmd.execute()
+
 
 def test():
     next_move = NextMove()

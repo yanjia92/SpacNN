@@ -139,7 +139,7 @@ class Manager(object):
         for constant_list in itertools.product(*constant_objs):
             try:
                 self._set_param(*constant_list)
-                self.model.prepare_commands()
+                self.model.prepare()
                 train_y = self.checker.run_checker()
                 train_x = [c_obj.get_value() for c_obj in constant_list]
                 train_data_x.append(train_x)

@@ -15,7 +15,6 @@ from Step import Step
 from util.AnnotationHelper import *
 from module.NextMove import NextMove
 from PathHelper import *
-import traceback
 import Queue
 
 # logger = logging.getLogger("ModulesFile logging")
@@ -65,7 +64,7 @@ class StepGenThd(threading.Thread):
                     # ModulesFile generate a step without move
                     break
                 if step.next_move.cmd:
-                    step.next_move.cmd.execAction()
+                    step.next_move.cmd.execute()
 
             model.restore_system()
 
@@ -129,6 +128,15 @@ class ModulesFile(object):
         self.STEPS_QUEUE_MAX_SIZE = STEPS_QUEUE_MAX_SIZE
 
         self.command_synced = False
+
+    def get_variables(self):
+        return self.localVarsList
+
+    def prepared(self):
+        return self.commPrepared
+
+    def type(self):
+        return self.model_type
 
     def init_queue(self):
         # why here using list is thread-safe?
@@ -347,7 +355,7 @@ class ModulesFile(object):
                     else:
                         holdingTime = 1
                 enabledCommand = cmds[index]
-                enabledCommand.execAction()
+                enabledCommand.execute()
                 key = self._updateCurAndPrevState()
                 return (
                     enabledCommand.name,
@@ -482,7 +490,7 @@ class ModulesFile(object):
     def get_random_path_V2(self):
         ''':return [Step]'''
         if not self.commPrepared:
-            self.prepare_commands()
+            self.prepare()
         path = []
         passed_time = 0.0
         duration = self.duration
@@ -497,9 +505,7 @@ class ModulesFile(object):
                 # this step is the end step
                 self.restore_system()
                 return path
-            # for cmd in step.next_move.cmds:
-            #     cmd.execAction()
-            step.next_move.cmd.execAction()
+            step.next_move.cmd.execute()
             passed_time += step.next_move.holding_time
         self.restore_system()
         return path
@@ -696,7 +702,7 @@ class ModulesFile(object):
     # generate enabled commands for each state of the model beforehand
     # to accelerate the speed of generating random path
     # ATTENTION: when running experiment, constant value must be set before calling this method
-    def prepare_commands(self):
+    def prepare(self):
         '''generate enabled commands and probs for each state'''
 
         # none of the variables can be unbounded.
@@ -712,7 +718,7 @@ class ModulesFile(object):
             for _, module in self.modules.items():
                 for _, commands in module.commands.items():
                     for command in commands:
-                        if command.evalGuard():
+                        if command.evaluate():
                             # make a copy of Command instance
                             # in failure biasing situation when command's rate
                             # needs to be modified.

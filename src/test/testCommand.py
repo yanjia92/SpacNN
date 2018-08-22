@@ -9,8 +9,8 @@ def buildCommand():
 
 def test():
     cmd = buildCommand()
-    assert cmd.evalGuard() == True
-    cmd.execAction()
+    assert cmd.evaluate() == True
+    cmd.execute()
     assert cmd.vs['a'].get_value() == 0
 
 

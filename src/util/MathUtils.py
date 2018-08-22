@@ -2,6 +2,7 @@
 from math import *
 import random
 
+
 # generate random variable from a exponential distribution
 # given that it's less than t.
 # e.g. implementation of forcing.

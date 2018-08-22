@@ -116,7 +116,7 @@ class Command(object):
         self.biasing_rate = biasing_rate
         # print "Guard is None ? : " + str(self.guard is None)
 
-    def evalGuard(self):
+    def evaluate(self):
         result = True
         for guard in self.guards:
             result = guard(self.vs, self.cs)
@@ -124,7 +124,7 @@ class Command(object):
                 return False
         return result
 
-    def execAction(self):
+    def execute(self):
         for var, update_func in self.action.items():
             var.value = update_func()
 
