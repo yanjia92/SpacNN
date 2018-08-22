@@ -7,6 +7,8 @@ import re
 import threading
 import sys
 from util.AnnotationHelper import *
+from module.PathGenerator import PathGenerator
+from random import random
 
 
 # class represent an interval in DTMC/CTMC
@@ -89,6 +91,7 @@ class Checker(threading.Thread):
         self.logger = logging.getLogger(__name__)
         self.logger.addHandler(logging.StreamHandler(sys.stdout))
         self.logger.setLevel(logging.DEBUG)
+        self.antithetic = False
 
     # Get upper-bound of variance
     def __getVar_m(self, n, a, b):
@@ -200,9 +203,23 @@ class Checker(threading.Thread):
     # returned (result, path e.g. list of Step instance)
     # using cachedPrefixes to check the path's checking result beforehand
     def gen_random_path(self):
-        # return self.model.gen_random_path(self.duration, self.cachedPrefixes)
-        path = self.model.get_random_path_V2()
-        return None, path
+        if self.antithetic:
+            return self.model.get_random_path_V3()
+        else:
+            path = self.model.get_random_path_V2()
+            return None, path
+
+    def gen_path_antithetically(self):
+        duration = self.duration
+        # todo improve the hard code
+        rnd_cnt = int(duration) * 10
+        rnds = [random() for _ in range(rnd_cnt)]
+        anti_rnds = map(lambda elem: 1 - elem, rnds)
+        generator = PathGenerator(self.model, rnds)
+        anti_generator = PathGenerator(self.model, anti_rnds)
+        path = generator.get_random_path(self.duration)
+        antipath = anti_generator.get_random_path(self.duration)
+        return (path, antipath)
 
     # path: list of Step
     # step: current Step instance
@@ -405,6 +422,14 @@ class Checker(threading.Thread):
         for i in range(sz):
             # begin = time.time()
             satisfied, path = self.gen_random_path()
+            if isinstance(satisfied, list):
+                path1, path2 = satisfied, path
+                n += 2
+                if self.verify(path1):
+                    x += 1
+                if self.verify(path2):
+                    x += 1
+                continue
             # end = time.time()
             # self.logger.info("Generating a length={} path caused {}s".format(len(path), end-begin))
             pathlens.append(len(path))

@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
-from copy import deepcopy
+from copy import copy
 from module.ModulesFile import ModelType
 from util.MathUtils import randomExpo
 from module.NextMove import NextMove
 from Step import Step
+from collections import OrderedDict
 
 
 class PathGenerator(object):
@@ -13,8 +14,12 @@ class PathGenerator(object):
         :param model:
         :param rands:
         '''
-        self._vars = model.get_variables()
-        # self._init_vars = deepcopy(self._vars)
+        self._vars = OrderedDict()
+        self._init_vars = OrderedDict()
+        for name, varobj in model.get_variables():
+            self._vars[name] = copy(varobj)
+            self._init_vars[name] = copy(varobj)
+        # todo make a copy of variables
         if not model.prepared():
             model.prepare()
         self._state_cmd_map = model.scDict
@@ -60,7 +65,7 @@ class PathGenerator(object):
                 return NextMove(passedtime, holding_time, _tuple[0], probsum, 0.0)
 
     def _next_step(self, passedtime, duration):
-        key = tuple([lambda v: v.get_value() for v in self._vars])
+        key = tuple([v.get_value() for v in self._vars.values()])
         enabled_cmds = self._state_cmd_map[key]
         next_move = self._next_move(passedtime, enabled_cmds)
         if passedtime + next_move.holding_time > duration:
@@ -72,7 +77,8 @@ class PathGenerator(object):
         pass
 
     def _after_generate_path(self):
-        pass
+        for name, varobj in self._init_vars.items():
+            self._vars[name].set_value(varobj.get_value())
 
     def _before_generate_path(self):
         pass

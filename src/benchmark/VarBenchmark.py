@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from test.unittest.CheckerTest import CheckerTestBase
-from PathHelper import get_prism_model_dir
+
 
 '''
 测试antithetic variable方法是否可以减小smc算法的方差
@@ -24,9 +24,6 @@ label ieq2 = i == 2;
 
 class VarBenchmark(CheckerTestBase):
 
-    def _get_model_root_path(self):
-        return get_prism_model_dir()
-
     def _get_model_name(self):
         return "ToyDTMCModel"
 
@@ -42,6 +39,10 @@ class VarBenchmark(CheckerTestBase):
     def _get_duration(self):
         return 2
 
+    def setUp(self):
+        CheckerTestBase.setUp(self)
+        self._checker.antithetic = True
+
     def testComputeVar(self):
         '''
         计算SMC算法的方差
@@ -53,7 +54,9 @@ class VarBenchmark(CheckerTestBase):
         results = []
         for _ in range(20):
             results.append(self._checker.run_checker())
+        # 期望
         expect = sum(results) / len(results)
+        print "expect: {}".format(expect)
+        # 方差
         var = sum(map(lambda x: (x - expect) ** 2, results)) / (len(results) - 1)
-        print var
-
+        print "var: {}".format(var)

@@ -16,10 +16,8 @@ from util.AnnotationHelper import *
 from module.NextMove import NextMove
 from PathHelper import *
 import Queue
-
-# logger = logging.getLogger("ModulesFile logging")
-# logger.addHandler(logging.StreamHandler())
-# logger.setLevel(logging.INFO)
+from threading import Thread
+from random import random
 
 allUpCnt = 0
 failureCnt = 0
@@ -67,6 +65,18 @@ class StepGenThd(threading.Thread):
                     step.next_move.cmd.execute()
 
             model.restore_system()
+
+
+class RndProvider(Thread):
+    def __init__(self, queue):
+        Thread.__init__(self)
+        self._queue = queue
+        self._generator = random
+
+    def run(self):
+        while True:
+            rnd = self._generator()
+            self._queue.put(rnd)
 
 
 # class represents a DTMC/CTMC model
@@ -126,11 +136,19 @@ class ModulesFile(object):
         # self.steps_queue = list()
         self.steps_queue = Queue.Queue(maxsize=STEPS_QUEUE_MAX_SIZE)
         self.STEPS_QUEUE_MAX_SIZE = STEPS_QUEUE_MAX_SIZE
-
         self.command_synced = False
 
+        # queue containing random numbers [0, 1)
+        self._queue = Queue.Queue(maxsize=20)
+        self._rndprovider = RndProvider(self._queue)
+        self._rndprovider.setDaemon(daemonic=True)
+        self._rndprovider.start()
+
     def get_variables(self):
-        return self.localVarsList
+        return self.localVars.items()
+
+    def get_init_variables(self):
+        return self.initLocalVars.values()
 
     def prepared(self):
         return self.commPrepared
@@ -416,10 +434,11 @@ class ModulesFile(object):
         return cmd_map.values()
 
     # @profileit(get_log_dir() + get_sep() + "next_move")
-    def next_move(self, cmd_probs, time_passed):
+    def next_move(self, cmd_probs, time_passed, rnd=None):
         # cmd_probs: [(cmd, sync_prob)]
         # 所有的cmds的guard均满足,故无需判断
-        rnd_num = random.random()
+        if not rnd:
+            rnd = random()
         prob_sum = 0
 
         cmd_list = [v[0] for v in cmd_probs] # list of list
@@ -435,7 +454,7 @@ class ModulesFile(object):
 
         for i, p in enumerate(actual_probs):
             prob_sum += p
-            if prob_sum >= rnd_num:
+            if prob_sum >= rnd:
                 chosen_cmd = cmd_list[i]
                 holding_time = self.gen_holding_time(
                     exit_rate, self.duration - time_passed, int(time_passed) == 0)
@@ -468,13 +487,13 @@ class ModulesFile(object):
             yield step
             passed_time += step.next_move.holding_time
 
-    def next_step(self, passed_time):
+    def next_step(self, passed_time, rnd=None):
         duration = self.duration
         key = tuple([v.value for v in self.localVarsList])
         cmd_probs = self.scDict[key]
         if len(cmd_probs) == 0:
             return self.step_without_move(key, passed_time)
-        next_move = self.next_move(cmd_probs, passed_time)
+        next_move = self.next_move(cmd_probs, passed_time, rnd=rnd)
         ap_set = self.tstate_apset_map[key]
 
         # if first move is not possible
@@ -510,6 +529,60 @@ class ModulesFile(object):
         self.restore_system()
         return path
 
+    def get_random_path_V3(self):
+        '''
+        generate path and its antithetic path together.
+        :param rnds: list of random number in [0, 1)
+        :return: list of Step instance
+        '''
+        if not self.commPrepared:
+            self.prepare()
+        paths = []
+        rnds = []
+        path = []
+        passed_time = 0.0
+        while passed_time < self.duration:
+            rnd = self._queue.get()
+            rnds.append(rnd)
+            step = self.next_step(passed_time, rnd=rnd)
+            path.append(step)
+            # considering CTMC case
+            if abs(step.next_move.holding_time) <= 1e-8:
+                last_step = path[-1]
+                # if last_step.holding_time + last_step.passed_time <= self.duration:
+                #     pass
+                # this step is the end step
+                self.restore_system()
+                paths.append(path)
+                break
+            step.next_move.cmd.execute()
+            passed_time += step.next_move.holding_time
+        self.restore_system()
+        if len(paths) == 0:
+            paths.append(path)
+
+        # generate the antithetic path
+        path = []
+        passed_time = 0.0
+        while passed_time < self.duration:
+            step = self.next_step(passed_time, rnd=1 - rnds.pop(0))
+            path.append(step)
+            # considering CTMC case
+            if abs(step.next_move.holding_time) <= 1e-8:
+                last_step = path[-1]
+                # if last_step.holding_time + last_step.passed_time <= self.duration:
+                #     pass
+                # this step is the end step
+                self.restore_system()
+                paths.append(path)
+                break
+            step.next_move.cmd.execute()
+            passed_time += step.next_move.holding_time
+        self.restore_system()
+        if len(paths) < 2:
+            paths.append(path)
+        return paths
+
     # return list of Step instance whose path duration is duration
     # duration: path duration
     # cachedPrefixes: dict type object to store previous checking result for each prefix
@@ -518,7 +591,6 @@ class ModulesFile(object):
     # return (None, path) if cache is not hit
     # else return satisfied(of bool type), path
     @profileit(get_log_dir() + get_sep() + "pathgenV1")
-    @deprecated("Use get_random_path_V2 instead")
     def gen_random_path(self, cachedPrefixes=None):
         # Since when initilize a module, all its local variables
         # have been initilized
