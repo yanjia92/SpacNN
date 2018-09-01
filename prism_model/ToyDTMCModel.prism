@@ -1,8 +1,12 @@
 dtmc
 
+
+// unsure parameter
+const double theta;
+
 module Toy
     i : [0, 2] init 0;
-    [] i == 0 -> 0.3 : (i'=1) + 0.7 : (i'=2);
+    [] i == 0 -> theta : (i'=1) + (1 - theta) : (i'=2);
 endmodule
 
 label ieq1 = i == 1;

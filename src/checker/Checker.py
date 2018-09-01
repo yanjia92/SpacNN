@@ -9,6 +9,7 @@ import sys
 from util.AnnotationHelper import *
 from module.PathGenerator import PathGenerator
 from random import random
+from UnsureModelChecker import UnsureModelChecker
 
 
 # class represent an interval in DTMC/CTMC
@@ -44,7 +45,7 @@ class Interval:
             return self.end > step.passedTime >= self.begin
 
 
-class Checker(threading.Thread):
+class Checker(threading.Thread, UnsureModelChecker):
     class CheckingType:
         QUANTATIVE, QUALITATIVE = range(2)
 
@@ -517,3 +518,8 @@ class Checker(threading.Thread):
             self.is_satisfy = self.mc1()
             return self.is_satisfy
         return self.mc2()
+
+    def set_param(self, name, value):
+        result = self.model.set_constant_name_value(name, value)
+        self.model.commPrepared = False
+        return result

@@ -25,19 +25,19 @@ label ieq2 = i == 2;
 class VarBenchmark(CheckerTestBase):
 
     def _get_model_name(self):
-        return "ToyDTMCModel"
+        return "die"
 
     def testModelCorrect(self):
         pass
 
     def _get_ltl(self):
-        return "true U<=2 ieq1"
+        return "true U<=20 result_4"
 
     def _get_samples(self):
         return 100
 
     def _get_duration(self):
-        return 2
+        return 20
 
     def setUp(self):
         CheckerTestBase.setUp(self)
@@ -51,6 +51,8 @@ class VarBenchmark(CheckerTestBase):
             2. 取20个样本，计算这20个样本的方差
         :return: void
         '''
+        #
+        # 0.000422302631579
         results = []
         for _ in range(20):
             results.append(self._checker.run_checker())

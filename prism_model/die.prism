@@ -15,7 +15,6 @@ module die
 	[] s==5 -> 0.5 : (s'=7) & (d'=4) + 0.5 : (s'=7) & (d'=5);
 	[] s==6 -> 0.5 : (s'=2) + 0.5 : (s'=7) & (d'=6);
 	[] s==7 -> (s'=7);
-
 endmodule
 
-label result_4 = s == 7 && d = 4;
+label result_4 = s == 7 & d == 4;

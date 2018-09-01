@@ -27,7 +27,7 @@ def write_csv_rows(file_path, datas, headers=None, sep=","):
     return len(datas)
 
 
-def parse_csv_cols(file_path, types, has_headers=True, sep=','):
+def parse_csv_cols(file_path, types=float, has_headers=True, sep=','):
     '''
     :return [[col]]
     '''

@@ -1,6 +1,8 @@
 # -*- coding:utf-8 -*-
 from util.MathUtils import *
-
+from util.util import interval
+import matplotlib.pyplot as plt
+from random import random
 
 class BPNeuralNetwork:
     def __init__(self):
@@ -118,22 +120,23 @@ class BPNeuralNetwork:
                 case = cases[i]
                 error += self.back_propagate(case, label)
 
-    # def test(self):
-    #     cases = interval(-pi, pi, 0.1)
-    #     labels = [cos(x) for x in cases]
-    #     self.setup(1, 5, 1)
-    #     self.train(cases, labels, 10000, 0.05, 0.1)
-    #     test_cases = interval(-pi, pi, 0.01)
-    #     test_labels = [cos(x) for x in test_cases]
-    #     predict_labels = [self.predict(test_case) for test_case in test_cases]
-    #     plt.xlabel("x")
-    #     plt.ylabel("true value")
-    #     plt.plot(test_cases, test_labels, label="true value")
-    #     plt.plot(test_cases, predict_labels, label="predict value")
-    #     plt.legend()
-    #     plt.show()
+    def test(self):
+        cases = interval(-pi, pi, 0.1)
+        errors = [random() / 10 * [-1 ,1][random() > 0.5] for _ in cases]
+        labels = [cos(x) + error for x, error in zip(cases, errors)]
+        self.setup(1, 5, 1, 0.05, 0.1)
+        self.train(cases, labels, 10000)
+        test_cases = interval(-pi, pi, 0.01)
+        test_labels = [cos(x) for x in test_cases]
+        predict_labels = [self.predict(test_case) for test_case in test_cases]
+        plt.xlabel("x")
+        plt.ylabel("true value")
+        plt.plot(test_cases, test_labels, label="true value")
+        plt.plot(test_cases, predict_labels, label="predict value")
+        plt.legend()
+        plt.show()
 
 
 if __name__ == '__main__':
     nn = BPNeuralNetwork()
-    # nn.test()
+    nn.test()

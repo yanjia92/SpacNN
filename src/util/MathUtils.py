@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 from math import *
 import random
+from AnnotationHelper import deprecated
+from scipy.optimize import leastsq
+import numpy as np
 
 
 # generate random variable from a exponential distribution
@@ -79,6 +82,57 @@ def format_float(v, n):
             float_part += "0"
         float_part = float_part[:n]
         return float(int_part + "." + float_part)
+
+
+def uniform(a, b, samples=1):
+    '''
+    产生介于a,b之间的服从均匀分布的随机数
+    :param a:
+    :param b:
+    :param samples: 所需的随机样本数
+    :return: 随机样本 type list
+    '''
+    randoms = []
+    if a < b and samples > 0:
+        for _ in range(samples):
+            randoms.append(a + (b - a) * random.random())
+        return randoms
+    else:
+        return []
+
+
+def standDiv(xs, ys):
+    '''
+    计算二维坐标点距离通过最小二乘法拟合出的曲线的平均距离
+    :param xs: list of pointer's x
+    :param ys: list of pointer's y
+    :return: 点到拟合出的直线的距离的平均值
+    '''
+    if not (len(xs) == len(ys) and len(xs) > 0):
+        return
+
+    def error(param, x, y):
+        return func(param, x) - y
+
+    def func(param, x):
+        k, b = param
+        return k * x + b
+
+    xs = np.array(xs)
+    ys = np.array(ys)
+    initparam = np.array([1, 1])
+    param = leastsq(error, initparam, args=(xs, ys))
+    param = param[0]
+
+    def linegenerator(param):
+        def wrapper(x):
+            k, b = param
+            return k * x + b
+        return wrapper
+
+    linefunc = linegenerator(param)
+    return sum([fabs(linefunc(x) - y) for x, y in zip(xs, ys)]) / float(len(xs))
+
 
 
 class ErrorType():

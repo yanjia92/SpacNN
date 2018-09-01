@@ -11,9 +11,15 @@ def plot_multi(*args, **kwargs):
         title = kwargs.get("title")
         plt.title(title)
 
+    marker = None
+    if "marker" in kwargs:
+        marker = kwargs["marker"]
     for line_data in args:
         x, y, label = line_data
-        plt.plot(x, y, label=label)
+        if marker:
+            plt.plot(x, y, label=label, marker=marker)
+        else:
+            plt.plot(x, y, label=label)
     
     if "legend" in kwargs.keys() and not kwargs.get("legend"):
         pass
