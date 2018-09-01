@@ -165,32 +165,32 @@ class Variable(object):
             valType=None,
             bounded=True):
         self.name = name
-        self.initVal = initVal
+        self.init_val = initVal
         self.bounded = bounded
-        self.valRange = valRange
-        self.valType = valType
+        self.range = valRange
+        self.type = valType
         self.value = initVal
 
     # check if value is within the domain
     # (bounded or unbounded) of the variable
     def validate(self, value):
         if self.bounded:
-            return value in self.valRange
+            return value in self.range
         else:
-            return isinstance(value, self.valType)
+            return isinstance(value, self.type)
 
     # __cmp__用于使用sort函数进行排序时调用
     def __cmp__(self, v):
-        if isinstance(v, Variable) and self.valType == v.valType:
+        if isinstance(v, Variable) and self.type == v.type:
             return self.value.__cmp__(v.value)
-        elif isinstance(v, self.valType):
+        elif isinstance(v, self.type):
             return self.value.__cmp__(v)
 
     def __str__(self):
         return "(Variable {} : {})".format(self.name, self.get_value())
 
     def set_value(self, v):
-        if isinstance(v, self.valType):
+        if isinstance(v, self.type):
             self.value = v
         else:
             self.value = v.get_value()
@@ -207,7 +207,7 @@ class Variable(object):
             return TypeError("Variable is not bounded")
 
         l = list()
-        for val in self.valRange:
+        for val in self.range:
             cp = copy.copy(self)
             cp.value = val
             l.append(cp)
@@ -217,16 +217,16 @@ class Variable(object):
         self.value += 1
 
     def __iadd__(self, other):
-        if isinstance(other, Variable) and self.valType == other.valType:
+        if isinstance(other, Variable) and self.type == other.type:
             self.value += other.value
-        elif isinstance(other, self.valType):
+        elif isinstance(other, self.type):
             self.value += other
         return self
 
     def __eq__(self, other):
-        if type(self) == type(other) and self.valType == other.valType:
+        if type(self) == type(other) and self.type == other.valType:
             return self.value == other.value
-        elif type(other) == self.valType:
+        elif type(other) == self.type:
             return self.value == other
         else:
             raise Exception('type error in Variable.__eq__()')
@@ -235,9 +235,9 @@ class Variable(object):
         return not self.__eq__(other)
 
     def __lt__(self, other):
-        if type(self) == type(other) and self.valType == other.valType:
+        if type(self) == type(other) and self.type == other.valType:
             return self.value < other.value
-        elif self.valType == type(other):
+        elif self.type == type(other):
             return self.value < other
         else:
             raise Exception('type error in Variable.__lt__()')

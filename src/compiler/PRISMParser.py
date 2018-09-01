@@ -205,12 +205,13 @@ class BasicParser(object):
         self.vcf_map[name] = obj
 
     def p_module_var_def_statement(self, p):
-        '''module_var_def_statement : NAME COLON LB expr COMMA expr RB INIT NUM SEMICOLON'''
-        #  让var的lowbound和upperbound支持expression
+        '''module_var_def_statement : NAME COLON LB expr COMMA expr RB INIT expr SEMICOLON'''
+        #  让var的lowbound和upperbound和initvalue支持expression
         tokens = shallow_cpy(p.slice)
         min = tokens[4].value()
         max = tokens[6].value()
-        var = Variable(p[1], p[len(p) - 2], range(min, max + 1),
+        init_value = tokens[9].value()
+        var = Variable(p[1], init_value, range(min, max + 1),
                        int)  # 目前默认变量的类型是int p[index] index不能是负数
         self.module.addVariable(var)
         self.vcf_map[var.get_name()] = var
@@ -291,6 +292,10 @@ class BasicParser(object):
         var_name = p[2]
 
         p[0] = {self.vcf_map[var_name]: update_func}
+
+    def p_assignment2(self, p):
+        '''assignment : TRUE'''
+        p[0] = {}
 
     def p_expr(self, p):
         '''expr : expr ADD term

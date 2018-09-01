@@ -1,0 +1,14 @@
+
+
+const int param1 = 11;
+const double param2 = 11.0;
+
+module XXX
+var1 : [0, param1] init param1;
+var2 : [0, 10] init 5;
+var3 : [param1, 2 * param1] init param1;
+
+[comm1] var1 == param1 -> true;
+[comm2] var1 != param1 -> true;
+[comm3] var1 == param1 -> param1 : (var1'=var - 1);
+endmodule

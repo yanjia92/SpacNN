@@ -39,6 +39,11 @@ class LTLParser(object):
         p[0] = TreeNode("U[0, {}]".format(num), left, right)
         self.parsed_results.append(BT_level_traverse(p[0]))
 
+    def p_path_statement3(self, p):
+        '''path_statement : state_statement UNTIL LB NUM COMMA NUM RB state_statement'''
+        p[0] = TreeNode("U[{}, {}]".format(p[4], p[6]), p[1], p[8])
+        self.parsed_results.append(BT_level_traverse(p[0]))
+
     def p_state_statement(self, p):
         '''state_statement : ap'''
         p[0] = p[1]

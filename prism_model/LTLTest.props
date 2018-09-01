@@ -1,2 +1,3 @@
 true U<=730 failure
 normal U failure
+true U[10, 10] failure

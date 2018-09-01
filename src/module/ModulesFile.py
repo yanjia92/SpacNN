@@ -147,6 +147,10 @@ class ModulesFile(object):
     def get_variables(self):
         return self.localVars.items()
 
+    def get_variable_with_name(self, name):
+        if name in self.localVars:
+            return self.localVars[name]
+
     def get_init_variables(self):
         return self.initLocalVars.values()
 
@@ -445,8 +449,6 @@ class ModulesFile(object):
         probs = [v[1] for v in cmd_probs]
         exit_rate = sum(probs)
         actual_probs = [p/exit_rate for p in probs]
-        # if int(exit_rate) == 0:
-        #     print str(cmds)
         biasing_exit_rate = None
         if self.fb:
             # todo add failure biasing logic
