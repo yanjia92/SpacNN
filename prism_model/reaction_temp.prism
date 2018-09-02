@@ -7,7 +7,7 @@ const int cntCl = 10;
 module Na
 na : [0, cntNa] init cntNa;
 [e1] na > 0 -> na : (na' = na - 1);
-[e1] na < cntNa -> (cntNa - na) : (na' = na + 1);
+[e2] na < cntNa -> (cntNa - na) : (na' = na + 1);
 endmodule
 
 module Cl

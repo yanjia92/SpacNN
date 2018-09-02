@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 from math import *
 import random
-from AnnotationHelper import deprecated
 from scipy.optimize import leastsq
 import numpy as np
+from math import pow
+from math import e
 
 
 # generate random variable from a exponential distribution
@@ -17,6 +18,18 @@ def randomExpo(lamda, t=None, forcing=True):
         return log(1-rnd*(1-exp(-1*lamda*t)))/(-1*lamda)
     else:
         return log(1-rnd)/(-1*lamda)
+
+
+def expo_pdf(x, lamda):
+    '''
+    指数分布的概率密度函数
+    :param x: x
+    :param lamda: parameter lambda
+    :return: pdf_lambda(x)
+    '''
+    if x <= 0:
+        return 0
+    return lamda * pow(e, -lamda * x)
 
 
 # 计算标准正态分布的累积分布函数

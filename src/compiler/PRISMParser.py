@@ -199,6 +199,10 @@ class BasicParser(object):
                                  | CONST DOUBLE NAME ASSIGN expr SEMICOLON
                                  | CONST BOOL NAME ASSIGN expr SEMICOLON'''
         name = p[3]
+        #  常量表达式中也可能包含参数，即value不能立刻求值
+        # def f():
+        #     value = self.resolvetype(p[5](), p[2])
+        #     return value
         value = self.resolvetype(p[5](), p[2])
         obj = Constant(name, value)
         ModelConstructor.model.setConstant(name, obj)

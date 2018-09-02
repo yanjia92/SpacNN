@@ -10,12 +10,17 @@ from util.AnnotationHelper import *
 from module.PathGenerator import PathGenerator
 from random import random
 from UnsureModelChecker import UnsureModelChecker
+from util.FormatUtil import str2num
 
 
 # class represent an interval in DTMC/CTMC
 # using -1 as the end to represent the unbound situation
 class Interval:
     def __init__(self, begin, end):
+        if isinstance(begin, str):
+            begin = str2num(begin)
+        if isinstance(end, str):
+            end = str2num(end)
         self.begin = begin
         self.end = end
         self.bounded = begin * end >= 0
@@ -42,7 +47,7 @@ class Interval:
         if not self.bounded:
             return step.passedTime >= self.begin
         else:
-            return self.end > step.passedTime >= self.begin
+            return self.end >= step.passedTime >= self.begin
 
 
 class Checker(threading.Thread, UnsureModelChecker):
@@ -113,7 +118,7 @@ class Checker(threading.Thread, UnsureModelChecker):
             return self.samples_size
         sz = int(1.0 / ((1 - self.c) * 4 * self.d *
                           self.d) - self.a - self.b - 1)
-        return sz
+        return int(sz)
 
     def set_sample_size(self, size):
         self.samples_size = size
@@ -277,7 +282,7 @@ class Checker(threading.Thread, UnsureModelChecker):
                     logging.error(
                         "Time interval for until formula must contains two values: begin and end.")
                     return None
-                timeInterval = Interval(*[int(n) for n in nums])
+                timeInterval = Interval(*nums)
                 if timeInterval[0] > timeInterval[1]:
                     logging.error("invalid ltl until time interval")
                     return set()
@@ -409,76 +414,51 @@ class Checker(threading.Thread, UnsureModelChecker):
     # Estiamte the probability of property holding
     # @profileit(filepath=get_log_dir() + get_sep() + "checker_mc2_prof")
     def mc2(self):
-        sz = int(self.get_sample_size())
+        samples = self.get_sample_size()
         if self.samples_size:
-            sz = self.samples_size
-        print "samples: {}".format(sz)
-        x, n = 0, 0
-        hitTimes = 0
+            samples = self.samples_size
+        generated_cnt = 0
+        hit_cnt = 0  # satisfied path cnt
         satisfying = 0
-        pathlens = []
-        spaths = set()  # 满足性质的path集合
-        nspaths = set()  # 不满足性质的path集合
         begin = time.time()
-        for i in range(sz):
-            # begin = time.time()
+        while generated_cnt < samples:
             satisfied, path = self.gen_random_path()
             if isinstance(satisfied, list):
+                generated_cnt += 2
                 path1, path2 = satisfied, path
-                n += 2
                 if self.verify(path1):
-                    x += 1
+                    hit_cnt += 1
                 if self.verify(path2):
-                    x += 1
-                continue
-            # end = time.time()
-            # self.logger.info("Generating a length={} path caused {}s".format(len(path), end-begin))
-            pathlens.append(len(path))
-
-            n += 1
-            if n & 511 == 0:
-                t2 = time.time()
-                print "Verifying %d paths, causing %.2fs" % (n, t2 - begin)
-            if isinstance(satisfied, bool):
-                hitTimes += 1
-                if satisfied:
-                    satisfying += 1
-                    pb1 = self.model.probForPath(path, False)
-                    pb2 = self.model.probForPath(path, True)
-                    if pb2 == 0:
-                        continue
-                    likelihood = pb1/pb2
-                    x += likelihood
-
-                continue
-            verified = self.verify(path)
-            if verified:
-                spaths.add(str(path))
-                if self.fb:
-                    satisfying += 1
-                    try:
-                        pb1 = self.model.probForPath(path, biasing=False, duration=self.duration)
-                        pb2 = self.model.probForPath(path, biasing=True, duration=self.duration)
-                        likelihood = pb1/pb2
-                    except ZeroDivisionError:
-                        # logging.error("path's length: %d" % (len(path)))
-                        # logging.error("path: %s" % str(path))
-                        continue
-                    x += likelihood
-                else:
-                    x += 1
+                    hit_cnt += 1
+                if generated_cnt & 15 == 0:
+                    t2 = time.time()
+                    print "Verifying %d paths, causing %.2fs" % (generated_cnt, t2 - begin)
             else:
-                # nspaths.add(str(path))
-                failed = filter(lambda apset: "failure" in apset, map(lambda step: step.ap_set, path))
-                if failed:
-                    pass
-                    # self.logger.info("fail ap in apset, but verified not failed. path={}".format(str(path)))
+                apsets = [step.ap_set for step in path]
+                apset = reduce(lambda set1, set2: set1.union(set2), apsets)
+                satisfied = self.verify(path)
+                if satisfied:
+                    if self.fb:
+                        satisfying += 1
+                        try:
+                            pb1 = self.model.probForPath(path, biasing=False, duration=self.duration)
+                            pb2 = self.model.probForPath(path, biasing=True, duration=self.duration)
+                            likelihood = pb1/pb2
+                        except ZeroDivisionError:
+                            continue
+                        hit_cnt += likelihood
+                    else:
+                        if "full" not in apset:
+                            print "fake positive"
+                        hit_cnt += 1
                 else:
-                    # self.logger.info("not failed")
-                    pass
-
-        postex = self.postEx(n, x)
-        # self.logger.info("mc2's result={}".format(postex))
+                    if "full" in apset:
+                        print "fake negative"
+                generated_cnt += 1
+                if generated_cnt & 15 == 0:
+                    t2 = time.time()
+                    print "Verifying %d paths, causing %.2fs" % (generated_cnt, t2 - begin)
+        postex = self.postEx(generated_cnt, hit_cnt)
         return postex
 
     def intervalUnreliability(self, duration):

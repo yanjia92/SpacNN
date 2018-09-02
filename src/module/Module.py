@@ -117,12 +117,11 @@ class Command(object):
         # print "Guard is None ? : " + str(self.guard is None)
 
     def evaluate(self):
-        result = True
         for guard in self.guards:
             result = guard(self.vs, self.cs)
             if not result:
                 return False
-        return result
+        return True
 
     def execute(self):
         for var, update_func in self.action.items():
@@ -254,11 +253,15 @@ class Variable(object):
 
 class Constant(object):
     def __init__(self, name, constant=None):
+        '''
+        :param name: 常量名
+        :param constant: 常量值 could be None, some value or a function
+        '''
         self.value = constant
         self.name = name
 
     def __str__(self):
-        return "constant {0}: {1}".format(self.get_name(), self.value)
+        return "constant {0}: {1}".format(self.get_name(), self.get_value())
 
     def __repr__(self):
         return self.__str__()
@@ -267,6 +270,8 @@ class Constant(object):
         return self.name
 
     def get_value(self):
+        if callable(self.value):
+            return self.value()
         return self.value
 
     def set_value(self, value):
@@ -281,33 +286,33 @@ class Constant(object):
 
     def __mul__(self, other):
         if isinstance(other, Constant):
-            return self.value * other.get_value()
+            return self.get_value() * other.get_value()
         elif isinstance(other,(int, float)):
-            return self.value * other
+            return self.get_value() * other
         else:
             raise Exception("type error in Constant.__mul__")
 
     def __add__(self, other):
         if isinstance(other, Constant):
-            return self.value + other.get_value()
+            return self.get_value() + other.get_value()
         elif isinstance(other, (int, float)):
-            return self.value + other
+            return self.get_value() + other
         else:
             raise Exception("type error in Constant.__mul__")
 
     def __sub__(self, other):
         if isinstance(other, Constant):
-            return self.value - other.get_value()
+            return self.get_value() - other.get_value()
         elif isinstance(other, (int, float)):
-            return self.value - other
+            return self.get_value() - other
         else:
             raise Exception("type error in Constant.__mul__")
 
     def __div__(self, other):
         if isinstance(other, Constant):
-            return self.value / other.get_value()
+            return self.get_value() / other.get_value()
         elif isinstance(other, (int, float)):
-            return self.value / other
+            return self.get_value() / other
         else:
             raise Exception("type error in Constant.__mul__")
 

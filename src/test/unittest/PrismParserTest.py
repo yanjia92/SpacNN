@@ -55,8 +55,6 @@ class PRISMParserTest(ModelTestBase):
 
     def testCommands(self):
         model = self._model
-        vs = model.localVars
-        cs = model.constants
         commands = {}
         for _, mod in model.modules.items():
             commands.update(mod.commands)
@@ -64,9 +62,9 @@ class PRISMParserTest(ModelTestBase):
         comm2 = commands.get("comm2")[0]
         comm3 = commands.get("comm3")[0]
 
-        self.assertTrue(comm1.guards[0](vs, cs))
-        self.assertFalse(comm2.guards[0](vs, cs))
-        self.assertTrue(comm3.guards[0](vs, cs))
+        self.assertTrue(comm1.evaluate())
+        self.assertFalse(comm2.evaluate())
+        self.assertTrue(comm3.evaluate())
 
         self.assertTrue(callable(comm3.prob))
         self.assertEqual(comm3.prob(), 11)

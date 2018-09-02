@@ -139,7 +139,7 @@ class ModulesFile(object):
         self.command_synced = False
 
         # queue containing random numbers [0, 1)
-        self._queue = Queue.Queue(maxsize=20)
+        self._queue = Queue.Queue(maxsize=100)
         self._rndprovider = RndProvider(self._queue)
         self._rndprovider.setDaemon(daemonic=True)
         self._rndprovider.start()
@@ -567,7 +567,14 @@ class ModulesFile(object):
         path = []
         passed_time = 0.0
         while passed_time < self.duration:
-            step = self.next_step(passed_time, rnd=1 - rnds.pop(0))
+            if len(rnds):
+                step = self.next_step(passed_time, rnd=1-rnds.pop(0))
+            else:
+                #  对于DTMC来说，两条对偶路径的长度（所需要的随机数个数）必相同
+                #  但是对于CTMC来说，如果对于每个状态的停留时间也采用1 - U的方式的话，将不能
+                #  保证最后路径的长度满足要求，由于停留时间的长短对最后的结果的影响不能很好的分析
+                #  （事实上是不确定），所以这里采用（两条路径）每个状态的停留时间无关（or相等？）的策略。
+                step = self.next_step(passed_time, rnd=self._queue.get())
             path.append(step)
             # considering CTMC case
             if abs(step.next_move.holding_time) <= 1e-8:
