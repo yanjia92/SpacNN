@@ -15,7 +15,7 @@ class QueueNetworkTest(CheckerTestBase):
         return "queue_network"
 
     def _get_samples(self):
-        return 500
+        return 1000
 
     def _get_ltl(self):
         self.duration = 50

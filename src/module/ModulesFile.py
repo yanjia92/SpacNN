@@ -188,10 +188,13 @@ class ModulesFile(object):
             cmd.add_guards(cmd1.get_guards())
             cmd.action.update(cmd1.action)
             assert callable(cmd.prob)
-            copied_prob = copy.copy(cmd.prob)
-            def prob():
-                return copied_prob() * cmd1.prob()
-            cmd.prob = prob
+            copy_prob = copy.copy(cmd.prob)
+            def func(prob):
+                def wrapper():
+                    return prob() * cmd1.prob()
+                return wrapper
+            cmd.prob = func(copy_prob)
+        print "finished"
 
     # module: module instance
     def add_module(self, added_mod):
