@@ -11,7 +11,6 @@ from util.ListUtils import shallow_cpy
 from math import floor, ceil
 import logging, sys
 from os.path import *
-from util.AnnotationHelper import singleton
 
 
 def bin_add(x,y):
