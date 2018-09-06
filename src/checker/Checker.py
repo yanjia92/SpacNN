@@ -421,19 +421,26 @@ class Checker(threading.Thread, UnsureModelChecker):
         hit_cnt = 0  # satisfied path cnt
         satisfying = 0
         begin = time.time()
+        diff_cnt = 0 # 统计对偶路径验证结果不同的次数
         while generated_cnt < samples:
             satisfied, path = self.gen_random_path()
             if isinstance(satisfied, list):
+                # generate 2 antithetic path
                 generated_cnt += 2
                 path1, path2 = satisfied, path
-                if self.verify(path1):
-                    hit_cnt += 1
-                if self.verify(path2):
-                    hit_cnt += 1
+                result1 = self.verify(path1)
+                result2 = self.verify(path2)
+                if result1:
+                    hit_cnt+=1
+                if result2:
+                    hit_cnt+=1
+                if result1 != result2:
+                    diff_cnt += 1
                 if generated_cnt & 15 == 0:
                     t2 = time.time()
-                    print "Verifying %d paths, causing %.2fs" % (generated_cnt, t2 - begin)
+                    # print "Verifying %d paths, causing %.2fs" % (generated_cnt, t2 - begin)
             else:
+                # generate random path case
                 apsets = [step.ap_set for step in path]
                 apset = reduce(lambda set1, set2: set1.union(set2), apsets)
                 satisfied = self.verify(path)
@@ -457,7 +464,8 @@ class Checker(threading.Thread, UnsureModelChecker):
                 generated_cnt += 1
                 if generated_cnt & 15 == 0:
                     t2 = time.time()
-                    print "Verifying %d paths, causing %.2fs" % (generated_cnt, t2 - begin)
+                    # print "Verifying %d paths, causing %.2fs" % (generated_cnt, t2 - begin)
+        print "diff_cnt: {}".format(diff_cnt)
         postex = self.postEx(generated_cnt, hit_cnt)
         return postex
 

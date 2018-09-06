@@ -6,7 +6,7 @@ class ReactionModelTest(CheckerTestBase):
 
     def setUp(self):
         CheckerTestBase.setUp(self)
-        # self._checker.antithetic = True
+        self._checker.antithetic = True
 
     def _get_model_name(self):
         return "reaction"
@@ -18,7 +18,7 @@ class ReactionModelTest(CheckerTestBase):
         return 0.001
 
     def _get_samples(self):
-        return 1200
+        return 2000
 
     def testCheckCorrect(self):
         '''
