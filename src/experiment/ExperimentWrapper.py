@@ -79,7 +79,7 @@ class ExperimentWrapper(object):
         for params in product(*paramslist):
             for constant in params:
                 self.checker.model.constants[constant.get_name()].value =  constant.get_value()
-            low, high = self.checker.mc2()
+            low, high = self.checker.run_checker()
             results.append((params, (low+high)/2.0))
             # logger.info("params: {0}, prob: {1}".format(str(params), (low+high)/2.0))
         return results
