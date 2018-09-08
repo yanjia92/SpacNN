@@ -4,6 +4,7 @@ from manager.Manager import Manager
 from director.Director import Director
 from ui.CodeWindow import CodeWindow
 from util.SystemUtil import *
+from compiler.PRISMParser import ModelConstructor
 
 
 '''

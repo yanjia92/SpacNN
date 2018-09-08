@@ -15,6 +15,7 @@ try:
 except ImportError:
     import pickle
 from compiler.LTLParser import LTLParser
+from compiler.PRISMParser import ModelConstructor
 
 
 class Manager(object):

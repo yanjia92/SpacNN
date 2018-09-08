@@ -16,7 +16,7 @@ class QueueNetworkTest(CheckerTestBase):
         return "queue_network"
 
     def _get_samples(self):
-        return 1000
+        return 200
 
     def _get_ltl(self):
         self.duration = 50
@@ -32,7 +32,7 @@ class QueueNetworkTest(CheckerTestBase):
         self.assertAlmostEqual(prism_answer, check_answer, delta=delta)
 
     def testVarReduction(self):
-        samples = 100
+        samples = 10
         check_results = [self._checker.run_checker() for _ in range(samples)]
         average = sum(check_results) / len(check_results)
         variance = sum([(check_result - average) ** 2 for check_result in check_results])
