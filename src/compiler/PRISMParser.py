@@ -11,6 +11,7 @@ from util.ListUtils import shallow_cpy
 from math import floor, ceil
 import logging, sys
 from os.path import *
+from copy import copy
 
 
 def bin_add(x,y):
@@ -82,15 +83,12 @@ class ExpressionHelper(object):
             return val1 != val2
 
 
-class BasicParser(object):
-    FRML_FUNC_PREFIX = "FRML"
-    VAR_FUNC_PREFIX = "VAR"
-    SPLIT = ":"
+class PRISMParser(object):
 
     def __init__(self):
         # 表示当前是否正在解析module模块
         # 用途: 值为false时,对boolean_expression的解析不会将结果保存为guard
-        self.moduledefbegin = False
+        self._parsing_module = False
         '''
         当parser分析到一行Command时，可能最后会解析成多个Command对象
         每个Command对象包含以下信息：name, guard, prob, action, module
@@ -102,8 +100,8 @@ class BasicParser(object):
         之所以要在BasicParser中保存module和guard对象是因为
         它们是被多个Command对象所共享的。
         '''
-        self.module = None  # 当前正在解析的module对象
-        self.guard = None  # 表示当前Command对象的guard属性
+        self._m = None  # module
+        self._g = None  # guard
         self.binary_op_map = {
             '+': lambda x, y: x + y,
             '-': lambda x, y: x - y,
@@ -115,22 +113,19 @@ class BasicParser(object):
             'floor' : floor,
             'ceil'  : ceil
         }
-        # when parsing a command declaration, store the command sync_name in this property
-        self.comm_name = None
-        # name : value storage structure for constants
-        # name : func object storage structure for variables and formula
-        # self.logger = logging.getLogger("BasicParser logging")
-        # self.logger.addHandler(logging.FileHandler(LogHelper.get_logging_root() + "BasicParser.log"))
-        # self.logger.setLevel(logging.ERROR)
-        self.vcf_map = defaultdict(lambda: None)
+        self._type_map = {
+            'int': int,
+            'double': float,
+            'bool': bool
+        }
+        self._cname = None # command sync name
+        self._vcf_map = defaultdict(lambda: None)  # variable, constant and function map
 
-    def constname_unsure(self):
-        ''':return 不确定的常量名 [str]'''
+    def unsure_parameters(self):
         names = []
-        for name, obj_or_func in self.vcf_map.items():
+        for name, obj_or_func in self._vcf_map.items():
             if not callable(obj_or_func):
                 if obj_or_func.get_value() is None:
-                    # unsure Constant objects
                     names.append(name)
         return names
 
@@ -143,103 +138,87 @@ class BasicParser(object):
                      | module_command_statement
                      | formula_statement
                      | label_statement'''
-        # print "slice: {}".format(p.slice)
         pass
 
     def p_model_type(self, p):
         '''model_type_statement : DTMC
                       | CTMC'''
-        model_type = ModelType.CTMC
-        if p[1] == 'dtmc':
-            model_type = ModelType.DTMC
-        ModelConstructor.model = ModulesFile(modeltype=model_type)
+        model_type = [ModelType.DTMC, ModelType.CTMC][p[1] == 'ctmc']
+        ModelConstructor.set_model(ModulesFile(model_type=model_type))
 
     def p_module_def_begin_statement(self, p):
         '''module_def_begin_statement : MODULE NAME'''
-        self.moduledefbegin = True
-        self.module = Module(p[2])
+        self._parsing_module = True
+        self._m = Module(p[2])
 
     def p_module_def_end_statement(self, p):
         '''module_def_end_statement : ENDMODULE'''
-        if self.moduledefbegin:
-            self.moduledefbegin = False
-            ModelConstructor.model.add_module(self.module)
-        else:
-            # todo throw syntax error message
-            pass
+        if not self._parsing_module:
+            raise Exception("Syntax error: end module definition before starting defining it")
+        self._parsing_module = False
+        ModelConstructor.get_model().add_module(self._m)
 
     def p_const_expression(self, p):
         '''const_value_statement : CONST INT NAME ASSIGN NUM SEMICOLON
                                  | CONST DOUBLE NAME ASSIGN NUM SEMICOLON
                                  | CONST BOOL NAME ASSIGN NUM SEMICOLON'''
-        name = p[3]
-        _value = p[5]
-        _type = p[2]
-        value = self.resolvetype(_value, _type)
-        if not value:
-            # todo log unrecognized type name
-            pass
-        obj = Constant(name, value)
-        ModelConstructor.model.setConstant(name, obj)
-        self.vcf_map[p[3]] = obj
+        n = p[3]
+        v = self._resolve_literal(p[5], p[2])
+        c = Constant(n, v, self._type_map[p[2]])
+        ModelConstructor.get_model().add_constant(c)
+        self._vcf_map[n] = c
 
     def p_const_expression1(self, p):
         '''const_value_statement : CONST INT NAME SEMICOLON
                              | CONST DOUBLE NAME SEMICOLON
                              | CONST BOOL NAME SEMICOLON'''
         # 支持解析不确定的常量表达式
-        name = p[3]
-        obj = Constant(name)
-        ModelConstructor.model.setConstant(name, obj)
-        self.vcf_map[name] = obj
+        n = p[3]
+        c = Constant(n, None, self._type_map[p[2]])
+        ModelConstructor.get_model().add_constant(c)
+        self._vcf_map[n] = c
 
     def p_const_expression2(self, p):
         '''const_value_statement : CONST INT NAME ASSIGN expr SEMICOLON
                                  | CONST DOUBLE NAME ASSIGN expr SEMICOLON
                                  | CONST BOOL NAME ASSIGN expr SEMICOLON'''
-        name = p[3]
-        #  常量表达式中也可能包含参数，即value不能立刻求值
-        # def f():
-        #     value = self.resolvetype(p[5](), p[2])
-        #     return value
-        value = self.resolvetype(p[5](), p[2])
-        obj = Constant(name, value)
-        ModelConstructor.model.setConstant(name, obj)
-        self.vcf_map[name] = obj
+        n = p[3]
+
+        # there could be unsure parameter in expression
+        def f():
+            v = self._resolve_literal(p[5](), p[2])
+            return v
+
+        c = Constant(n, f, self._type_map[p[2]])
+        ModelConstructor.get_model().add_constant(c)
+        self._vcf_map[n] = c
 
     def p_module_var_def_statement(self, p):
         '''module_var_def_statement : NAME COLON LB expr COMMA expr RB INIT expr SEMICOLON'''
-        #  让var的lowbound和upperbound和initvalue支持expression
-        tokens = shallow_cpy(p.slice)
-        min = tokens[4].value()
-        max = tokens[6].value()
-        init_value = tokens[9].value()
-        var = Variable(p[1], init_value, range(min, max + 1),
-                       int)  # 目前默认变量的类型是int p[index] index不能是负数
-        self.module.addVariable(var)
-        self.vcf_map[var.get_name()] = var
+        v = BoundedIntegerVariable(p[1], p[9], (p[4], p[6]))
+        self._m.add_variable(v)
+        self._vcf_map[v.get_name()] = v
 
     def p_module_command_statement(self, p):
         '''module_command_statement : LB NAME RB boolean_expression THEN updates SEMICOLON'''
-        sync_name = p[2]
+        n = p[2]
         commands = p[6]
-        for comm in commands:
-            comm.name = sync_name
-            self.module.addCommand(comm)
+        for c in commands:
+            c.set_name(n)
+            self._m.add_command(c)
 
     def p_module_command_statement1(self, p):
         '''module_command_statement : LB RB boolean_expression THEN updates SEMICOLON'''
-        sync_name = ""
+        n = ""
         commands = p[5]
-        for comm in commands:
-            comm.name = sync_name
-            self.module.addCommand(comm)
+        for c  in commands:
+            c.set_name = n
+            self._m.add_command(c)
 
     def p_updates(self, p):
         '''updates : updates ADD prob_update'''
-        p[0] = list()
-        p[1].append(p[3])
-        p[0].extend(p[1])
+        p[0] = list(p[1])
+        p[0].append(p[3])
 
     def p_updates1(self, p):
         '''updates : prob_update'''
@@ -248,53 +227,33 @@ class BasicParser(object):
 
     def p_prob_update(self, p):
         '''prob_update : expr COLON actions'''
-        prob = p[1]  # prob_expr is a function
-        actions = p[3]  # actions is a dict
-        guard = copy.copy(self.guard)
-        command = Command("", guard, actions, self.module, prob)
-        p[0] = command
+        p[0] = Command(None, copy(self._g), p[1], p[3])
 
     def p_prob_update1(self, p):
         '''prob_update : actions'''
-        prob = lambda : 1.0 # in CTMC, a prob can be default(not written) equals 1(it must be callable)
-        actions = p[1]
-        guard = copy.copy(self.guard)
-        command = Command("", guard, actions, self.module, prob)
-        p[0] = command
+        # todo why copy here?
+        p[0] = Command(None, copy(self._g), lambda :1.0, p[1])
 
     def p_prob_update2(self, p):
         '''prob_update : TRUE'''
-        prob = lambda : 1.0
-        actions = dict()
-        guard = copy.copy(self.guard)
-        command = Command("", guard, actions, self.module, prob)
-        p[0] = command
+        p[0] = Command(None, copy(self._g), lambda :1.0, dict())
 
     def p_actions(self, p):
         '''actions : actions AND assignment'''
-        tokens = shallow_cpy(p.slice)
-        action1 = tokens[1].value  # dict
-        action2 = tokens[3].value   # dict
-        action2.update(action1)
-        p[0] = action2
+        p[1].update(p[3])
+        p[0] = copy(p[1])
 
     def p_actions2(self, p):
         '''actions : assignment'''
-        p[0] = p[1]  # a assignment is a function that udpate the variable in model.localVars
+        p[0] = p[1]
 
     def p_assignment(self, p):
         '''assignment : NAME QUOTE ASSIGN expr'''
-        update_func = copy.deepcopy(p[4])
-        var_name = copy.copy(p[1])
-
-        p[0] = {self.vcf_map[var_name]: update_func}
+        p[0] = {self._vcf_map[p[1]]: p[4]}
 
     def p_assignment1(self, p):
         '''assignment : LP NAME QUOTE ASSIGN expr RP'''
-        update_func = copy.copy(p[5])
-        var_name = p[2]
-
-        p[0] = {self.vcf_map[var_name]: update_func}
+        p[0] = {self._vcf_map[p[2]]: p[5]}
 
     def p_assignment2(self, p):
         '''assignment : TRUE'''
@@ -303,22 +262,23 @@ class BasicParser(object):
     def p_expr(self, p):
         '''expr : expr ADD term
                 | expr MINUS term'''
-        slice_copy = shallow_cpy(p.slice)
-        op = slice_copy[2].value
+        f1 = copy(p[1])
+        f2 = copy(p[3])
+        op = copy(p[2])
 
         def f():
-            '''binary expression function'''
-            v1 = slice_copy[1].value()
-            v2 = slice_copy[3].value()
+            if not callable(f1) or not callable(f2):
+                raise Exception("Expression must be a function")
             if op == '-':
-                return v1 - v2
-            else:
-                return v1 + v2
+                return f1() - f2()
+            elif op == '+':
+                return f1() + f2()
+            raise Exception("Unrecognized operator {}".format(p[2]))
         p[0] = f
 
     def p_expr2(self, p):
         '''expr : term'''
-        p[0] = p[1]
+        p[0] = copy(p[1])
 
     # def p_expr3(self, p):
     #     '''expr : LP expr RP'''
@@ -327,62 +287,53 @@ class BasicParser(object):
     def p_term(self, p):
         '''term : term MUL factor
                 | term DIV factor'''
-        slice_copy = shallow_cpy(p.slice)
-        op = slice_copy[2].value
+        f1 = copy(p[1])
+        f2 = copy(p[3])
+        op = copy(p[2])
 
         def f():
-            v1 = slice_copy[1].value()
-            v2 = slice_copy[3].value()
+            if not callable(f1) or not callable(f2):
+                raise Exception("Expression must be a function")
             if op == "*":
-                return v1 * v2
-            else:
-                return v1 / v2
+                return f1() * f2()
+            elif op == '/':
+                return f1() / f2()
+            raise Exception("Unrecognized operator {}".format(op))
         p[0] = f
 
     def p_term1(self, p):
         '''term : factor'''
-        p[0] = p[1]
+        p[0] = copy(p[1])
 
     def p_factor(self, p):
         '''factor : NUM'''
-        num = p[1]
-
-        def f():
-            return num
-        f.func_doc = "return {}".format(str(num))
-        p[0] = f
+        num = copy(p[1])
+        p[0] = lambda : num
 
     def p_factor1(self, p):
         '''factor : NAME'''
-        slice_cpy = shallow_cpy(p.slice)
-        name = slice_cpy[1].value
+        k = copy(p[1])
 
         def f():
-            obj = self.vcf_map[name]
-            if not obj:
-                # todo log unknown token name
-                print name
-            if callable(obj):
-                try:
-                    return obj()
-                except ZeroDivisionError:
-                    print name
-            else:
-                # constant or variable
-                return obj.get_value()
+            if k not in self._vcf_map:
+                raise Exception("Unknown token {}".format(k))
+            v = self._vcf_map[k]
+            if callable(v):
+                return v()
+            return v.get_value()
         p[0] = f
 
     def p_factor2(self, p):
         '''factor : NAME LP expr RP'''
-        slice = shallow_cpy(p.slice)
-        func = ExpressionHelper.func_map.get(slice[1].value, None)
-        # if not func:
-        #     raise Exception("Not supported function {}".format(slice[1].value))
+        func_name = p[1]
+        if func_name not in ExpressionHelper.func_map:
+            raise Exception("Unknown function {}".format(func_name))
+        if not callable(p[3]):
+            raise Exception("Expression must be callable")
+        param = copy(p[3])
 
         def f():
-            assert callable(func)
-            return func(slice[3].value())
-        f.func_doc = "func_{}".format(func.__name__)
+            return ExpressionHelper.func_map[func_name](param())
         p[0] = f
 
     def p_factor3(self, p):
@@ -391,12 +342,13 @@ class BasicParser(object):
 
     def p_factor4(self, p):
         '''factor : NAME LP params RP'''
-        func = ExpressionHelper.func_map.get(p[1], None)
-        slice = shallow_cpy(p.slice)
+        fname = p[1]
+        if fname not in ExpressionHelper.func_map:
+            raise Exception("Unknown function {}".format(fname))
+        params = copy(p[3])
 
         def f():
-            params = [f() for f in slice[3].value]
-            return func(*tuple(params))
+            return ExpressionHelper.func_map[fname](*params)
         p[0] = f
 
     def p_params(self, p):
@@ -406,30 +358,33 @@ class BasicParser(object):
 
     def p_params1(self, p):
         '''params : expr'''
-        p[0] = list()
-        p[0].append(p[1]) # directly append function to list
+        p[0] = list([p[1]])
 
     def p_boolean_expression(self, p):
         '''boolean_expression : boolean_expression AND boolean_expression_unit
                               | boolean_expression OR boolean_expression_unit
                               | boolean_expression_unit'''
-        # print "boolean_expression detached."
-        slices = shallow_cpy(p.slice)
-        if len(slices) == 4:
-            if slices[2].value == "&":
-                def f(vs, cs):
-                    return slices[1].value(vs, cs) and slices[3].value(vs, cs)
-            if slices[2].value == "|":
-                def f(vs, cs):
-                    return slices[1].value(vs, cs) or slices[3].value(vs, cs)
+        if len(p) == 4:
+            op = p[2]
+            f1 = copy(p[1])
+            f2 = copy(p[3])
 
-            p[0] = f
+            def bool_and(vs, cs):
+                return f1(vs, cs) and f2(vs, cs)
+
+            def bool_or(vs, cs):
+                return f1(vs, cs) or f2(vs, cs)
+
+            if op == '&':
+                func = bool_and
+            else:
+                func = bool_or
+            p[0] = [func]
         elif len(p) == 2:
             p[0] = p[1]
-        if self.moduledefbegin:
-            # 如果当前正在解析command
-            # 否则要么是解析formula,要么是label
-            self.guard = p[0]
+        if self._parsing_module:
+            # the parser is parsing a module, since label must be defined outside of any module
+            self._g = p[0]
 
     def p_boolean_expression_unit(self, p):
         '''boolean_expression_unit : NAME GT NUM
@@ -438,34 +393,20 @@ class BasicParser(object):
                                    | NAME LE NUM
                                    | NAME EQ NUM
                                    | NAME NEQ NUM'''
-        # 解析单个变量与某个常量进行比较
-        tokens = shallow_cpy(p.slice)
-        op = copy.deepcopy(tokens[2])
+        n = copy(p[1])
+        num = copy(p[3])
+        bool_op = copy(p[2])
 
-        def f(tokens, op_token):
-            def inner(vs ,cs):
-                var = vs[tokens[1].value]
-                # if not var or not isinstance(var, Variable):
-                #     raise Exception("invalid variable name")
-                val1 = var.get_value()
-                val2 = tokens[3]
-                op = op_token.value
-                if '<' == op:
-                    return val1 < val2
-                if '>' == op:
-                    return val1 > val2
-                if '>=' == op:
-                    return val1 >= val2
-                if '<=' == op:
-                    return val1 <= val2
-                if '==' == op:
-                    return val1 == val2
-                if '!=' == op:
-                    return val1 != val2
-
-            return inner
-
-        p[0] = f(tokens, op)
+        def f(vs, cs):
+            op1 = self._vcf_map[n]
+            if callable(op1):
+                op1 = op1()
+            else:
+                op1 = op1.get_value()
+            op2 = num
+            bool_func = self._gen_bool_func(bool_op)
+            return bool_func(op1, op2)
+        p[0] = [f]
 
     def p_boolean_expression_unit1(self, p):
         '''boolean_expression_unit : NAME GT expr
@@ -474,65 +415,69 @@ class BasicParser(object):
                                    | NAME LE expr
                                    | NAME EQ expr
                                    | NAME NEQ expr'''
-        # 解析某个变量与一个表达式进行比较
-        # 一个重大bug
-        # 因为slice是list,所以在进行copy的时候不会对每个元素进行拷贝
-        tokens = shallow_cpy(p.slice)
-        optoken = copy.deepcopy(tokens[2])
+        n = copy(p[1])
+        expr = copy(p[3])
+        op = copy(p[2])
 
-        def f(t, op_token):
-            def inner(vs, cs):
-                var = vs[t[1].value]
-                val1 = var.get_value()
-                val2 = t[3].value()
-                op = op_token.value
-                if '<' == op:
-                    return val1 < val2
-                if '>' == op:
-                    return val1 > val2
-                if '>=' == op:
-                    return val1 >= val2
-                if '<=' == op:
-                    return val1 <= val2
-                if '==' == op:
-                    return val1 == val2
-                if '!=' == op:
-                    return val1 != val2
-            return inner
-
-        p[0] = f(tokens, optoken)
+        def f(vs, cs):
+            if not callable(expr):
+                raise Exception("expr in prismparser must be a function")
+            op1 = self._vcf_map[n]
+            if callable(op1):
+                op1 = op1()
+            else:
+                op1 = op1.get_value()
+            op2 = expr()
+            bool_func = self._gen_bool_func(op)
+            return bool_func(op1, op2)
+        p[0] = [f]
 
     def p_boolean_expression_unit2(self, p):
         '''boolean_expression_unit : TRUE'''
-        p[0] = lambda vs, cs: True
+        p[0] = [lambda vs, cs: True]
 
     def p_boolean_expression_unit3(self, p):
         '''boolean_expression_unit : FALSE'''
-        p[0] = lambda vs, cs: False
+        p[0] = [lambda vs, cs: False]
 
     def p_formula_statement(self, p):
         '''formula_statement : FORMULA NAME ASSIGN expr SEMICOLON'''
-        slices = shallow_cpy(p.slice)
-        frml_name = slices[2].value
-        self.vcf_map[frml_name] = slices[4].value
+        self._vcf_map[p[2]] = p[4]
 
     def p_label_statement(self, p):
         '''label_statement : LABEL NAME ASSIGN boolean_expression SEMICOLON'''
-        lbl_name = p[2]
-        lbl_func = p[4]
-        ModelConstructor.model.labels[lbl_name] = lbl_func
+        ModelConstructor.get_model().add_label(p[2], p[4])
 
-    def resolvetype(self, strval, type):
-        type_map = {"int": int, "double": float, "bool": bool}
-        if type in type_map:
-            return type_map[type](strval)
-        else:
-            return None
+    def _resolve_literal(self, v, t):
+        # v: value in string
+        # t: type in string: int, double or bool
+        if t not in self._type_map:
+            raise Exception("Unrecognized type {}".format(t))
+        return self._type_map[t](v)
 
-    def resolvenum(self, strval):
-        if strval.find(r"\.") == -1:
-            return int(strval)
-        return float(strval)
+    def _gen_bool_func(self, op):
+        '''
+        根据传入的op(str)返回相应的函数
+        :param op: str
+        :return: func
+        '''
+        eqfunc = lambda op1, op2: op1 == op2
+        ltfunc = lambda op1, op2: op1 < op2
+        lefunc = lambda op1, op2: eqfunc(op1, op2) or eqfunc(op1, op2)
+        gtfunc = lambda op1, op2: not gtfunc(op1, op2)
+        nefunc = lambda op1, op2: not eqfunc(op1, op2)
+        gefunc = lambda op1, op2: gtfunc(op1, op2) or eqfunc(op1, op2)
+        map = {
+            '<': ltfunc,
+            '<=': lefunc,
+            '>': gtfunc,
+            '>=': gefunc,
+            '==': eqfunc,
+            '!=': nefunc
+        }
+        if op not in map:
+            raise Exception("Unsupported boolean operation {}".format(op))
+        return map[op]
 
     def parse_model(self, filepath):
         commentremoved = clear_comment(filepath)
@@ -554,18 +499,17 @@ class BasicParser(object):
                 self.parser.parse(line, lexer=lexer)
 
     def build(self):
-        cur_dir = os.path.dirname(os.path.realpath(__file__))
+        cur_dir = dirname(realpath(__file__))
         self.tokens = MyLexer.tokens
         self.parser = yacc.yacc(module=self, outputdir=cur_dir)
 
 
 class ModelConstructor(object):
-    model = None
+    _m = None
 
     def __init__(self, base_dir=None):
-        self.parser = BasicParser()
+        self.parser = PRISMParser()
         self.parser.build()
-        ModelConstructor.model = ModulesFile(ModelType.DTMC)
         self.logger = logging.getLogger(__name__)
         self.logger.addHandler(logging.StreamHandler(sys.stdout))
         self.logger.setLevel(logging.DEBUG)
@@ -574,27 +518,43 @@ class ModelConstructor(object):
                 return
             self._base_dir = base_dir
 
+    @staticmethod
+    def set_model(model):
+        ModelConstructor._m = model
+
+    @staticmethod
+    def get_model():
+        if ModelConstructor._m is None:
+            raise Exception("Please specify a model type for the .prism file")
+        return ModelConstructor._m
+
     def set_base_dir(self, base_dir):
         if not exists(base_dir) or not isdir(base_dir):
             return False
         self._base_dir = base_dir
         return True
 
-    def _parseModelFile(self, filepath):
+    def _parse(self, filepath):
         self.parser.parse_model(filepath)
-        return ModelConstructor.model
+        return ModelConstructor.get_model()
 
-    def get_model(self, filename):
+    def parse(self, filename):
+        '''
+        解析.prism文件并返回
+        :param filename: Die for example (extension excluded)
+        :return: ModulesFile instance
+        '''
         if not hasattr(self, "_base_dir"):
             self.logger.error("先设置模型所在路径")
             return
         path = join(self._base_dir, filename + ".prism")
         if not exists(path):
             self.logger.error("%s.prism 不存在", filename)
-        return self._parseModelFile(path)
+        return self._parse(path)
+
 
 if __name__ == "__main__":
     modelConstructor = ModelConstructor()
-    model = modelConstructor._parseModelFile("/Users/bitbook/Documents/SpacNN/prism_model/DPM.prism")
+    model = modelConstructor._parse("/Users/bitbook/Documents/SpacNN/prism_model/DPM.prism")
 
 

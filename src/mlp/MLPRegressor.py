@@ -48,7 +48,7 @@ def dpm_regress():
     from experiment.ExperimentWrapper import ExperimentWrapper
 
     base_dir = get_prism_model_dir()
-    model = ModelConstructor(base_dir).get_model("smalltest")
+    model = ModelConstructor(base_dir).parse("smalltest")
     ltl = "true U<=180 failure"
     ltl_parser = LTLParser().build_parser()
     parsed_ltl = ltl_parser.parse_line(ltl)

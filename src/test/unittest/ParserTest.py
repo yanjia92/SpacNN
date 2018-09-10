@@ -38,7 +38,7 @@ class ParserTest(unittest.TestCase):
         self.params = params
 
     def setUp(self):
-        self.model = self.modelConstructor._parseModelFile(self.model_path)
+        self.model = self.modelConstructor._parse(self.model_path)
         self.parsed_ltl = self.ltl_parser.parse_line(self.ltl)
 
         if self.prism_data_path:

@@ -3,3 +3,35 @@
 2018/09/08 在验证对偶路径中发现了以下规律：
     假设在验证Until性质时，我们先找到U右边的性质的所有满足其的状态（假设称其为target状态），我们找到这些节点的父亲节点，在这些节点进行对偶翻转，即将随机数U变成1-U，希望可以使得对偶路径的验证结果可以和原路径相反。
     因此，我们创建分支dev-step-refactor对涉及Step以及Path的代码进行重构，采用面向接口编程。
+
+
+2018/09/09
+    观察0-1分布运用对偶变量的过程，可以对状态转移图中的状态作出如下变换：
+        针对每个状态n, 假设所有的enabled states为s_1, s_2, s_3，统计每个状态的经过它们的yes路径（即验证结果为True）数占所有路径的比例，将s_1, s_2, s_3按照比例进行排序。
+        此时产生对偶路径的逻辑便十分简单，对每个seed进行翻转即可。（每个seed为产生下一个状态所需要的随机数）
+
+
+    梳理Module.py模块
+        variables的存储:
+            使用类BoundedIntegerVariable，即当前只允许定义有界int型变量。类型用函数int或者float表示，value可以为None, primitive或者是函数
+            关于value可以是函数的理由：
+                从PRISMParser中解析的变量的值是一个表达式（expression），而由于expression可以包含不定参数，所以必须使用函数表示。
+        constant的定义：
+            在PRISM中，由于包含不定参数，所以常量本质上也是变量的概念，故而使用TypeVariable表示一个常量。
+        commands的存储：
+            以下是PRISM中一条command的定义（注意：此处的command与类Command并不相同）
+                [name] boolean_expression -> prob_expression : updates + ... + prob_expression_n : updates_n;
+            以上对应n个Command实例
+                即 comm_i = Command(name, boolean_expression, updates_i, prob_expression_i);
+        关于Command的几个注意点：
+            1. 同一个PRISM module中允许出现多个同名command，但是在任意状态下，同一个module中的同名commands只有一个的条件被满足。
+            2. 使用map<String, Command>保存每个module中的所有commands，key为command的名字，value为Command实例。
+            3. 不同module之间同名Command实例的联立：
+                注意点：
+                    1. 任意两个模块之间的同名command数量没有限制，也就是说可以将两个模块之间的所有同名commands做笛卡尔积。
+
+
+2018/09/10
+    关于PRISMParser中的p
+        观察yacc的源码，发现yacc在编译每行代码时，会生成一个YaccProduction对象。
+        所以，建议在一行之中的某些元素如果存在闭包的话，建议对所需元素进行拷贝。

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from copy import copy
 from module.ModulesFile import ModelType
-from util.MathUtils import randomExpo
+from util.MathUtils import expo_rnd
 from module.NextMove import NextMove
 from Step import Step
 from collections import OrderedDict
@@ -61,7 +61,7 @@ class PathGenerator(object):
             if accumulated >= random:
                 holding_time = 1
                 if self._type == ModelType.CTMC:
-                    holding_time = randomExpo(probsum)
+                    holding_time = expo_rnd(probsum)
                 return NextMove(passedtime, holding_time, _tuple[0], probsum, 0.0)
 
     def _next_step(self, passedtime, duration):

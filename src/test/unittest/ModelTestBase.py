@@ -21,7 +21,7 @@ class ModelTestBase(unittest.TestCase):
             self.logger.error("model path not exist: %s", path)
         else:
             self.constructor.set_base_dir(base_dir=path)
-        self._model = self.constructor.get_model(self._get_model_name())
+        self._model = self.constructor.parse(self._get_model_name())
 
     def _get_model_name(self):
         '''

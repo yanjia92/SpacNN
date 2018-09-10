@@ -17,7 +17,7 @@ class CheckerStepMixin(object):
         '''
         pass
 
-    def get_duration(self):
+    def get_holding_time(self):
         '''
         获取当前Step的延时
         :return: float

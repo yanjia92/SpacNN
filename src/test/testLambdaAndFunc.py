@@ -1,5 +1,5 @@
 import time
-from module.Module import Variable
+from module.Module import BoundedVariable
 
 times = 100000
 
@@ -24,7 +24,7 @@ def testlambda():
 
 # test for retrieve action of map
 def testmap():
-    v1 = Variable('a', 1, range(2), int)
+    v1 = BoundedVariable('a', 1, range(2), int)
     d = {"a": v1,
          "func": lambda: 1+2
     }

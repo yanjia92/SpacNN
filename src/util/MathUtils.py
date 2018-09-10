@@ -7,17 +7,14 @@ from math import pow
 from math import e
 
 
-# generate random variable from a exponential distribution
-# given that it's less than t.
-# e.g. implementation of forcing.
-# if forcing is False, return normal random variable from the exponential distribution
-# of the rate parameter set to be lambda.
-def randomExpo(lamda, t=None, forcing=True):
+def expo_rnd(lamda):
+    '''
+    return random number which is distributed under exponential distribution
+    :param lamda: rate parameter
+    :return: random number
+    '''
     rnd = random.uniform(0, 1)
-    if forcing and t:
-        return log(1-rnd*(1-exp(-1*lamda*t)))/(-1*lamda)
-    else:
-        return log(1-rnd)/(-1*lamda)
+    return log(1-rnd)/(-1*lamda)
 
 
 def expo_pdf(x, lamda):

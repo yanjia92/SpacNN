@@ -1,347 +1,267 @@
 # -*- coding:utf-8 -*-
-import logging
-logging.basicConfig(level=logging.DEBUG)
 from collections import OrderedDict
-import copy
-from util.AnnotationHelper import *
+from collections import defaultdict
 
-# class represents a DTMC/CTMC module in PRISM
 
 class Module(object):
-    # name: module name
+    '''
+    class represents a DTMC/CTMC module in PRISM
+    '''
     def __init__(self, name):
-        self.name = name
-        self.commands = defaultdict(list)
-        self.variables = OrderedDict()
-        self.constants = dict()
-        self.modulesFile = None
+        self._name = name
+        self._commands = defaultdict(list) # 默认使用list存储同名commands
+        self._variables = OrderedDict()
+        self._constants = dict()
+        self._model = None
 
-    def addVariable(self, variable):
-        self.variables[variable.name] = variable
-        variable.module = self
+    def set_model(self, model):
+        '''
+        assoicate self with the model
+        :param model: ModulesFile instance
+        :return: None
+        '''
+        self._model = model
 
-    def removeVariable(self, varname):
-        if not self.variables and varname not in self.variables.keys():
-            return
-        self.variables.pop(varname)
+    def get_name(self):
+        return self._name
 
-    def addCommand(self, command):
-        self.commands[command.name].append(command)
+    def add_variable(self, variable):
+        '''
+        add variable to this module
+        :param variable: BoundedIntegerVariable instance
+        :return: None
+        '''
+        self._variables[variable.get_name()] = variable
+
+    def get_variable(self, key):
+        '''
+        get the variable instance for the key
+        :param key: variable name
+        :return: BoundedIntegerVariable instance
+        '''
+        if key in self._variables:
+            return self._variables.get(key)
+        raise Exception('variable {} not exist in module {}'.format(key, self._name))
+
+    def get_variables(self):
+        return self._variables
+
+    def add_command(self, command):
+        self._commands[command.get_name()].append(command)
         command.module = self
 
     def get_commands_with_name(self, name):
         ''':return a list contains commands with same name'''
-        if name not in self.commands.keys():
+        if name not in self._commands.keys():
             return
-        return self.commands[name]
+        return self._commands[name]
 
-    def allCommands(self):
-        return self.commands
+    def get_commands(self):
+        return self._commands
 
     # a value is not needed when executing an do_expe over this constant
     # constant is no longer a primitive value, but a Constant typed instance
-    def addConstant(self, constant):
-        self.constants[constant.get_name()] = constant
+    def add_constant(self, constant):
+        self._constants[constant.get_name()] = constant
 
     def getConstant(self, name):
-        if name in self.constants.keys():
-            return self.constants[name]
-        return None
+        if name in self._constants.keys():
+            return self._constants[name]
+        raise Exception("Module {} does not contain constant {}".format(self._name, name))
 
-    # exist for now in the case of do_expe
-    def setConstant(self, constant):
-        name = constant.get_name()
-        if name in self.constants.keys():
-            v = self.constants[name]
-            self.constants[name] = constant
-            return v
-
-
-    def getVariable(self, name):
-        if name in self.variables:
-            return self.variables[name]
-        return None
+    def get_constants(self):
+        return self._constants
 
     def __str__(self):
-        return self.name
-
-
-class CommandKind:
-    FAILURE, REPAIR, NONE = range(3)
-
-class Commands(object):
-
-    @staticmethod
-    def none_command():
-        return Command()
+        return "Module {}".format(self._name)
 
 
 class Command(object):
-    # name: name of the command
-    # about guard and action in Command:
-        # they are function objects both
-        # they all take two dictionaries vs, cs(set of variables and constants)
-        # as its parameter
-    # module: Module instance which the command get attached to
-    # kind: indicate the command is a failure/repair transition
-    # according to the definition in p52-nakayama(1).pdf
-    # is an instance of CommandKind
-    # prob: represents probability/rate
     def __init__(
             self,
-            name = "",
-            # [func(vs, cs)]
-            guards = list(),
-            action = None,
-            module = None,
-            prob = None,
-            kind=None,
-            biasing_rate=None):
-        self.name = name
-        self.guards = list()
-        if isinstance(guards, list):
-            self.guards.extend(guards)
-        else:
-            self.guards.append(guards)
-        # change action type from function to dict
-        # e.g. {var_name : var_new_value_func}
-        self.action = action
-        self.prob = prob
-        self.module = module
-        self.kind = kind
-        # biasing rate(probability of DTMC actually)
-        # by failure biasing methods, such as SFB, BFB, ...
-        # failure biasing doesn't change rate, it only changes
-        # probability of the embedded DTMC
-        self.biasing_rate = biasing_rate
-        # print "Guard is None ? : " + str(self.guard is None)
+            name,
+            guards,
+            prob,
+            updates):
+        '''
+        Command constructor
+        :param name: command name
+        :param guards: list of function
+        :param actions: {variable_instance: update_function}
+        :param prob: float or function
+        '''
+        self._name = name
+        self._guards = guards
+        self._updates = updates
+        self._prob = prob
+        self._module = None
+        self._vs = None  # variables map
+        self._cs = None  # constants map
+        self._hit_cnt = 0
+        self._miss_cnt = 0
+
+    def get_updates(self):
+        return self._updates
+
+    def get_guards(self):
+        return self._guards
+
+    def get_prob(self):
+        return self._prob
+
+    def get_name(self):
+        return self._name
+
+    def get_hit_cnt(self):
+        return self._hit_cnt
+
+    def get_miss_cnt(self):
+        return self._miss_cnt
+
+    def set_variables(self, vs):
+        '''
+        设置command执行evaluate, execute所需的variables
+        :param vs: dict
+        :return: None
+        '''
+        self._vs = vs
+
+    def set_constants(self, cs):
+        '''
+        设置command执行evaluate, execute所需的constants
+        :param cs: dict
+        :return: None
+        '''
+        self._cs = cs
+
+    def set_name(self, name):
+        self._name = name
+
+    def incr_hit_cnt(self):
+        self._hit_cnt += 1
+
+    def incr_miss_cnt(self):
+        self._miss_cnt += 1
 
     def evaluate(self):
-        for guard in self.guards:
-            result = guard(self.vs, self.cs)
+        for guard in self._guards:
+            if not callable(guard):
+                continue
+            result = guard(self._vs, self._cs)
             if not result:
                 return False
         return True
 
     def execute(self):
-        for var, update_func in self.action.items():
-            var.value = update_func()
+        for var, update_func in self._updates.items():
+            if not callable(update_func):
+                continue
+            var.set_value(update_func())
 
     def __str__(self):
-        return 'comm %s of module %s' % (self.name, self.module.name)
-
-    def __repr__(self):
-        return "cmd {} of module {}".format(self.name, self.module.name)
-
-    def add_guards(self, guards):
-        assert isinstance(guards, list)
-        self.guards.extend(guards)
-
-    def get_guards(self):
-        return self.guards
-
-    def setAction(self, action):
-        if not action:
-            # todo throws null pointer exception
-            return
-        self.action = action
-
-
-class TypeError(object):
-    def __init__(self, message):
-        self.message = message
-
-    def __str__(self):
-        return "TypeError: %s" % self.message
-
-
-class Variable(object):
-    def __init__(
-            self,
-            name='',
-            initVal=None,
-            valRange=None,
-            valType=None,
-            bounded=True):
-        self.name = name
-        self.init_val = initVal
-        self.bounded = bounded
-        self.range = valRange
-        self.type = valType
-        self.value = initVal
-
-    # check if value is within the domain
-    # (bounded or unbounded) of the variable
-    def validate(self, value):
-        if self.bounded:
-            return value in self.range
-        else:
-            return isinstance(value, self.type)
-
-    # __cmp__用于使用sort函数进行排序时调用
-    def __cmp__(self, v):
-        if isinstance(v, Variable) and self.type == v.type:
-            return self.value.__cmp__(v.value)
-        elif isinstance(v, self.type):
-            return self.value.__cmp__(v)
-
-    def __str__(self):
-        return "(Variable {} : {})".format(self.name, self.get_value())
-
-    def set_value(self, v):
-        if isinstance(v, self.type):
-            self.value = v
-        else:
-            self.value = v.get_value()
-
-    def get_value(self):
-        return self.value
-
-    def get_name(self):
-        return self.name
-
-    # return list of Variable instance with all possible values
-    def allVarsList(self):
-        if not self.bounded:
-            return TypeError("Variable is not bounded")
-
-        l = list()
-        for val in self.range:
-            cp = copy.copy(self)
-            cp.value = val
-            l.append(cp)
-        return l
-
-    def incr(self):
-        self.value += 1
-
-    def __iadd__(self, other):
-        if isinstance(other, Variable) and self.type == other.type:
-            self.value += other.value
-        elif isinstance(other, self.type):
-            self.value += other
-        return self
-
-    def __eq__(self, other):
-        if type(self) == type(other) and self.type == other.valType:
-            return self.value == other.value
-        elif type(other) == self.type:
-            return self.value == other
-        else:
-            raise Exception('type error in Variable.__eq__()')
-
-    def __ne__(self, other):
-        return not self.__eq__(other)
-
-    def __lt__(self, other):
-        if type(self) == type(other) and self.type == other.valType:
-            return self.value < other.value
-        elif self.type == type(other):
-            return self.value < other
-        else:
-            raise Exception('type error in Variable.__lt__()')
-
-    def __le__(self, other):
-        return self.__lt__(other) or self.__eq__(other)
-
-    def __gt__(self, other):
-        return not self.__le__(other)
-
-    def __ge__(self, other):
-        return self.__gt__(other) or self.__eq__(other)
-
-
-class Constant(object):
-    def __init__(self, name, constant=None):
-        '''
-        :param name: 常量名
-        :param constant: 常量值 could be None, some value or a function
-        '''
-        self.value = constant
-        self.name = name
-
-    def __str__(self):
-        return "constant {0}: {1}".format(self.get_name(), self.get_value())
+        if self._module is not None:
+            return 'Command {} of module {}'.format(self._name, self._module.get_name())
+        return 'Command {}'.format(self._name)
 
     def __repr__(self):
         return self.__str__()
 
-    def get_name(self):
-        return self.name
+    def add_guards(self, *guards):
+        '''
+        adds guards
+        :param guards: list of functions
+        :return:
+        '''
+        self._guards.extend(guards)
+
+    def add_actions(self, actions):
+        if isinstance(actions, dict):
+            self._updates.update(actions)
+
+
+class TypeVariable(object):
+    def __init__(self, n, v, t):
+        '''
+        constructor
+        :param n: name
+        :param v: value of the variable, could be None, primitive value or function that return a value
+        :param t: type of the value int, float or bool
+        '''
+        self._name = n
+        self._init_value = v
+        self._value = v
+        self._type = t
+
+    def set_value(self, v):
+        '''
+        value setter method
+        :param v: could be int, float or function
+        :return: None
+        '''
+        self._value = v
 
     def get_value(self):
-        if callable(self.value):
-            return self.value()
-        return self.value
-
-    def set_value(self, value):
-        if isinstance(value, Constant) and self.name == value.name:
-            self.value = value.value
+        if not callable(self._type):
+            raise Exception("Variable type must be callable")
+        if callable(self._value):
+            return self._type(self._value())
         else:
-            self.value = value
+            return self._type(self._value)
 
-    def update(self, constant):
-        if self.get_name() == constant.get_name():
-            self.value = constant.get_value()
+    def get_init(self):
+        ans = self._init_value
+        if callable(ans):
+            ans = ans()
+        return ans
 
-    def __mul__(self, other):
-        if isinstance(other, Constant):
-            return self.get_value() * other.get_value()
-        elif isinstance(other,(int, float)):
-            return self.get_value() * other
-        else:
-            raise Exception("type error in Constant.__mul__")
+    def get_name(self):
+        return self._name
 
-    def __add__(self, other):
-        if isinstance(other, Constant):
-            return self.get_value() + other.get_value()
-        elif isinstance(other, (int, float)):
-            return self.get_value() + other
-        else:
-            raise Exception("type error in Constant.__mul__")
-
-    def __sub__(self, other):
-        if isinstance(other, Constant):
-            return self.get_value() - other.get_value()
-        elif isinstance(other, (int, float)):
-            return self.get_value() - other
-        else:
-            raise Exception("type error in Constant.__mul__")
-
-    def __div__(self, other):
-        if isinstance(other, Constant):
-            return self.get_value() / other.get_value()
-        elif isinstance(other, (int, float)):
-            return self.get_value() / other
-        else:
-            raise Exception("type error in Constant.__mul__")
-
-    def __neg__(self):
-        return Constant(self.get_name(), -1 * self.get_value())
-
-    def __lt__(self, other):
-        if isinstance(other, Constant):
-            return self.get_value() < other.get_value()
-        elif isinstance(other, type(self.get_value())):
-            return self.get_value() < other
-        else:
-            raise Exception('type error in Constant.__lt__: {0}'.format(type(other)))
-
-    def __eq__(self, other):
-        if isinstance(other, Constant):
-            return self.get_value() == other.get_value()
-        elif isinstance(other, type(self.get_value())):
-            return self.get_value() == other
-        else:
-            raise Exception('type error in Constant.__eq__: {0}'.format(type(other)))
-
-    def __le__(self, other):
-        return self.__lt__(other) or self.__eq__(other)
-
-    def __gt__(self, other):
-        return not self.__le__(other)
-
-    def __ge__(self, other):
-        return not self.__lt__(other)
+    def __str__(self):
+        return "(TypeVariable {} : {})".format(self._name, self._value)
 
 
+class BoundedIntegerVariable(TypeVariable):
+    def __init__(self, n, v, r):
+        '''
+        constructor
+        :param n: name
+        :param v: value, could be function
+        :param r: range(inclusive), a tuple of type (min, max), min, max could be None, value or function
+        '''
+        TypeVariable.__init__(self, n, v, int)
+        self._min_value = r[0]
+        self._max_value = r[1]
+
+    def get_min(self):
+        ans = self._min_value
+        if callable(ans):
+            ans = ans()
+        return ans
+
+    def get_max(self):
+        ans = self._max_value
+        if callable(ans):
+            ans = ans()
+        return ans
+
+    def possible_values(self):
+        '''
+        返回该变量所有可能的取值
+        :return: list of type [(name, value)]
+        '''
+        min_value = self._min_value
+        if callable(min_value):
+            min_value = min_value()
+        max_value = self._max_value
+        if callable(max_value):
+            max_value = max_value()
+        if min_value > max_value:
+            raise Exception("Invalid Variable range parameter: ({}, {})".format(min_value, max_value))
+        return [tuple([self._name, value]) for value in range(min_value, max_value+1)]
+
+
+class Constant(TypeVariable):
+
+    def __str__(self):
+        return "Constant {0}: {1}".format(self.get_name(), self.get_value())

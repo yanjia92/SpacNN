@@ -65,7 +65,7 @@ class Manager(object):
         self.model.duration = duration
 
     def read_model_file(self, file_path):
-        self.model = self.mdl_parser._parseModelFile(file_path)
+        self.model = self.mdl_parser._parse(file_path)
         self.checker = Checker(model=self.model)
 
     def _set_constants(self, *constants):
@@ -196,7 +196,7 @@ class Manager(object):
         return test_expr_ys
 
     def unsure_param_names(self):
-        return self.mdl_parser.parser.constname_unsure()
+        return self.mdl_parser.parser.unsure_parameters()
 
     def plot_expr_datas(self, expr_xs, expr_ys, true_ys=None):
         if true_ys:

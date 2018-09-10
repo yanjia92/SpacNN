@@ -4,7 +4,7 @@ import sys
 from math import fabs
 
 from config.SPSConfig import SPSConfig
-from module.Module import Module, Constant, Variable, Command, CommandKind
+from module.Module import Module, Constant, BoundedVariable, Command, CommandKind
 from util.MathUtils import *
 from util.util import *
 
@@ -19,22 +19,22 @@ YEAR = 5
 # timer module of the system
 timer = Module('timer_module')
 timer.addConstant(Constant('TIME_LIMIT', YEAR * 365))  # 2 years
-day = Variable(
+day = BoundedVariable(
     'day',
     1,
     range(timer.getConstant('TIME_LIMIT').get_value() + 1),
     int,
     True
 )
-timer_turn = Variable(
+timer_turn = BoundedVariable(
     'timer_turn',
     True,
     set([True, False]),
     bool,
     True
 )
-timer.addVariable(day)
-timer.addVariable(timer_turn)
+timer.add_variable(day)
+timer.add_variable(timer_turn)
 
 def incdayaction(vs, cs):
     vs['day'].set_value(vs['day'].get_value() + 1)
@@ -65,9 +65,9 @@ sb.addConstant(config.getParam("SB_A_MU"))
 sb.addConstant(config.getParam("SB_A_SIGMA"))
 
 # variables
-sb_status = Variable('sb_status', 1, range(2), int,
-                     True)
-sb.addVariable(sb_status)
+sb_status = BoundedVariable('sb_status', 1, range(2), int,
+                            True)
+sb.add_variable(sb_status)
 
 def failaction(vs, cs):
     vs['sb_status'].set_value(0)
@@ -128,7 +128,7 @@ def test():
         ps = []
         doses = []
         std_xs = []
-        for v in [Variable('day', i) for i in interval(1, 365*YEAR, 1)]:
+        for v in [BoundedVariable('day', i) for i in interval(1, 365 * YEAR, 1)]:
             dose = v.get_value() / 365.0 * sb.getConstant("SB_K").get_value() * sb.getConstant("SCREEN_THICKNESS").get_value()
             doses.append(dose)
             x = (1 - sb.getConstant("SB_P_THRESHOLD").get_value()) / (log(1 + sb.getConstant("SB_B").get_value() * dose))
@@ -143,7 +143,7 @@ def test():
 
 def get_parsed():
     constructor = ModelConstructor()
-    model = constructor._parseModelFile("../../prism_model/smalltest.prism")
+    model = constructor._parse("../../prism_model/smalltest.prism")
     return model
 
 
@@ -151,7 +151,7 @@ def get_parsed():
 def test_parsed():
     parsed = get_parsed()
     days = range(1, YEAR * 365+1)
-    sb_mdl = parsed.getModuleByName("SB")
+    sb_mdl = parsed.get_module("SB")
     results = []
     logger.info("===============parsed===============")
     for thickness in range(4, 5):

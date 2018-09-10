@@ -125,5 +125,5 @@ class Checker(UnsureModelChecker):
 
     def set_param(self, name, value):
         result = self._model.set_constant_name_value(name, value)
-        self._model.commPrepared = False
+        self._model.set_prepared(False)
         return result

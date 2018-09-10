@@ -1,11 +1,11 @@
 import unittest
-from module.Module import Variable
+from module.Module import BoundedVariable
 from copy import copy
 
 
 class VariableTest(unittest.TestCase):
     def setUp(self):
-        self.varobj = Variable("i", 0, range(3), int, True)
+        self.varobj = BoundedVariable("i", 0, range(3), int, True)
         self.copied = copy(self.varobj)
 
     def testCopy(self):

@@ -32,7 +32,7 @@ class ModelFactory(object):
                 cls.module_factory.bcrmodule(),
                 cls.module_factory.bdrmodule()],
             labels=labels)
-        model.constants['SCREEN_THICKNESS'] = cls.module_factory.config.getParam('SCREEN_THICKNESS')
+        model._constants['SCREEN_THICKNESS'] = cls.module_factory.config.getParam('SCREEN_THICKNESS')
         model.duration = 730
         return model
 
@@ -49,7 +49,7 @@ class ModelFactory(object):
     def get_parsed(cls, duration=730):
         sep = get_sep()
         mdl_dir = sep.join((get_proj_dir(), 'prism_model', 'smalltest.prism'))
-        model =  cls.model_constructor._parseModelFile(mdl_dir)
+        model =  cls.model_constructor._parse(mdl_dir)
         model.duration = duration
         return model
 

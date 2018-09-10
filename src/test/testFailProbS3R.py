@@ -32,7 +32,7 @@ class TestCase(unittest.TestCase):
             ps = []
             xs = []
             std_xs = []
-            for v in [Variable("day", i) for i in interval(1, 365*YEAR, 1)]:
+            for v in [BoundedVariable("day", i) for i in interval(1, 365 * YEAR, 1)]:
                 dose = v.get_value() / 365.0 * (s3r.getConstant("S3R_K").get_value() /
                                                 self.config.getParam("SCREEN_THICKNESS").get_value())
                 # 阈值电压漂移
@@ -50,14 +50,14 @@ class TestCase(unittest.TestCase):
 
     def get_parsed(self):
         constructor = ModelConstructor()
-        model = constructor._parseModelFile("../../prism_model/smalltest.prism")
+        model = constructor._parse("../../prism_model/smalltest.prism")
         return model
 
     # 测试同样的数据for parsed model
     def testparsing(self):
         parsed = self.get_parsed()
         days = range(1, YEAR * 365 + 1)
-        s3r_mdl = parsed.getModuleByName("S3R")
+        s3r_mdl = parsed.get_module("S3R")
         results = []
         logger.info("===============parsed===============")
         for thickness in range(4, 5):

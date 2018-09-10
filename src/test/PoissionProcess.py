@@ -10,8 +10,8 @@ def poission_model():
     module.addConstant(Constant('r', None))
 
     # variable definition
-    v = Variable('n', 0, None, int, False)  # n: int init 0;
-    module.addVariable(v)
+    v = BoundedVariable('n', 0, None, int, False)  # n: int init 0;
+    module.add_variable(v)
     # command definition
 
     comm = Command(

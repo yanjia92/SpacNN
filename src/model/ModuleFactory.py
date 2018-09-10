@@ -25,8 +25,8 @@ class ModuleFactory(object):
         module.addConstant(config.getParam('SB_B'))
         module.addConstant(config.getParam('SB_P_THRESHOLD'))
 
-        module.addVariable(
-            Variable(
+        module.add_variable(
+            BoundedVariable(
                 'sb_status',
                 1,
                 range(2),
@@ -95,16 +95,16 @@ class ModuleFactory(object):
     def _timermodule(self):
         config = self.config
         module = Module('TIME')
-        module.addVariable(
-            Variable(
+        module.add_variable(
+            BoundedVariable(
                 'day',
                 1,
                 range(1, config.getParam('DURATION_IN_DAY') + 1),
                 int
             )
         )
-        module.addVariable(
-            Variable(
+        module.add_variable(
+            BoundedVariable(
                 'timer_turn',
                 False,
                 set([True, False]),
@@ -143,8 +143,8 @@ class ModuleFactory(object):
         module.addConstant(config.getParam('S3R_B'))
         module.addConstant(config.getParam('S3R_DELTAV_THRESHOLD'))
 
-        module.addVariable(
-            Variable(
+        module.add_variable(
+            BoundedVariable(
                 's3r_status',
                 1,
                 range(2),
@@ -215,8 +215,8 @@ class ModuleFactory(object):
         config = self.config
         module = Module('BCR')
 
-        module.addVariable(
-            Variable(
+        module.add_variable(
+            BoundedVariable(
                 'bcr_status',
                 1,
                 range(2),
@@ -287,8 +287,8 @@ class ModuleFactory(object):
         config = self.config
         module = Module('BDR')
 
-        module.addVariable(
-            Variable(
+        module.add_variable(
+            BoundedVariable(
                 'bdr_status',
                 1,
                 range(2),
