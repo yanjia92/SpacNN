@@ -33,7 +33,7 @@ class VarBenchmark(CheckerTestBase):
     def _get_ltl(self):
         return "true U<=20 result_4"
 
-    def _get_samples(self):
+    def _get_sample_cnt(self):
         return 100
 
     def _get_duration(self):

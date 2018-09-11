@@ -9,7 +9,7 @@ class DieTest(CheckerTestBase):
     def _get_model_name(self):
         return "die"
 
-    def _get_samples(self):
+    def _get_sample_cnt(self):
         return 400
 
     def _get_ltl(self):

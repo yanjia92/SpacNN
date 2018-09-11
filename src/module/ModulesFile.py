@@ -133,10 +133,9 @@ class ModulesFile(object):
         :return: joined Command instance
         '''
         name = c1.get_name()
-        guards = c1.get_guards()
-        if not isinstance(guards, list):
-            raise Exception("Command's guards property must be a list")
-        guards.extend(c2.get_guards())
+        guard1 = c1.get_guard()
+        guard2 = c2.get_guard()
+        guard = lambda vs, cs: guard1(vs, cs) and guard2(vs, cs)
 
         def prob():
             p1 = c1.get_prob()
@@ -144,9 +143,9 @@ class ModulesFile(object):
             if callable(p1) and callable(p2):
                 return p1() * p2()
             raise Exception("Command's prob property must be a function.")
-        updates = c1.get_updates()
-        updates.update(c2.get_updates())
-        return CommandFactory.generate(name, guards, prob, updates)
+        update = c1.get_update()
+        update.update(c2.get_update())
+        return CommandFactory.generate(name, guard, prob, update)
 
     def _fill_commands(self, commands):
         '''
@@ -214,6 +213,8 @@ class ModulesFile(object):
         :param init_state: init state of type {name: value}
         :return: path typed of list of AnotherStep
         '''
+        if not self._prepared:
+            self.prepare()
         if init_state is not None and len(init_state) > 0:
             for n, v in init_state.items():
                 self._vars[n].set_value(v)
@@ -283,6 +284,8 @@ class ModulesFile(object):
         :param seed: the random number([0,1]) to use
         :return: chosen command
         '''
+        if not enabled or len(enabled) == 0:
+            return None
         probs = map(lambda c: c.get_prob(), enabled)
         exit_rate = sum(probs)
         for i, p in enumerate(probs):
@@ -293,6 +296,8 @@ class ModulesFile(object):
             acc += p
             acc_arr.append(acc)
         index = bisect(acc_arr, seed)
+        if index < 0 or index >= len(enabled):
+            raise Exception("Index out of range: {}".format(index))
         return enabled[index]
 
     def prepare(self):
@@ -305,16 +310,17 @@ class ModulesFile(object):
         for constant in self._constants.values():
             if constant.get_value() is None:
                 raise Exception("Set unsure parameter before run ModulesFile's prepare method")
-        for values in itertools.product(*[variable.possible_values() for variable in self._vars]):
+        for values in itertools.product(*[variable.possible_values() for variable in self._vars.values()]):
             for name, value in values:
                 self._vars[name].set_value(value)
             enabled = []
-            for c in self._commands:
-                p = c.get_prob()
-                if callable(p):
-                    c.set_prob(p())
-                if c.evaluate():
-                    enabled.append(c)
+            for commands in self._commands.values():
+                for c in commands:
+                    p = c.get_prob()
+                    if callable(p):
+                        c.set_prob(p())
+                    if c.evaluate():
+                        enabled.append(c)
             key = self._status_as_key()
             self._status_commands_map[key] = enabled
             apset = set()

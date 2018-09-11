@@ -21,7 +21,7 @@ class Test(CheckerTestBase):
     def _get_duration(self):
         return 5
 
-    def _get_samples(self):
+    def _get_sample_cnt(self):
         return 100
 
     def setUp(self):

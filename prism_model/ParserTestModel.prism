@@ -3,6 +3,7 @@ ctmc
 
 const int param1 = 11;
 const double param2 = 11.0;
+const int param3 = 2 * param1;
 
 module XXX
     // variable definitions

@@ -80,19 +80,19 @@ class Command(object):
     def __init__(
             self,
             name,
-            guards,
+            guard,
             prob,
-            updates):
+            update):
         '''
         Command constructor
         :param name: command name
-        :param guards: list of function
-        :param actions: {variable_instance: update_function}
+        :param guard: function that returns bool
+        :param update: {variable_instance: update_function}
         :param prob: float or function
         '''
         self._name = name
-        self._guards = guards
-        self._updates = updates
+        self._guard = guard
+        self._update = update
         self._prob = prob
         self._module = None
         self._vs = None  # variables map
@@ -100,14 +100,17 @@ class Command(object):
         self._hit_cnt = 0
         self._miss_cnt = 0
 
-    def get_updates(self):
-        return self._updates
+    def get_update(self):
+        return self._update
 
-    def get_guards(self):
-        return self._guards
+    def get_guard(self):
+        return self._guard
 
     def get_prob(self):
         return self._prob
+
+    def set_prob(self, p):
+        self._prob = p
 
     def get_name(self):
         return self._name
@@ -144,18 +147,14 @@ class Command(object):
         self._miss_cnt += 1
 
     def evaluate(self):
-        for guard in self._guards:
-            if not callable(guard):
-                continue
-            result = guard(self._vs, self._cs)
-            if not result:
-                return False
-        return True
+        if not callable(self._guard):
+            raise Exception("Command's guard must be callable")
+        return self._guard(self._vs, self._cs)
 
     def execute(self):
-        for var, update_func in self._updates.items():
+        for var, update_func in self._update.items():
             if not callable(update_func):
-                continue
+                raise Exception("Command's update's value must be callable")
             var.set_value(update_func())
 
     def __str__(self):

@@ -9,6 +9,7 @@ class PRISMParserTest(ModelTestBase):
     ctmc
     const int param1 = 11;
     const double param2 = 11.0;
+    const int param3 = 2 * param1;
 
     module XXX
         // variable definitions
@@ -39,6 +40,7 @@ class PRISMParserTest(ModelTestBase):
         m = self._model
         param1 = m.get_constant('param1')
         param2 = m.get_constant("param2")
+        param3 = m.get_constant("param3")
         var1 = m.get_variable("var1")
         var2 = m.get_variable("var2")
         var3 = m.get_variable("var3")
@@ -47,6 +49,7 @@ class PRISMParserTest(ModelTestBase):
         self.assertIsNotNone(var3)
         self.assertAlmostEqual(param2.get_value(), 11.0, 1e-10)
         self.assertEqual(param1.get_value(), 11)
+        self.assertEqual(param3.get_value(), 2 * 11)
         self.assertEqual(var1.get_min(), 0)
         self.assertEqual(var1.get_max(), param1.get_value())
         self.assertEqual(var1.get_init(), param1.get_value())

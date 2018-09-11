@@ -183,13 +183,15 @@ class PRISMParser(object):
                                  | CONST DOUBLE NAME ASSIGN expr SEMICOLON
                                  | CONST BOOL NAME ASSIGN expr SEMICOLON'''
         n = p[3]
+        expr = copy(p[5])
+        t = copy(p[2]) # type
 
         # there could be unsure parameter in expression
         def f():
-            v = self._resolve_literal(p[5](), p[2])
+            v = self._resolve_literal(expr(), t)
             return v
 
-        c = Constant(n, f, self._type_map[p[2]])
+        c = Constant(n, f, self._type_map[t])
         ModelConstructor.get_model().add_constant(c)
         self._vcf_map[n] = c
 
@@ -211,8 +213,8 @@ class PRISMParser(object):
         '''module_command_statement : LB RB boolean_expression THEN updates SEMICOLON'''
         n = ""
         commands = p[5]
-        for c  in commands:
-            c.set_name = n
+        for c in commands:
+            c.set_name(n)
             self._m.add_command(c)
 
     def p_updates(self, p):
@@ -241,7 +243,7 @@ class PRISMParser(object):
     def p_actions(self, p):
         '''actions : actions AND assignment'''
         p[1].update(p[3])
-        p[0] = copy(p[1])
+        p[0] = p[1]
 
     def p_actions2(self, p):
         '''actions : assignment'''
@@ -379,7 +381,7 @@ class PRISMParser(object):
                 func = bool_and
             else:
                 func = bool_or
-            p[0] = [func]
+            p[0] = func
         elif len(p) == 2:
             p[0] = p[1]
         if self._parsing_module:
@@ -406,7 +408,7 @@ class PRISMParser(object):
             op2 = num
             bool_func = self._gen_bool_func(bool_op)
             return bool_func(op1, op2)
-        p[0] = [f]
+        p[0] = f
 
     def p_boolean_expression_unit1(self, p):
         '''boolean_expression_unit : NAME GT expr
@@ -430,15 +432,15 @@ class PRISMParser(object):
             op2 = expr()
             bool_func = self._gen_bool_func(op)
             return bool_func(op1, op2)
-        p[0] = [f]
+        p[0] = f
 
     def p_boolean_expression_unit2(self, p):
         '''boolean_expression_unit : TRUE'''
-        p[0] = [lambda vs, cs: True]
+        p[0] = lambda vs, cs: True
 
     def p_boolean_expression_unit3(self, p):
         '''boolean_expression_unit : FALSE'''
-        p[0] = [lambda vs, cs: False]
+        p[0] = lambda vs, cs: False
 
     def p_formula_statement(self, p):
         '''formula_statement : FORMULA NAME ASSIGN expr SEMICOLON'''
@@ -463,8 +465,8 @@ class PRISMParser(object):
         '''
         eqfunc = lambda op1, op2: op1 == op2
         ltfunc = lambda op1, op2: op1 < op2
-        lefunc = lambda op1, op2: eqfunc(op1, op2) or eqfunc(op1, op2)
-        gtfunc = lambda op1, op2: not gtfunc(op1, op2)
+        lefunc = lambda op1, op2: ltfunc(op1, op2) or eqfunc(op1, op2)
+        gtfunc = lambda op1, op2: not lefunc(op1, op2)
         nefunc = lambda op1, op2: not eqfunc(op1, op2)
         gefunc = lambda op1, op2: gtfunc(op1, op2) or eqfunc(op1, op2)
         map = {

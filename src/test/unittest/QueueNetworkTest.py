@@ -15,15 +15,11 @@ class QueueNetworkTest(CheckerTestBase):
     def _get_model_name(self):
         return "queue_network"
 
-    def _get_samples(self):
+    def _get_sample_cnt(self):
         return 200
 
     def _get_ltl(self):
-        self.duration = 50
-        return "true U<={} full".format(self.duration)
-
-    def _get_duration(self):
-        return self.duration
+        return "true U<=50 full"
 
     def testCheckCorrect(self):
         prism_answer = 0.086023

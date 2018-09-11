@@ -5,7 +5,7 @@ from module.Module import Command
 class CommandFactory(object):
 
     @staticmethod
-    def generate(name, guards, prob, updates):
+    def generate(name, guard, prob, updates):
         '''
         factory method
         :param name: command's name
@@ -14,4 +14,4 @@ class CommandFactory(object):
         :param updates: a dictionary of type Map<Variable_instance, func> with function of type func(vs, cs) to perform the update
         :return:
         '''
-        return Command(name, guards, prob, updates)
+        return Command(name, guard, prob, updates)

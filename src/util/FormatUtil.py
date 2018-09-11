@@ -22,5 +22,3 @@ def str2num(val):
     else:
         if isinstance(val, int) or isinstance(val, float):
             return val
-
-
