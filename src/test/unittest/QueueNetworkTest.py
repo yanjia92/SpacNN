@@ -16,13 +16,17 @@ class QueueNetworkTest(CheckerTestBase):
         return "queue_network"
 
     def _get_sample_cnt(self):
-        return 200
+        return 400
 
     def _get_ltl(self):
-        return "true U<=50 full"
+        return "true U<=10 full"
 
     def testCheckCorrect(self):
-        prism_answer = 0.086023
+        '''
+        验证检验结果正确
+        :return:
+        '''
+        prism_answer = 0.086023 # result for duration = 50
         delta = 0.02
         check_answer = self._checker.run_checker()
         self.assertAlmostEqual(prism_answer, check_answer, delta=delta)
@@ -32,6 +36,10 @@ class QueueNetworkTest(CheckerTestBase):
         check_results = [self._checker.run_checker() for _ in range(samples)]
         average = sum(check_results) / len(check_results)
         variance = sum([(check_result - average) ** 2 for check_result in check_results])
+
+        # generate training path and check results to rearrange next-state order
+        paths, results = self._checker.check_and_export(1000)
+        self._model.rearrange(paths, results)
 
         self._checker.antithetic = True
         check_results = [self._checker.run_checker() for _ in range(samples)]

@@ -207,6 +207,7 @@ class PRISMParser(object):
         commands = p[6]
         for c in commands:
             c.set_name(n)
+            c.set_module(self._m)
             self._m.add_command(c)
 
     def p_module_command_statement1(self, p):
@@ -215,6 +216,7 @@ class PRISMParser(object):
         commands = p[5]
         for c in commands:
             c.set_name(n)
+            c.set_module(self._m)
             self._m.add_command(c)
 
     def p_updates(self, p):

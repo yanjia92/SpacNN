@@ -112,6 +112,9 @@ class Command(object):
     def set_prob(self, p):
         self._prob = p
 
+    def set_module(self, m):
+        self._module = m
+
     def get_name(self):
         return self._name
 

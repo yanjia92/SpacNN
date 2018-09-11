@@ -10,7 +10,7 @@ def str2num(val):
     if isinstance(val, str):
         result = None
         try:
-            if val.index('.') != -1:
+            if '.' in val:
                 result = float(val)
             elif val.isdigit():
                 result = int(val)

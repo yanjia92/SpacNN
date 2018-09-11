@@ -49,7 +49,7 @@ class BoundedInterval:
         rb = literal.find(']')
         comma = literal.find(',')
         num1 = literal[lb+1:comma].strip()
-        num2 = literal[comma+1:rb]
+        num2 = literal[comma+1:rb].strip()
         try:
             num1 = str2num(num1)
             num2 = str2num(num2)

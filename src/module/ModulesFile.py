@@ -112,7 +112,7 @@ class ModulesFile(object):
 
     def _join_commands(self, commands1, commands2):
         '''
-        将两个同名commands进行同步
+        将两组同名commands进行同步
         即guard作并处理
         update做并处理
         prob相乘
@@ -120,7 +120,7 @@ class ModulesFile(object):
         :param commands2: list of Command instance with same name
         :return: joined command list
         '''
-        return [self._join_command(c1, c2) for c1, c2 in zip(commands1, commands2)]
+        return [self._join_command(c1, c2) for c1, c2 in itertools.product(commands1, commands2)]
 
     def _join_command(self, c1, c2):
         '''
@@ -207,10 +207,12 @@ class ModulesFile(object):
         else:
             raise Exception("Invalid parameter passed to add_label: n:{}, f:{}".format(n, f))
 
-    def gen_path(self, init_state=None):
+    def gen_path(self, init_state=None, seeds=None):
         '''
         产生随机路径
+        if seeds is not null, this method is used to generate an antithetic path
         :param init_state: init state of type {name: value}
+        :param seeds: a list of random number that is in [0, 1] used to generate next state
         :return: path typed of list of AnotherStep
         '''
         if not self._prepared:
@@ -222,7 +224,10 @@ class ModulesFile(object):
         d = self._duration
         t = 0.0 # passed_time
         while t <= d:
-            step = self._gen_next(t)
+            seed = None
+            if seeds is not None and len(seeds) > 0:
+                seed = seeds.pop(0)
+            step = self._gen_next(t, seed=seed)
             path.append(step)
             if step.get_holding_time() + t >= d:
                 self._restore()
@@ -259,21 +264,25 @@ class ModulesFile(object):
         '''
         return tuple([variable.get_value() for variable in self._vars.values()])
 
-    def _gen_next(self, time):
+    def _gen_next(self, time, seed=None):
         '''
         根据目前已经流逝的时间以及当前系统所处的状态产生AnotherStep实例
         :param time: passed time
+        :param seed: random number used to generate next state, used if provided
         :return: AnotherStep instance
         '''
         key = self._status_as_key()
         apset = self._status_apset_map[key]
         passed_time = time
         enabled = self._status_commands_map[key]
-        seed = self._queue.get()
+        if seed is None:
+            seed = self._queue.get()
         command = self._choose_next(enabled, seed)
         exit_rate = sum(map(lambda c: c.get_prob(),  enabled))
         holding_time = 1
         if self._type == ModelType.CTMC:
+            if exit_rate == 0:
+                raise Exception("Exit rate can not be zero")
             holding_time = expo_rnd(exit_rate)
         return AnotherStep(apset, passed_time, holding_time, seed, command)
 
@@ -314,6 +323,7 @@ class ModulesFile(object):
             for name, value in values:
                 self._vars[name].set_value(value)
             enabled = []
+            key = self._status_as_key()
             for commands in self._commands.values():
                 for c in commands:
                     p = c.get_prob()
@@ -321,7 +331,6 @@ class ModulesFile(object):
                         c.set_prob(p())
                     if c.evaluate():
                         enabled.append(c)
-            key = self._status_as_key()
             self._status_commands_map[key] = enabled
             apset = set()
             for n, f in self._labels.items():
