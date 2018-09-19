@@ -97,8 +97,8 @@ class Command(object):
         self._module = None
         self._vs = None  # variables map
         self._cs = None  # constants map
-        self._hit_cnt = 0
-        self._miss_cnt = 0
+        self._hit_cnt = 0 # when a path satisfy the LTL, each command in the path increments its _hit_cnt
+        self._miss_cnt = 0 # when a path doesn't satisfy the LTL, each command in the path increments its _miss_cnt
 
     def get_update(self):
         return self._update
@@ -174,11 +174,11 @@ class Command(object):
         :param guards: list of functions
         :return:
         '''
-        self._guards.extend(guards)
+        self._guard.extend(guards)
 
     def add_actions(self, actions):
         if isinstance(actions, dict):
-            self._updates.update(actions)
+            self._update.update(actions)
 
 
 class TypeVariable(object):

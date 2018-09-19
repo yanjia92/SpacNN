@@ -65,7 +65,7 @@ class Checker(UnsureModelChecker):
             if check_ans:
                 hit_cnt += 1
             if self._antithetic:
-                seeds = map(lambda step: step.get_seed(), path)
+                seeds = map(lambda step: 1 - step.get_seed(), path)
                 antithetic_path = self.gen_random_path(seeds=seeds)
                 result = self._check(antithetic_path)
                 generated_cnt += 1
@@ -78,3 +78,12 @@ class Checker(UnsureModelChecker):
         result = self._model.set_constant_name_value(name, value)
         self._model.set_prepared(False)
         return result
+
+    def set_antithetic(self, antithetic):
+        '''
+        setter
+        :param antithetic:
+        :return:
+        '''
+        if isinstance(antithetic, bool):
+            self._antithetic = antithetic
