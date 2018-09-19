@@ -94,11 +94,51 @@ class Command(object):
         self._guard = guard
         self._update = update
         self._prob = prob
-        self._module = None
+        self._mod_name = ""
         self._vs = None  # variables map
         self._cs = None  # constants map
         self._hit_cnt = 0 # when a path satisfy the LTL, each command in the path increments its _hit_cnt
         self._miss_cnt = 0 # when a path doesn't satisfy the LTL, each command in the path increments its _miss_cnt
+
+    def incr_hit_cnt(self):
+        self._hit_cnt += 1
+
+    def incr_miss_cnt(self):
+        self._miss_cnt += 1
+
+    def evaluate(self):
+        if not callable(self._guard):
+            raise Exception("Command's guard must be callable")
+        return self._guard(self._vs, self._cs)
+
+    def execute(self):
+        for var, update_func in self._update.items():
+            if not callable(update_func):
+                raise Exception("Command's update's value must be callable")
+            var.set_value(update_func())
+
+    def __str__(self):
+        return "Comm {} of module {}".format(self._name, self._mod_name)
+
+    def __repr__(self):
+        return self.__str__()
+
+    def set_mod_name(self, mod_name):
+        if not isinstance(mod_name, str) or len(mod_name) <= 0:
+            raise Exception("Invalid module name {}".format(mod_name))
+        self._mod_name = mod_name
+
+    def add_guards(self, *guards):
+        '''
+        adds guards
+        :param guards: list of functions
+        :return:
+        '''
+        self._guard.extend(guards)
+
+    def add_actions(self, actions):
+        if isinstance(actions, dict):
+            self._update.update(actions)
 
     def get_update(self):
         return self._update
@@ -142,43 +182,6 @@ class Command(object):
 
     def set_name(self, name):
         self._name = name
-
-    def incr_hit_cnt(self):
-        self._hit_cnt += 1
-
-    def incr_miss_cnt(self):
-        self._miss_cnt += 1
-
-    def evaluate(self):
-        if not callable(self._guard):
-            raise Exception("Command's guard must be callable")
-        return self._guard(self._vs, self._cs)
-
-    def execute(self):
-        for var, update_func in self._update.items():
-            if not callable(update_func):
-                raise Exception("Command's update's value must be callable")
-            var.set_value(update_func())
-
-    def __str__(self):
-        if self._module is not None:
-            return 'Command {} of module {}'.format(self._name, self._module.get_name())
-        return 'Command {}'.format(self._name)
-
-    def __repr__(self):
-        return self.__str__()
-
-    def add_guards(self, *guards):
-        '''
-        adds guards
-        :param guards: list of functions
-        :return:
-        '''
-        self._guard.extend(guards)
-
-    def add_actions(self, actions):
-        if isinstance(actions, dict):
-            self._update.update(actions)
 
 
 class TypeVariable(object):

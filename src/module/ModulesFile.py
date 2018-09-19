@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*-
-import copy
+from copy import *
 import itertools
 import random
 from collections import OrderedDict
@@ -83,7 +83,7 @@ class ModulesFile(object):
 
         # add variables into model
         self._vars.update(m.get_variables())
-        self._init_vars.update(copy.deepcopy(m.get_variables()))
+        self._init_vars.update(deepcopy(m.get_variables()))
 
         # add constant into model
         self._constants.update(m.get_constants())
@@ -167,8 +167,15 @@ class ModulesFile(object):
             raise Exception("Model contains no constant named {}".format(n))
         return self._constants[n]
 
-    def get_commands(self):
-        return self._commands
+    def get_commands(self, name=None):
+        '''
+        this method is mainly used for unittest
+        :param name: command's name
+        :return: list of [Command] instance
+        '''
+        if not name or name not in self._commands:
+            return self._commands.values()
+        return self._commands[name]
 
     def get_variable(self, n):
         if n not in self._vars:
@@ -330,7 +337,7 @@ class ModulesFile(object):
                     if callable(p):
                         c.set_prob(p())
                     if c.evaluate():
-                        enabled.append(c)
+                        enabled.append(copy(c))
             self._status_commands_map[key] = enabled
             apset = set()
             for n, f in self._labels.items():
