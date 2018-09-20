@@ -144,6 +144,32 @@ def standDiv(xs, ys):
     return sum([fabs(linefunc(x) - y) for x, y in zip(xs, ys)]) / float(len(xs))
 
 
+def cov(nums1, nums2):
+    '''
+    协方差
+    :param nums1: array of numbers
+    :param nums2: array of numbers
+    :return: covariance of two arrays
+    '''
+    exy = sum([x*y for x,y in zip(nums1, nums2)]) / float(len(nums1))
+    ex = sum(nums1) / float(len(nums1))
+    ey = sum(nums2) / float(len(nums2))
+    return exy - ex * ey
+
+
+def rel_index(nums1, nums2):
+    '''
+    相关系数
+    formula: index = cov(arr1, arr2) / std_var(arr1) * std_var(arr2)
+    :param nums1:
+    :param nums2:
+    :return:
+    '''
+    c = cov(nums1, nums2)
+    std_var1 = sqrt(cov(nums1, nums1))
+    std_var2 = sqrt(cov(nums2, nums2))
+    return c / (std_var1 * std_var2)
+
 
 class ErrorType():
     SQ_DIFF = 0

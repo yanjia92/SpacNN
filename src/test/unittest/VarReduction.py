@@ -1,6 +1,8 @@
 # -*- coding:utf-8 -*-
 from unittest import TestCase
 from random import random
+from math import sqrt
+
 
 # 验证对于离散分布（0-1分布）来说，对偶变量可以有效减小估计值方差
 
@@ -22,7 +24,7 @@ class AntitheticMapper(object):
 class VarReductionTest(TestCase):
     def setUp(self, debug=True):
         self._sample_cnt = 100 # 样本个数
-        self._sample_size = 500 # 每个样本的取样的个数
+        self._sample_size = 30 # 每个样本的取样的个数
         self._p = random() # 0-1分布的参数p
         self._generator = random # 随机数的生成器
 
@@ -62,8 +64,25 @@ class VarReductionTest(TestCase):
         return variance, anti_variance
 
     def testVarReduction(self):
-        variances = [self.testComputeVars() for _ in range(40)]
+        variances = [self.testComputeVars() for _ in range(100)]
         anti_variances = [t[1] for t in variances]
         variances = [t[0] for t in variances]
         print sum(variances) / len(variances)
         print sum(anti_variances) / len(anti_variances)
+
+    def cov(self, nums1, nums2):
+        exy = sum([x*y for x,y in zip(nums1, nums2)]) / float(len(nums1))
+        ex = sum(nums1) / float(len(nums1))
+        ey = sum(nums2) / float(len(nums2))
+        return exy - ex * ey
+
+    def rel_index(self, nums1, nums2):
+        cov = self.cov(nums1, nums2)
+        std1 = sqrt(self.cov(nums1, nums1))
+        std2 = sqrt(self.cov(nums2, nums2))
+        return cov / (std1 * std2)
+
+    def testRelIndex(self):
+        nums1 = [1, -1, -1, 1, -1, -1, -1, 1, -1, -1]
+        nums2 = [-1, 1,  1, 1, -1, -1, -1, 1, -1, -1]
+        print self.rel_index(nums1, nums2)

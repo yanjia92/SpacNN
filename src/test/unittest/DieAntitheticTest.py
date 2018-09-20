@@ -4,7 +4,6 @@ from CheckerTest import CheckerTestBase
 class DieTest(CheckerTestBase):
     def setUp(self):
         CheckerTestBase.setUp(self)
-        self._checker.antithetic = True
 
     def _get_model_name(self):
         return "die"
@@ -18,8 +17,16 @@ class DieTest(CheckerTestBase):
     def _get_duration(self):
         return 10
 
+    def testChecking(self):
+        checker = self._get_checker()
+        print checker.run_checker()
+
     def testCheckAntithetic(self):
-        return self._checker.run_checker()
+        checker = self._get_checker()
+        paths, results = checker.check_and_export(1000)
+        checker.rearrange(paths, results)
+        checker.set_antithetic(True)
+        print checker.run_checker()
 
     def testVarReduction(self):
         samples = 50

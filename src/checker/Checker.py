@@ -3,6 +3,8 @@
 from util.AnnotationHelper import *
 from UnsureModelChecker import UnsureModelChecker
 from LTLChecker import LTLChecker
+from util.CsvFileHelper import write_csv_rows
+from util.TypeTransformer import bool2int
 
 
 class Checker(UnsureModelChecker):
@@ -27,6 +29,9 @@ class Checker(UnsureModelChecker):
         formula = self._ltl
         results = map(lambda path: self._ltl_checker.check(path, formula), paths)
         return paths, results
+
+    def rearrange(self, paths, results):
+        self._model.rearrange(paths, results)
 
     def get_sample_size(self):
         return self._sample_cnt
@@ -55,23 +60,30 @@ class Checker(UnsureModelChecker):
         hit_cnt = 0  # satisfied path cnt
         begin = time.time()
         diff_cnt = 0 # 统计对偶路径验证结果不同的次数
+        results = []
         while generated_cnt < samples:
             path = self.gen_random_path()
             generated_cnt += 1
             if generated_cnt % self._log_path_interval == 0:
                 clock = time.time()
                 print "Generating {} path causing {}s.".format(generated_cnt, clock - begin)
-            check_ans = self._check(path)
-            if check_ans:
+            result = self._check(path)
+            results.append(result)
+            if result:
                 hit_cnt += 1
             if self._antithetic:
                 seeds = map(lambda step: 1 - step.get_seed(), path)
                 antithetic_path = self.gen_random_path(seeds=seeds)
-                result = self._check(antithetic_path)
+                anti_result = self._check(antithetic_path)
+                results.append(anti_result)
+                if result != anti_result:
+                    diff_cnt += 1
                 generated_cnt += 1
                 if result:
                     hit_cnt += 1
-
+        print "diff_cnt percentage = {}%".format(float(diff_cnt) / samples * 2 * 100)
+        results = [list([elem]) for elem in results]
+        write_csv_rows("anti.txt", results, transformer=bool2int)
         return hit_cnt/generated_cnt
 
     def set_param(self, name, value):

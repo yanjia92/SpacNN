@@ -30,3 +30,6 @@ class CheckerTestBase(ModelTestBase):
         :return: int or float type
         '''
         pass
+
+    def _get_checker(self):
+        return self._checker

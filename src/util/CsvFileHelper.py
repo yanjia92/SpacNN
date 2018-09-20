@@ -3,12 +3,18 @@ from SystemUtil import on_windows_platform
 from os.path import exists, isfile
 
 
-def write_csv_rows(file_path, datas, headers=None, sep=","):
-    assert len(datas) > 0
-    lens = map(len, datas)
-    assert len(set(lens)) == 1  #  确保每一行数据数相等
-    if headers:
-        assert len(headers) == len(datas[0])
+def write_csv_rows(file_path, datas, headers=None, sep=",", transformer=None):
+    '''
+    :param file_path:
+    :param datas: list of list
+    :param headers: list of strings
+    :param sep: separator
+    :param transformer: transform(row_data)
+    :return: None
+    '''
+    # validate file_path and datas
+    # validation includes: all data rows should be same length
+    # header's length should be same with data's row
     with open(file_path, "w") as f:
         if headers:
             header_line = sep.join(headers)
@@ -18,13 +24,14 @@ def write_csv_rows(file_path, datas, headers=None, sep=","):
             else:
                 f.write("\n")
         for data in datas:
+            if transformer:
+                transformer(data)
             data = map(str, data)
             f.write(sep.join(data))
             if on_windows_platform():
                 f.write("\r\n")
             else:
                 f.write("\n")
-    return len(datas)
 
 
 def parse_csv_cols(file_path, types=float, has_headers=True, sep=','):
@@ -53,7 +60,7 @@ def parse_csv_rows(path, types=float, has_headers=True, sep=','):
     :param types: single type or type list
     :param has_headers: False or True
     :param sep: separator
-    :return: rows of data(list)
+    :return: list of list
     '''
     results = []
     if not exists(path) or not isfile(path):
@@ -92,7 +99,7 @@ def test_write():
     headers = ["col1", "col2", "col3"]
     write_csv_rows(write_to, datas, headers)
     datas = parse_csv_rows(write_to, [int])
-    print data
+    print datas
 
 
 if __name__ == "__main__":

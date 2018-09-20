@@ -10,13 +10,12 @@ class QueueNetworkTest(CheckerTestBase):
 
     def setUp(self):
         CheckerTestBase.setUp(self)
-        self._checker.antithetic = True
 
     def _get_model_name(self):
         return "queue_network"
 
     def _get_sample_cnt(self):
-        return 300
+        return 30
 
     def _get_ltl(self):
         return "true U<=10 full"
@@ -42,7 +41,7 @@ class QueueNetworkTest(CheckerTestBase):
         return sum([(result - average) ** 2 for result in check_results]) / len(check_results)
 
     def testVarReduction(self):
-        sample_cnt = 5
+        sample_cnt = 100
         vars1 = [self._compute_var(sample_cnt) for _ in range(10)]
 
         # generate training path and check results to rearrange next-state order
