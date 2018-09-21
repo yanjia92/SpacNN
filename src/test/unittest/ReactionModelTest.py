@@ -17,7 +17,7 @@ class ReactionModelTest(CheckerTestBase):
     def _get_duration(self):
         return 0.001
 
-    def _get_sample_cnt(self):
+    def _get_sample_size(self):
         return 2000
 
     def testCheckCorrect(self):

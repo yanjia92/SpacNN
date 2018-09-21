@@ -171,5 +171,9 @@ def rel_index(nums1, nums2):
     return c / (std_var1 * std_var2)
 
 
+def variance(nums):
+    return cov(nums, nums)
+
+
 class ErrorType():
     SQ_DIFF = 0

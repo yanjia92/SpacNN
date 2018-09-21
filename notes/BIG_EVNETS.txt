@@ -35,3 +35,17 @@
     关于PRISMParser中的p
         观察yacc的源码，发现yacc在编译每行代码时，会生成一个YaccProduction对象。
         所以，建议在一行之中的某些元素如果存在闭包的话，建议对所需元素进行拷贝。
+
+
+
+2018/09/21
+    对对偶路径的效果进行了验证
+    使用的模型是简单的DTMC模型: die.prism
+    验证方法为DieAntitheticTest.py.testShowRelativeIndex方法
+    实验结果表明，使用对偶路径的采样法可以有效减小样本之间的相关系数。
+
+    同样对不使用对偶路径和使用对偶路径的估计值的方差进行了比较
+    发现后者比前者平均小一半
+    使用模型：die.prism
+    调用方法：DieAntitheticTest.py.testShowVariance
+    结果：result/die_model_anthetic_results1.png

@@ -3,8 +3,7 @@
 from util.AnnotationHelper import *
 from UnsureModelChecker import UnsureModelChecker
 from LTLChecker import LTLChecker
-from util.CsvFileHelper import write_csv_rows
-from util.TypeTransformer import bool2int
+from util.MathUtils import rel_index
 
 
 class Checker(UnsureModelChecker):
@@ -19,15 +18,24 @@ class Checker(UnsureModelChecker):
         self._ltl_checker = LTLChecker()
         self._log_path_interval = 16
 
-    def check_and_export(self, path_cnt):
+    def check_and_export(self, path_cnt, antithetic=False):
         '''
         产生path_cnt条随机路径进行验证，并将验证结果返回
         :param path_cnt: int
         :return: [path], [bool]
         '''
-        paths = [self.gen_random_path() for _ in range(path_cnt)]
-        formula = self._ltl
-        results = map(lambda path: self._ltl_checker.check(path, formula), paths)
+        if not antithetic:
+            paths = [self.gen_random_path() for _ in range(path_cnt)]
+            results = map(lambda path: self._check(path), paths)
+            return paths, results
+        paths = []
+        if path_cnt & 1:
+            path_cnt += 1
+        for _ in range(path_cnt / 2):
+            paths.append(self.gen_random_path())
+            anti_path = self.antithetic_path_of(paths[-1])
+            paths.append(anti_path)
+        results = map(lambda path: self._check(path), paths)
         return paths, results
 
     def rearrange(self, paths, results):
@@ -53,6 +61,10 @@ class Checker(UnsureModelChecker):
         :return: bool
         '''
         return self._ltl_checker.check(path, self._ltl)
+
+    def antithetic_path_of(self, path):
+        seeds = [1 - step.get_seed() for step in path]
+        return self.gen_random_path(seeds=seeds)
 
     def run_checker(self):
         samples = self.get_sample_size()
@@ -82,8 +94,8 @@ class Checker(UnsureModelChecker):
                 if result:
                     hit_cnt += 1
         print "diff_cnt percentage = {}%".format(float(diff_cnt) / samples * 2 * 100)
-        results = [list([elem]) for elem in results]
-        write_csv_rows("anti.txt", results, transformer=bool2int)
+        results = map(lambda elem: [0, 1][elem], results)
+        print "index: {}".format(rel_index(results[0::2], results[1::2]))
         return hit_cnt/generated_cnt
 
     def set_param(self, name, value):

@@ -18,3 +18,4 @@ module die
 endmodule
 
 label result_4 = s == 7 & d == 4;
+label result_45 = (s == 7 & d == 4) | (s == 7 & d == 5);

@@ -365,8 +365,8 @@ class PRISMParser(object):
         p[0] = list([p[1]])
 
     def p_boolean_expression(self, p):
-        '''boolean_expression : boolean_expression AND boolean_expression_unit
-                              | boolean_expression OR boolean_expression_unit
+        '''boolean_expression : boolean_expression AND boolean_expression
+                              | boolean_expression OR boolean_expression
                               | boolean_expression_unit'''
         if len(p) == 4:
             op = p[2]
@@ -389,6 +389,11 @@ class PRISMParser(object):
         if self._parsing_module:
             # the parser is parsing a module, since label must be defined outside of any module
             self._g = p[0]
+
+    def p_boolean_expression1(self, p):
+        '''boolean_expression : LP boolean_expression RP'''
+        # 单独的一个boolean expression不允许加括号
+        p[0] = p[2]
 
     def p_boolean_expression_unit(self, p):
         '''boolean_expression_unit : NAME GT NUM

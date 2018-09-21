@@ -14,7 +14,7 @@ class QueueNetworkTest(CheckerTestBase):
     def _get_model_name(self):
         return "queue_network"
 
-    def _get_sample_cnt(self):
+    def _get_sample_size(self):
         return 30
 
     def _get_ltl(self):
