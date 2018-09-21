@@ -17,9 +17,9 @@ def test():
     built = ModelFactory.get_built()
     day_vals = range(1, 311, 50)
     logger.info("day_vals = {}".format(day_vals))
-    sb_module = built.getModuleByName("SB")
+    sb_module = built.get_module("SB")
     sb_fail_cmd = sb_module.get_commands_with_name("sb_fail_cmd")
-    s3r_module = built.getModuleByName("S3R")
+    s3r_module = built.get_module("S3R")
     s3r_fail_cmd = s3r_module.get_commands_with_name("s3r_fail_cmd")
     for day_val in day_vals:
         built.setVariable("day", day_val)

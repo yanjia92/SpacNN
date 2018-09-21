@@ -1,31 +1,32 @@
 # -*- coding: utf-8 -*-
 from math import *
 import random
+from scipy.optimize import leastsq
+import numpy as np
+from math import pow
+from math import e
 
-# generate random variable from a exponential distribution
-# given that it's less than t.
-# e.g. implementation of forcing.
-# if forcing is False, return normal random variable from the exponential distribution
-# of the rate parameter set to be lambda.
-def randomExpo(lamda, t=None, forcing=True):
+
+def expo_rnd(lamda):
+    '''
+    return random number which is distributed under exponential distribution
+    :param lamda: rate parameter
+    :return: random number
+    '''
     rnd = random.uniform(0, 1)
-    if forcing and t:
-        return log(1-rnd*(1-math.exp(-1*lamda*t)))/(-1*lamda)
-    else:
-        return log(1-rnd)/(-1*lamda)
+    return log(1-rnd)/(-1*lamda)
 
 
-# const double a1 =  0.254829592;
-# const double a2 = -0.284496736;
-# const double a3 =  1.421413741;
-# const double a4 = -1.453152027;
-# const double a5 =  1.061405429;
-# const double p  =  0.3275911;
-# formula s3r_sign = s3r_std_cdf_x < 0 ? -1 : 1;
-# formula s3r_std_cdf_x_2 = s3r_sign * s3r_std_cdf_x / pow(2.0, 0.5);
-# formula s3r_t = 1.0/(1.0 + p * s3r_std_cdf_x_2);
-# formula s3r_y = 1.0 - (((((a5*s3r_t + a4)*s3r_t) + a3)*s3r_t + a2)*s3r_t + a1)*s3r_t*pow(e, -s3r_std_cdf_x_2 * s3r_std_cdf_x_2);
-# formula s3r_fail_prob = 1 - 0.5 * (1.0 + s3r_sign * s3r_y);  // 根据s3r所受电离能损剂量计算出的失效概率
+def expo_pdf(x, lamda):
+    '''
+    指数分布的概率密度函数
+    :param x: x
+    :param lamda: parameter lambda
+    :return: pdf_lambda(x)
+    '''
+    if x <= 0:
+        return 0
+    return lamda * pow(e, -lamda * x)
 
 
 # 计算标准正态分布的累积分布函数
@@ -68,6 +69,111 @@ def sigmoid(x):
 
 def sigmoid_derivative(x):
     return x * (1 - x)
+
+
+def format_float(v, n):
+    '''
+    将浮点数v保留n位小数
+    :param v: float
+    :param n: int
+    :return:
+    '''
+    if not isinstance(n, int) or n < 0:
+        return None
+    str_v = str(v)
+    is_float = isinstance(v, float)
+    if not is_float:
+        str_v += "."
+        str_v += "0" * n
+        return float(str_v)
+    else:
+        int_part, float_part = str_v.split(".")
+        while len(float_part) < n:
+            float_part += "0"
+        float_part = float_part[:n]
+        return float(int_part + "." + float_part)
+
+
+def uniform(a, b, samples=1):
+    '''
+    产生介于a,b之间的服从均匀分布的随机数
+    :param a:
+    :param b:
+    :param samples: 所需的随机样本数
+    :return: 随机样本 type list
+    '''
+    randoms = []
+    if a < b and samples > 0:
+        for _ in range(samples):
+            randoms.append(a + (b - a) * random.random())
+        return randoms
+    else:
+        return []
+
+
+def standDiv(xs, ys):
+    '''
+    计算二维坐标点距离通过最小二乘法拟合出的曲线的平均距离
+    :param xs: list of pointer's x
+    :param ys: list of pointer's y
+    :return: 点到拟合出的直线的距离的平均值
+    '''
+    if not (len(xs) == len(ys) and len(xs) > 0):
+        return
+
+    def error(param, x, y):
+        return func(param, x) - y
+
+    def func(param, x):
+        k, b = param
+        return k * x + b
+
+    xs = np.array(xs)
+    ys = np.array(ys)
+    initparam = np.array([1, 1])
+    param = leastsq(error, initparam, args=(xs, ys))
+    param = param[0]
+
+    def linegenerator(param):
+        def wrapper(x):
+            k, b = param
+            return k * x + b
+        return wrapper
+
+    linefunc = linegenerator(param)
+    return sum([fabs(linefunc(x) - y) for x, y in zip(xs, ys)]) / float(len(xs))
+
+
+def cov(nums1, nums2):
+    '''
+    协方差
+    :param nums1: array of numbers
+    :param nums2: array of numbers
+    :return: covariance of two arrays
+    '''
+    exy = sum([x*y for x,y in zip(nums1, nums2)]) / float(len(nums1))
+    ex = sum(nums1) / float(len(nums1))
+    ey = sum(nums2) / float(len(nums2))
+    return exy - ex * ey
+
+
+def rel_index(nums1, nums2):
+    '''
+    相关系数
+    formula: index = cov(arr1, arr2) / std_var(arr1) * std_var(arr2)
+    :param nums1:
+    :param nums2:
+    :return:
+    '''
+    c = cov(nums1, nums2)
+    std_var1 = sqrt(cov(nums1, nums1))
+    std_var2 = sqrt(cov(nums2, nums2))
+    return c / (std_var1 * std_var2)
+
+
+def variance(nums):
+    return cov(nums, nums)
+
 
 class ErrorType():
     SQ_DIFF = 0

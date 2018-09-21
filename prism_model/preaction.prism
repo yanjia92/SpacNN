@@ -1,0 +1,32 @@
+// model for Na + Cl <-> Na+ + Cl-
+
+ctmc 
+
+const int cntNa = 10; // number of Na + Na+
+const int cntCl = 10; // number of Cl + Cl-
+
+const int i = 5;
+
+// Na and Na+ module
+module Na
+    na : [0..cntNa] init cntNa;
+    [e1] na > 0 -> na : (na' = na - 1);
+    [e2] na < cntNa -> (cntNa - na) : (na' = na + 1);
+endmodule
+
+// Cl and Cl- module
+module Cl
+    cl : [0..cntCl] init cntCl;
+    [e1] cl > 0 -> cl : (cl' = cl - 1);
+    [e2] cl < cntCl -> (cntCl - cl) : (cl' = cl + 1);
+endmodule
+
+// base rates
+const double e1_rate = 100; // Na + Cl -> Na+ + Cl-
+const double e2_rate = 10; // Na+ + Cl- -> Na + Cl
+
+// module represent the base rate for e1 and e2
+module baserate
+    [e1] true -> e1_rate : true;
+    [e2] true -> e2_rate : true;
+endmodule

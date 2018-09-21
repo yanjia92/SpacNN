@@ -6,14 +6,12 @@ class LTLLexer(object):
     def __init__(self):
         self.lexer = lex(object=self)
 
-
     keywords = {
         "true": "TRUE",
         "false": "FALSE",
         "U": "UNTIL",
         "X": "NEXT"
     }
-
 
     tokens = [
             "NAME",
@@ -22,9 +20,11 @@ class LTLLexer(object):
             "NOT",
             "LT",
             "LE",
-            "NUM"
+            "NUM",
+            "COMMA",
+            "LB",
+            "RB"
     ] + list(keywords.values())
-
 
     t_ignore = " \t"
     t_UNTIL = r"U"
@@ -34,7 +34,9 @@ class LTLLexer(object):
     t_NOT = r"!"
     t_LT = r"<"
     t_LE = r"<="
-
+    t_COMMA = r","
+    t_LB = r"\["
+    t_RB = r"\]"
 
     def t_NUM(self, t):
         r"[\-]?\d+\.?\d*"

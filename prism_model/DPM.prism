@@ -1,58 +1,48 @@
+// simple dynamic power management system
+
 ctmc
 
-const int q_max = 20;
+const int q_max = 20; // maximum queue size
 
-const double rate_arrive = 1/0.72;
+const double rate_arrive = 1 / 0.72;
 
-module SQ
+module SQ // service queue module
+    q: [0, q_max] init 0;
+    
+    [request] true -> rate_arrive : (q'=min(q+1, q_max));
 
-    q : [0, q_max] init 0;
+    [serve] q>1 -> (q'=q - 1);
 
-    [request] true -> rate_arrive : (q'=min(q+1,q_max));
+    [serve_last] q==1 -> q'=q - 1;
 
-    [serve] q>1 -> (q'=q- 1); // f: 44a28 
+endmodule 
 
-    [serve_last] q==1 -> (q'=q- 1);
-
-endmodule
-
+// service provider module
 const double rate_serve = 1/0.008;
 
-const double rate_s2i = 1/1.6;
-
-const double rate_i2s = 1/0.67;
-
 module SP
+    sp : [0, 2] init 1; // 0=sleep, 1=idle, 2=busy
 
-    sp : [0, 2] init 0;
+    // when a request arrive and at idle state, idle -> busy
+    [request] sp==1 -> (sp'=2);
 
-    [sleep2idle] sp==0 & q==0 -> rate_s2i : (sp'=1);
-    [sleep2idle] sp==0 & q>0 -> rate_s2i : (sp'=2);
+    // if queue is not at idle state and when a request comes, its state doesn't change
+    [request] sp != 1 -> (sp'=sp);
 
-    [idle2sleep] sp==1 -> rate_i2s : (sp'=0);
-
-
-    [request] sp==1  -> (sp'=2);
-
-    [request] sp!=1 -> (sp'=sp);
-
-    [serve]      sp==2 -> rate_serve : (sp'=2);
-    [serve_last] sp==2 -> rate_serve : (sp'=1);
+    //
+    [serve] sp == 2 -> rate_serve : (sp'=2);
+    
+    [serve_last] sp == 2 -> rate_serve : (sp'=1);
 
 endmodule
 
-const int q_trigger;
+const int q_trigger; // above which sleep2idle is sent
 
 module PM
-
-    // Send sleep2idle command to SP (when queue is of size q_trigger or greater)
-    [sleep2idle] q>=q_trigger -> true;
-
-    // Send idle2sleep command to SP (when queue is empty)
-    [idle2sleep] q==0 -> true;
+    [sleep2idle] q >= q_trigger -> true; // when queue's size >= q_trigger
+    
+    [idle2sleep] q == 0 -> true;
 
 endmodule
 
 label failure = q >= 6;
-
-

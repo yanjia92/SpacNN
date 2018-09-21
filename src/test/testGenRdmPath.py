@@ -12,7 +12,7 @@ def test_parsed(parsed=None):
     if not parsed:
         parsed = ModelFactory.get_parsed()
         parsed.duration = duration
-        parsed.prepare_commands()
+        parsed.prepare()
     # thd = StepGenThd(model=parsed)
     # thd.setDaemon(True)
     # thd.start()
@@ -31,7 +31,7 @@ def test_parsed(parsed=None):
 
 def test_built():
     built = ModelFactory.get_built()
-    built.prepare_commands()
+    built.prepare()
     pr = cProfile.Profile()
     pr.enable()
     path = built.get_random_path_V2()

@@ -10,8 +10,8 @@ def poission_model():
     module.addConstant(Constant('r', None))
 
     # variable definition
-    v = Variable('n', 0, None, int, False)  # n: int init 0;
-    module.addVariable(v)
+    v = BoundedVariable('n', 0, None, int, False)  # n: int init 0;
+    module.add_variable(v)
     # command definition
 
     comm = Command(
@@ -34,8 +34,9 @@ def poission_model():
         return vs['n'] >= 4
     labels['nge4'] = nge4
 
-    model = ModulesFile.ModulesFile(ModelType.CTMC, modules=[module], labels=labels)
+    model = ModulesFile(ModelType.CTMC, modules=[module], labels=labels)
     return model
+
 
 def test_run():
     model = poission_model()

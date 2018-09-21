@@ -4,7 +4,7 @@ from util.AnnotationHelper import profileit
 
 
 model = ModelFactory.get_parsed(duration=1000000)
-model.prepare_commands()
+model.prepare()
 
 #  测试将队列填满需要多少时间
 @profileit("stepgentime")

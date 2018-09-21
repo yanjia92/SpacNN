@@ -10,22 +10,22 @@ def sps_model_dtmc(duration):
     # timer module of the system
     timer = Module('timer_module')
     timer.addConstant(Constant('TIME_LIMIT', duration))
-    day = Variable(
+    day = BoundedVariable(
         'day',
         1,
         range(timer.getConstant('TIME_LIMIT').get_value() + 1),
         int,
         True
     )
-    timer_turn = Variable(
+    timer_turn = BoundedVariable(
         'timer_turn',
         True,
         set([True, False]),
         bool,
         True
     )
-    timer.addVariable(day)
-    timer.addVariable(timer_turn)
+    timer.add_variable(day)
+    timer.add_variable(timer_turn)
 
     def incdayaction(vs, cs):
         vs['day'].set_value(vs['day'].get_value() + 1)
@@ -54,9 +54,9 @@ def sps_model_dtmc(duration):
     sb.addConstant(Constant('SB_A_SIGMA', 0.02319029*21))
 
     # variables
-    sb_status = Variable('sb_status', 1, range(2), int,
-                         True)
-    sb.addVariable(sb_status)
+    sb_status = BoundedVariable('sb_status', 1, range(2), int,
+                                True)
+    sb.add_variable(sb_status)
 
     def failaction(vs, cs):
         vs['sb_status'].set_value(0)
@@ -118,14 +118,14 @@ def sps_model_dtmc(duration):
     s3r.addConstant(Constant('S3R_A_SIGMA', 6.7471 * 120))
     s3r.addConstant(Constant('S3R_B', 0.01731))
 
-    s3r_status = Variable(
+    s3r_status = BoundedVariable(
         's3r_status',
         1,
         range(2),
         int,
         True
     )
-    s3r.addVariable(s3r_status)
+    s3r.add_variable(s3r_status)
 
     def s3rfailaction(vs, cs):
         vs['s3r_status'].set_value(0)

@@ -1,0 +1,12 @@
+dtmc
+
+
+const double theta;
+
+module Toy
+i : [0, 2] init 0;
+[] i == 0 -> theta : (i'=1) + (1 - theta) : (i'=2);
+endmodule
+
+label ieq1 = i == 1;
+label ieq2 = i == 2;

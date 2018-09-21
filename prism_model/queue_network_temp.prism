@@ -1,0 +1,32 @@
+ctmc
+
+const int c = 5;
+
+const double lambda = 4*c;
+const double mu1a = 0.1*2;
+const double mu1b = 0.9*2;
+const double mu2 = 2;
+const double kappa = 4;
+
+module serverC
+
+sc : [0, c] init 0;
+ph : [1, 2] init 1;
+
+[] sc<c -> lambda: (sc'=sc+1);
+[route] sc>0 & ph==1 -> mu1b: (sc'=sc - 1);
+[] sc>0 & ph==1 -> mu1a: (ph'=2);
+[route] sc>0 & ph==2 -> mu2: (ph'=1) & (sc'=sc - 1);
+
+endmodule
+
+module serverM
+
+sm : [0, c] init 0;
+
+[route]	sm<c -> 1: (sm'=sm+1);
+[] sm>0 -> kappa: (sm'=sm - 1);
+
+endmodule
+
+label full = sc == c & sm == c & ph == 2;

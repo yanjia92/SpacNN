@@ -4,7 +4,7 @@ from manager.Manager import Manager
 from director.Director import Director
 from ui.CodeWindow import CodeWindow
 from util.SystemUtil import *
-
+from compiler.PRISMParser import ModelConstructor
 
 
 '''
@@ -30,7 +30,11 @@ def add_file_menu(f):
         menu_bar = f(*args, **kwargs)
 
         file_menu = Menu(menu_bar, tearoff=0)
-        file_menu.add_command(label="Open", command=comm_map["open"])
+        if on_windows_platform():
+            open_label = "Open"
+        elif on_mac_platform():
+            open_label = "Open"
+        file_menu.add_command(label=open_label, command=comm_map["open"])
         menu_bar.add_cascade(label="Model", menu=file_menu)
         return menu_bar
     return wrapper
@@ -49,7 +53,12 @@ def add_option_menu(f):
 
 
 class UIOperator(object):
-    def __init__(self, director):
+    def __init__(self, director, debug_mode=False):
+        '''
+        :param director: instance of Director
+        :param debug_mode: when this is True, user can specify a prism true data to for test
+        and every time user predict, it will print error to console
+        '''
         self.director = director
         self.comm_map = director.comm_map
         self.root = Tk()
@@ -69,13 +78,10 @@ class UIOperator(object):
         self.director.register_widget_var("model_file_path", var_path)
         l_model_file_path.pack()
         self._add_code_window()
-        # print self.root.children.keys()
         lLTL = Label(self.root, text="LTL formula for the path")
         lLTL.pack()
         var_LTL = StringVar()
         eLTL = Entry(self.root, textvariable=var_LTL, name="eLTL")
-        # eLTL.bind("<Return>", self.comm_map["ltl_input"])
-        # self.root.bind_class("Entry", "<FocusOut>", self.comm_map["ltl_input"])
         eLTL.pack()
 
         # buttons
@@ -85,6 +91,9 @@ class UIOperator(object):
         predict_button.pack()
         export_button = Button(self.root, text="export", command=self.comm_map["export"])
         export_button.pack()
+        if debug_mode:
+            prism_data_button = Button(self.root, text="add true data from prism", command=self.comm_map["atdfp"])
+            prism_data_button.pack()
 
     @add_help_menu
     @add_option_menu
@@ -102,6 +111,6 @@ class UIOperator(object):
 if __name__ == '__main__':
     manager = Manager()
     director = Director(manager)
-    ui_operator = UIOperator(director)
+    ui_operator = UIOperator(director, debug_mode=True)
     director.root = ui_operator.root
     ui_operator.start_ui_loop()

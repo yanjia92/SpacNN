@@ -3,7 +3,6 @@ curdir = os.getcwd()
 pardir = os.path.dirname(os.path.abspath(curdir))
 import sys
 sys.path.append(pardir)
-from collections import namedtuple
 from util.AnnotationHelper import deprecated
 
 
@@ -19,9 +18,6 @@ class State(object):
     def __str__(self):
         result = 'State(id: %d, %s)' % (self.sid, str(self.ap_set))
         return result
-
-# fields = ["state_id", "ap_set"]
-# State = namedtuple("State", fields)
 
 
 def test():

@@ -1,11 +1,11 @@
+# -*- coding:utf-8 -*-
+
 import ply.yacc as yacc
 from LTLLexer import LTLLexer
 from collections import namedtuple
 import os
-from util.BinaryTreeUtils import BT_level_traverse
 import copy
-
-
+from util.BinaryTreeUtils import BT_level_traverse
 TreeNode = namedtuple("TreeNode", ["object", "left", "right"])
 
 
@@ -15,6 +15,7 @@ class LTLParser(object):
         self.tokens = self.lexer.tokens
         self.parser = None
         self.parsed_results = list()
+        self._duration = None
 
     def p_statement(self, p):
         '''statement : path_statement
@@ -23,14 +24,16 @@ class LTLParser(object):
 
     def p_path_statement(self, p):
         '''path_statement : state_statement UNTIL state_statement'''
-        left = p[1]
-        right = p[3]
-        p[0] = TreeNode("U", left, right)
-        self.parsed_results.append(BT_level_traverse(p[0]))
+        raise Exception("Unbounded until formula is not supported for now")
+        # left = p[1]
+        # right = p[3]
+        # p[0] = TreeNode("U", left, right)
+        # self.parsed_results.append(BT_level_traverse(p[0]))
 
     def p_path_statement1(self, p):
         '''path_statement : NEXT state_statement'''
         p[0] = TreeNode("X", p[2], None)
+        self._duration = '1'
 
     def p_path_statement2(self, p):
         '''path_statement : state_statement UNTIL LT NUM state_statement
@@ -38,7 +41,14 @@ class LTLParser(object):
         left = p[1]
         right = p[5]
         num = p[4]
+        self._duration = num
         p[0] = TreeNode("U[0, {}]".format(num), left, right)
+        self.parsed_results.append(BT_level_traverse(p[0]))
+
+    def p_path_statement3(self, p):
+        '''path_statement : state_statement UNTIL LB NUM COMMA NUM RB state_statement'''
+        self._duration = p[6]
+        p[0] = TreeNode("U[{}, {}]".format(p[4], p[6]), p[1], p[8])
         self.parsed_results.append(BT_level_traverse(p[0]))
 
     def p_state_statement(self, p):
@@ -100,6 +110,37 @@ class LTLParser(object):
     def _clear_results(self):
         while len(self.parsed_results) > 0:
             self.parsed_results.pop(0)
+
+
+class LTLParserFacade(object):
+    def __init__(self):
+        self._parser = LTLParser().build_parser()
+        self._duration = 0.0
+
+    def parse_line(self, ltl):
+        '''
+        :param ltl: ltl forumla in string, e.g. True U<=100 someAP
+        :return: parsed_ltl represented in a array containing tokens
+        '''
+        if self._parser:
+            return self._parser.parse_line(ltl)
+
+    def parse_duration(self, ltl):
+        '''
+        获取ltl之中的duration
+        :param ltl: unparsed ltl formula
+        :return: duration in str
+        '''
+        if self._parser and ltl:
+            self._parser.parse_line(ltl)
+            if self._parser._duration:
+                return self._parser._duration
+
+
+    def parse_file(self, path):
+        if self._parser:
+            return self._parser.parse_file(path)
+
 
 def main():
     parser = LTLParser().build_parser()

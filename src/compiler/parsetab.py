@@ -6,9 +6,9 @@ _tabversion = '3.10'
 
 _lr_method = 'LALR'
 
-_lr_signature = 'AND FALSE LE LT NAME NEXT NOT NUM OR TRUE UNTILstatement : path_statement\n                     | state_statementpath_statement : state_statement UNTIL state_statementpath_statement : NEXT state_statementpath_statement : state_statement UNTIL LT NUM state_statement\n                          | state_statement UNTIL LE NUM state_statementstate_statement : apstate_statement : state_statement AND apstate_statement : state_statement OR apstate_statement : NOT state_statementstate_statement : path_statementap : NAME\n              | TRUE\n              | FALSE'
+_lr_signature = 'AND COMMA FALSE LB LE LT NAME NEXT NOT NUM OR RB TRUE UNTILstatement : path_statement\n                     | state_statementpath_statement : state_statement UNTIL state_statementpath_statement : NEXT state_statementpath_statement : state_statement UNTIL LT NUM state_statement\n                          | state_statement UNTIL LE NUM state_statementpath_statement : state_statement UNTIL LB NUM COMMA NUM RB state_statementstate_statement : apstate_statement : state_statement AND apstate_statement : state_statement OR apstate_statement : NOT state_statementstate_statement : path_statementap : NAME\n              | TRUE\n              | FALSE'
     
-_lr_action_items = {'AND':([1,2,4,5,8,9,10,11,15,16,17,20,23,24,],[-14,-12,-7,12,-11,-13,12,-11,12,-8,-9,12,12,12,]),'LE':([14,],[18,]),'FALSE':([0,3,7,12,13,14,21,22,],[1,1,1,1,1,1,1,1,]),'NAME':([0,3,7,12,13,14,21,22,],[2,2,2,2,2,2,2,2,]),'LT':([14,],[19,]),'NEXT':([0,3,7,14,21,22,],[3,3,3,3,3,3,]),'UNTIL':([1,2,4,5,8,9,10,11,15,16,17,20,23,24,],[-14,-12,-7,14,-11,-13,14,-11,14,-8,-9,14,14,14,]),'NUM':([18,19,],[21,22,]),'NOT':([0,3,7,14,21,22,],[7,7,7,7,7,7,]),'TRUE':([0,3,7,12,13,14,21,22,],[9,9,9,9,9,9,9,9,]),'OR':([1,2,4,5,8,9,10,11,15,16,17,20,23,24,],[-14,-12,-7,13,-11,-13,13,-11,13,-8,-9,13,13,13,]),'$end':([1,2,4,5,6,8,9,10,11,15,16,17,20,23,24,],[-14,-12,-7,-2,0,-1,-13,-4,-11,-10,-8,-9,-3,-6,-5,]),}
+_lr_action_items = {'AND':([1,2,4,5,8,9,10,11,15,16,17,21,25,27,30,],[-13,-15,-8,12,-12,-14,12,-12,12,-9,-10,12,12,12,12,]),'LE':([14,],[18,]),'FALSE':([0,3,7,12,13,14,22,24,29,],[2,2,2,2,2,2,2,2,2,]),'NAME':([0,3,7,12,13,14,22,24,29,],[1,1,1,1,1,1,1,1,1,]),'LT':([14,],[20,]),'NEXT':([0,3,7,14,22,24,29,],[3,3,3,3,3,3,3,]),'UNTIL':([1,2,4,5,8,9,10,11,15,16,17,21,25,27,30,],[-13,-15,-8,14,-12,-14,14,-12,14,-9,-10,14,14,14,14,]),'NUM':([18,19,20,26,],[22,23,24,28,]),'COMMA':([23,],[26,]),'RB':([28,],[29,]),'NOT':([0,3,7,14,22,24,29,],[7,7,7,7,7,7,7,]),'LB':([14,],[19,]),'TRUE':([0,3,7,12,13,14,22,24,29,],[9,9,9,9,9,9,9,9,9,]),'OR':([1,2,4,5,8,9,10,11,15,16,17,21,25,27,30,],[-13,-15,-8,13,-12,-14,13,-12,13,-9,-10,13,13,13,13,]),'$end':([1,2,4,5,6,8,9,10,11,15,16,17,21,25,27,30,],[-13,-15,-8,-2,0,-1,-14,-4,-12,-11,-9,-10,-3,-6,-5,-7,]),}
 
 _lr_action = {}
 for _k, _v in _lr_action_items.items():
@@ -17,7 +17,7 @@ for _k, _v in _lr_action_items.items():
       _lr_action[_x][_k] = _y
 del _lr_action_items
 
-_lr_goto_items = {'path_statement':([0,3,7,14,21,22,],[8,11,11,11,11,11,]),'state_statement':([0,3,7,14,21,22,],[5,10,15,20,23,24,]),'statement':([0,],[6,]),'ap':([0,3,7,12,13,14,21,22,],[4,4,4,16,17,4,4,4,]),}
+_lr_goto_items = {'path_statement':([0,3,7,14,22,24,29,],[8,11,11,11,11,11,11,]),'state_statement':([0,3,7,14,22,24,29,],[5,10,15,21,25,27,30,]),'statement':([0,],[6,]),'ap':([0,3,7,12,13,14,22,24,29,],[4,4,4,16,17,4,4,4,4,]),}
 
 _lr_goto = {}
 for _k, _v in _lr_goto_items.items():
@@ -27,18 +27,19 @@ for _k, _v in _lr_goto_items.items():
 del _lr_goto_items
 _lr_productions = [
   ("S' -> statement","S'",1,None,None,None),
-  ('statement -> path_statement','statement',1,'p_statement','LTLParser.py',20),
-  ('statement -> state_statement','statement',1,'p_statement','LTLParser.py',21),
-  ('path_statement -> state_statement UNTIL state_statement','path_statement',3,'p_path_statement','LTLParser.py',25),
-  ('path_statement -> NEXT state_statement','path_statement',2,'p_path_statement1','LTLParser.py',32),
-  ('path_statement -> state_statement UNTIL LT NUM state_statement','path_statement',5,'p_path_statement2','LTLParser.py',36),
-  ('path_statement -> state_statement UNTIL LE NUM state_statement','path_statement',5,'p_path_statement2','LTLParser.py',37),
-  ('state_statement -> ap','state_statement',1,'p_state_statement','LTLParser.py',45),
-  ('state_statement -> state_statement AND ap','state_statement',3,'p_state_statement3','LTLParser.py',49),
-  ('state_statement -> state_statement OR ap','state_statement',3,'p_state_statement4','LTLParser.py',55),
-  ('state_statement -> NOT state_statement','state_statement',2,'p_state_statement5','LTLParser.py',61),
-  ('state_statement -> path_statement','state_statement',1,'p_state_statement6','LTLParser.py',65),
-  ('ap -> NAME','ap',1,'p_ap','LTLParser.py',69),
-  ('ap -> TRUE','ap',1,'p_ap','LTLParser.py',70),
-  ('ap -> FALSE','ap',1,'p_ap','LTLParser.py',71),
+  ('statement -> path_statement','statement',1,'p_statement','LTLParser.py',21),
+  ('statement -> state_statement','statement',1,'p_statement','LTLParser.py',22),
+  ('path_statement -> state_statement UNTIL state_statement','path_statement',3,'p_path_statement','LTLParser.py',26),
+  ('path_statement -> NEXT state_statement','path_statement',2,'p_path_statement1','LTLParser.py',34),
+  ('path_statement -> state_statement UNTIL LT NUM state_statement','path_statement',5,'p_path_statement2','LTLParser.py',39),
+  ('path_statement -> state_statement UNTIL LE NUM state_statement','path_statement',5,'p_path_statement2','LTLParser.py',40),
+  ('path_statement -> state_statement UNTIL LB NUM COMMA NUM RB state_statement','path_statement',8,'p_path_statement3','LTLParser.py',49),
+  ('state_statement -> ap','state_statement',1,'p_state_statement','LTLParser.py',55),
+  ('state_statement -> state_statement AND ap','state_statement',3,'p_state_statement3','LTLParser.py',59),
+  ('state_statement -> state_statement OR ap','state_statement',3,'p_state_statement4','LTLParser.py',65),
+  ('state_statement -> NOT state_statement','state_statement',2,'p_state_statement5','LTLParser.py',71),
+  ('state_statement -> path_statement','state_statement',1,'p_state_statement6','LTLParser.py',75),
+  ('ap -> NAME','ap',1,'p_ap','LTLParser.py',79),
+  ('ap -> TRUE','ap',1,'p_ap','LTLParser.py',80),
+  ('ap -> FALSE','ap',1,'p_ap','LTLParser.py',81),
 ]

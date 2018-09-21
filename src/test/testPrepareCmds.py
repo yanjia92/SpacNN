@@ -23,7 +23,7 @@ def timeit(func, *args, **kwargs):
 def test():
     # model = getBuiltModel()
     model = getParsedModel()
-    timeit(model.prepare_commands)
+    timeit(model.prepare)
 
 
 if __name__ == '__main__':

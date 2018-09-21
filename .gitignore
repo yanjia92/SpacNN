@@ -5,3 +5,5 @@ result/*
 bin/*
 dist/*
 *.xml
+dist/*
+bin/*

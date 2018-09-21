@@ -3,9 +3,6 @@ from model.ModelFactory import ModelFactory
 from checker.Checker import Checker
 from util.CsvFileHelper import parse_csv_cols
 from math import fabs
-from PathHelper import *
-from compiler.PRISMParser import ModelConstructor
-from compiler.LTLParser import LTLParser
 
 
 DURATION = 5
@@ -15,13 +12,6 @@ d = 0.02
 
 def get_prism_checking_result(filepath):
     return parse_csv_cols(filepath)
-
-
-# def get_logger():
-#     logger = logging.getLogger("testCheckingAlgo logging")
-#     logger.addHandler(sys.stdout)
-#     logger.setLevel(logging.INFO)
-#     return logger
 
 
 def get_checker(model):
@@ -60,7 +50,7 @@ def t2(model=None):
     # logger = get_logger()
     for t in thickness:
         ModelFactory.setParam("SCREEN_THICKNESS", t)
-        checker.model.prepare_commands()
+        checker.model.prepare()
         probs.append(checker.run_checker())
     # logger.info("samples={},c={},d={}".format(samplesize, c, d))
     # logger.info(probs)
@@ -76,7 +66,7 @@ def set_param(name, value):
 
 def t3(model, set_param_func, prism_data_file):
     '''测试parsed模型运行checker的结果与PRISM中运行的一致'''
-    # logger = get_logger()
+    # logger = get_logger()3
     prism_result_x, prism_result_y = get_prism_checking_result(prism_data_file)
     checker = get_checker(model)
     samplesize = checker.get_sample_size()
@@ -85,7 +75,7 @@ def t3(model, set_param_func, prism_data_file):
     probs = []
     for t in thickness:
         set_param_func("SCREEN_THICKNESS", t)
-        checker.model.prepare_commands()
+        checker.model.prepare()
         probs.append(checker.run_checker())
     # logger.info("samples={},c={},d={}".format(samplesize, c, d))
     # logger.info(probs)
@@ -96,15 +86,15 @@ def t3(model, set_param_func, prism_data_file):
 if __name__ == "__main__":
     # pass
     # t1()
-    # t2()
-    model_path = get_prism_model_dir() + get_sep() + "Queue.prism"
-    model_constructor = ModelConstructor()
-    model = model_constructor.parseModelFile(model_path)
-    model.prepare_commands()
-    ltl = LTLParser().build_parser().parse_line("true U<=5 failure")
-    checker = Checker(model, ltl, duration=5, c=0.5, d=0.01)
-    checker.samples = 6000
-    print checker.run_checker()
+    t2()
+    # model_path = get_prism_model_dir() + get_sep() + "Queue.prism"
+    # model_constructor = ModelConstructor()
+    # model = model_constructor.parseModelFile(model_path)
+    # model.prepare_commands()
+    # ltl = LTLParser().build_parser().parse_line("true U<=5 failure")
+    # checker = Checker(model, ltl, duration=5, c=0.5, d=0.01)
+    # checker.samples = 6000
+    # print checker.run_checker()
     # for _ in range(5000):
     #     _, path = checker.gen_random_path()
     #     last_step = path[-1]

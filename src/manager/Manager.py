@@ -15,6 +15,7 @@ try:
 except ImportError:
     import pickle
 from compiler.LTLParser import LTLParser
+from compiler.PRISMParser import ModelConstructor
 
 
 class Manager(object):
@@ -22,7 +23,6 @@ class Manager(object):
     def __init__(self):
         self.manager_params = {
             "隐藏层神经元个数": 5, 
-            "输出层神经元个数": 1, 
             "训练样本取样数": 6000,
             "学习速率": 0.05,
             "矫正率": 0.1
@@ -30,7 +30,6 @@ class Manager(object):
 
         self._params_map = {
             "nh": "隐藏层神经元个数",
-            "no": "输出层神经元个数",
             "samples": "训练样本取样数",
             "learning_rate": "学习速率",
             "correct_rate": "矫正率"
@@ -45,6 +44,7 @@ class Manager(object):
         self.ltl_parser = LTLParser().build_parser()
         self.predict_xs = None
         self.predict_ys = None
+        self.prism_test_datas = []
 
     def set_manager_param(self, name, param):
         self.manager_params[name] = param
@@ -65,7 +65,7 @@ class Manager(object):
         self.model.duration = duration
 
     def read_model_file(self, file_path):
-        self.model = self.mdl_parser.parseModelFile(file_path)
+        self.model = self.mdl_parser._parse(file_path)
         self.checker = Checker(model=self.model)
 
     def _set_constants(self, *constants):
@@ -97,13 +97,14 @@ class Manager(object):
 
     def _set_param(self, *constants):
         '''
-        将参数设置到parser中
+        将参数设置到ModulesFile中
         :param constants: [constant_obj]
         :return: None
         '''
-        for constant_obj in constants:
-            self.mdl_parser.parser.vcf_map[constant_obj.get_name()].set_value(
-                constant_obj.get_value())
+        model = self.checker.model
+        if model:
+            for constant_obj in constants:
+                model.set_constant(constant_obj)
 
     def _clear_param(self, *constants):
         for constant_obj in constants:
@@ -139,7 +140,7 @@ class Manager(object):
         for constant_list in itertools.product(*constant_objs):
             try:
                 self._set_param(*constant_list)
-                self.model.prepare_commands()
+                self.model.prepare()
                 train_y = self.checker.run_checker()
                 train_x = [c_obj.get_value() for c_obj in constant_list]
                 train_data_x.append(train_x)
@@ -149,7 +150,7 @@ class Manager(object):
 
         self.regressor.setup(len(self.expr_params),
                              int(self.get_manager_param("nh")),
-                             int(self.get_manager_param("no")),
+                             1,
                              self.get_manager_param("learning_rate"),
                              self.get_manager_param("correct_rate"))
 
@@ -195,7 +196,7 @@ class Manager(object):
         return test_expr_ys
 
     def unsure_param_names(self):
-        return self.mdl_parser.parser.constname_unsure()
+        return self.mdl_parser.parser.unsure_parameters()
 
     def plot_expr_datas(self, expr_xs, expr_ys, true_ys=None):
         if true_ys:

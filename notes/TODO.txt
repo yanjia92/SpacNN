@@ -35,3 +35,9 @@ ltl解析
 不足
 目前command的update部分不允许出现boolean_expression
 因为在parse module的时候, 默认将所有的boolean_expression解析为当前command的guard
+
+
+测试对偶变量能否减小smc结果的方差。
+普通smc算法的结果：
+对于toy model，每个样本抽取100条路径，产生20个样本，方差为0.001左右。
+同样对于toy model，采用antithetic variables采样方法后，每个样本的路径数保持不变，方差减小了4到5倍。

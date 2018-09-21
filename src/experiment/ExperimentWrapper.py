@@ -5,6 +5,7 @@ import sys
 from checker import Checker
 from collections import OrderedDict
 from model.ModelFactory import ModelFactory
+from util.AnnotationHelper import deprecated
 
 # logger = logging.getLogger("ExperimentWrapper logging")
 # file_handler = logging.FileHandler("../log/expe.log", "w")
@@ -14,30 +15,16 @@ from model.ModelFactory import ModelFactory
 # 使用simulation的方法对模型进行experiment
 # 为模型中的未定参数设定一组值,并进行simulation验证实验,返回多次simulation的期望值(平均值)
 
+
+@deprecated
 class ExperimentWrapper(object):
-    def __init__(self, checker, samples_per_param=None):
-        # checker: Checker typed instance
+    def __init__(self, checker, params):
+        '''
+        :param checker:
+        :param params: map contain unknown parameters: {param_name: value_list}
+        '''
         self.checker = checker
-        self._constants = OrderedDict()  # key: cons_name, value: [value]
-        self.samples_per_param = samples_per_param
-        if not self.samples_per_param:
-            self.samples_per_param = self.checker.get_sample_size() # 使用checker的随机路径样本数
-
-    # 将实验值存储在ExperimentWrapper中,避免了直接修改ModulesFile.py
-    # constants中的常量必须是同一个常量的不同值
-    def _addvalues(self, constants):
-        name = constants[0].get_name()
-        if name not in self.checker.model.constants.keys():
-            return
-        else:
-            self._constants[name] = constants
-
-    # 设置实验所需的参数值
-    # 其中params的结构为 [[constant1s],[constant2s], ..., [constantNs]]
-    # 其中constantis为同一常量的不同常量值(Constant typed instance)
-    def setconstants(self, params):
-        for constants in params:
-            self._addvalues(constants)
+        self.params = params
 
     # 根据wrapper设置的多组参数进行实验
     # 返回每组参数的验证结果
@@ -92,10 +79,11 @@ class ExperimentWrapper(object):
         for params in product(*paramslist):
             for constant in params:
                 self.checker.model.constants[constant.get_name()].value =  constant.get_value()
-            low, high = self.checker.mc2()
+            low, high = self.checker.run_checker()
             results.append((params, (low+high)/2.0))
             # logger.info("params: {0}, prob: {1}".format(str(params), (low+high)/2.0))
         return results
+
 
 def main():
     from test.PoissionProcess import poission_model
@@ -109,9 +97,8 @@ def main():
     for value in interval(0.5, 5, 0.1):
         constants.append(Constant('r', value))
     wrapper.setconstants([constants])
-    # results = wrapper.do_expe()
+    results = wrapper.do_expe()
     wrapper.modelcheck()
-
 
 
 # 根据给定的参数值进行实验
@@ -126,6 +113,7 @@ def executepoissionexpe(params):
     wrapper.setconstants(params)
     results = wrapper.do_expe()
     return results
+
 
 # 根据给定的参数进行模型检验
 # params: [[constant1s], ...[constantns]] e.g. list of list of constant instance
