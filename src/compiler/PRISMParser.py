@@ -7,7 +7,6 @@ from module.Module import *
 from removeComment import clear_comment
 from util.MathUtils import *
 from collections import defaultdict
-from util.ListUtils import shallow_cpy
 from math import floor, ceil
 import logging, sys
 from os.path import *
