@@ -316,7 +316,9 @@ class PRISMParser(object):
         expr2 = copy(p[5])
 
         def f():
-            if condition:
+            if not callable(condition):
+                raise Exception("boolean expression must be callable")
+            if condition(self._vcf_map, self._vcf_map):
                 return expr1()
             else:
                 return expr2()

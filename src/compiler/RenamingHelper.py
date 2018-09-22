@@ -2,6 +2,7 @@
 from PathHelper import *
 import re
 from compiler.removeComment import clear_comment
+from collections import OrderedDict
 
 
 class RenamingHelper(object):
@@ -18,7 +19,7 @@ class RenamingHelper(object):
         self._path = clear_comment(path)
         self._lines = []
         self._module_map = {}  # {module_name: (begin_index, end_index)}
-        self._module_substitute_map = {}  # {module_name: [(str, str)]}
+        self._module_substitute_map = OrderedDict()  # {module_name: [(str, str)]}
         self._module_def_pattern = r'module (?P<module_name>[a-zA-Z]\w*)'
         self._substitute_pattern = r'\w+\s*=\s*\w+'
         self._substitute_cmp = self._gen_subs_cmp()
@@ -122,6 +123,21 @@ class RenamingHelper(object):
             result.append(line)
         return result
 
+    def export(self):
+        '''
+        rewritten self._lines to a new path
+        :return: path rewritten to
+        '''
+        index = self._original_path.rfind(get_sep())
+        dir = self._original_path[:index]
+        filename = self._original_path[index + 1:]
+        filename = "RH" + filename
+        written_to = dir + get_sep() + filename
+        with open(written_to, 'w') as f:
+            for line in self._lines:
+                f.write(line)
+        return written_to
+
     def rewrite(self):
         '''
         重写重命名的modules
@@ -144,7 +160,11 @@ class RenamingHelper(object):
         for to_extend in to_extends:
             self._lines.extend(to_extend)
 
-    def get_content(self):
+    def _get_content(self):
+        '''
+        for debug
+        :return:
+        '''
         return self._lines
 
 
@@ -152,10 +172,7 @@ def main():
     path = get_prism_model_dir() + get_sep() + "herman7.prism"
     helper = RenamingHelper(path)
     helper.rewrite()
-    content = helper.get_content()
-    for line in content:
-        print line
-
+    print helper.export()
 
 if __name__ == "__main__":
     main()

@@ -76,10 +76,14 @@ class Checker(UnsureModelChecker):
         while generated_cnt < samples:
             path = self.gen_random_path()
             generated_cnt += 1
+            apsets = map(lambda step: step.get_ap_set(), path)
+            apset = reduce(lambda s1, s2: s1.union(s2), apsets)
             if generated_cnt % self._log_path_interval == 0:
                 clock = time.time()
                 print "Generating {} path causing {}s.".format(generated_cnt, clock - begin)
             result = self._check(path)
+            if (len(apset) > 0) != result:
+                print "check error"
             results.append(result)
             if result:
                 hit_cnt += 1
@@ -94,8 +98,8 @@ class Checker(UnsureModelChecker):
                 if result:
                     hit_cnt += 1
         print "diff_cnt percentage = {}%".format(float(diff_cnt) / samples * 2 * 100)
-        results = map(lambda elem: [0, 1][elem], results)
-        print "index: {}".format(rel_index(results[0::2], results[1::2]))
+        # results = map(lambda elem: [0, 1][elem], results)
+        # print "index: {}".format(rel_index(results[0::2], results[1::2]))
         return hit_cnt/generated_cnt
 
     def set_param(self, name, value):

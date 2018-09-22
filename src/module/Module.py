@@ -112,10 +112,17 @@ class Command(object):
         return self._guard(self._vs, self._cs)
 
     def execute(self):
+        #  fix bug here
+        #  can not update variables one by one
+        #  must update all at one turn
+        new_value_map = {}
         for var, update_func in self._update.items():
             if not callable(update_func):
                 raise Exception("Command's update's value must be callable")
-            var.set_value(update_func())
+            new_value_map[var] = update_func()
+        for var, value in new_value_map.items():
+            var.set_value(value)
+
 
     def __str__(self):
         return "Comm {} of module {}".format(self._name, self._mod_name)

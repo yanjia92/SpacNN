@@ -36,7 +36,7 @@ class BoundedInterval:
         :param moment: time moment
         :return: boolean
         '''
-        return self._begin <= moment < self._end
+        return self._begin <= moment <= self._end
 
     @staticmethod
     def parse_literal(literal):
