@@ -10,7 +10,7 @@ import sys
 class ModelTestBase(unittest.TestCase):
 
     def setUp(self):
-        self.constructor = ModelConstructor()
+        self._constructor = ModelConstructor()
         self.ltl_parser = LTLParser()
         self.logger = logging.getLogger(__name__)
         self.logger.addHandler(sys.stdout)
@@ -20,8 +20,8 @@ class ModelTestBase(unittest.TestCase):
         if not isdir(path):
             self.logger.error("model path not exist: %s", path)
         else:
-            self.constructor.set_base_dir(base_dir=path)
-        self._model = self.constructor.parse(self._get_model_name())
+            self._constructor.set_base_dir(base_dir=path)
+        self._model = self._constructor.parse(self._get_model_name())
 
     def _get_model_name(self):
         '''

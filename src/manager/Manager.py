@@ -108,7 +108,7 @@ class Manager(object):
 
     def _clear_param(self, *constants):
         for constant_obj in constants:
-            self.mdl_parser.parser.vcf_map[constant_obj.get_name()].set_value(None)
+            self.mdl_parser._parser.vcf_map[constant_obj.get_name()].set_value(None)
 
     def set_test_xs(self, test_xs):
         '''
@@ -196,7 +196,7 @@ class Manager(object):
         return test_expr_ys
 
     def unsure_param_names(self):
-        return self.mdl_parser.parser.unsure_parameters()
+        return self.mdl_parser._parser.unsure_parameters()
 
     def plot_expr_datas(self, expr_xs, expr_ys, true_ys=None):
         if true_ys:
@@ -213,7 +213,7 @@ class Manager(object):
 
 def main():
     def set_param_func(name, value):
-        manager.mdl_parser.parser.vcf_map[name].value = value
+        manager.mdl_parser._parser.vcf_map[name].value = value
 
     manager = Manager()
     short_opts = "h"

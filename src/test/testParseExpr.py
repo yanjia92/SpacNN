@@ -27,11 +27,11 @@ def test():
         # get the fail prob function and compute
         var_day = model.getLocalVar("day")
         var_day.set_value(day_val)
-        prbs.append(fail_prob_of_model(model, constructor.parser.vfmap))
+        prbs.append(fail_prob_of_model(model, constructor._parser.vfmap))
 
         # get the parsed function and use it to compute the failure probability
-        f_sb = constructor.parser.vfmap["sb_fail_prob"]
-        f_s3r = constructor.parser.vfmap["s3r_fail_prob"]
+        f_sb = constructor._parser.vfmap["sb_fail_prob"]
+        f_s3r = constructor._parser.vfmap["s3r_fail_prob"]
         parsed_prbs.append((f_sb(), f_s3r()))
     # compare
     assert len(prbs) == len(parsed_prbs)

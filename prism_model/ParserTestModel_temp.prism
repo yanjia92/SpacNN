@@ -21,3 +21,5 @@ module YYY
 var4: [0, 2] init 2;
 [comm1] var4 == 2 -> 1.5 : (var4'=1);
 endmodule
+
+formula some_formula = (var2==5?6:4) + (var4==2?3:1);

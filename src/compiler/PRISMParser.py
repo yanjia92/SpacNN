@@ -284,9 +284,9 @@ class PRISMParser(object):
         '''expr : term'''
         p[0] = copy(p[1])
 
-    # def p_expr3(self, p):
-    #     '''expr : LP expr RP'''
-    #     p[0] = p[2]
+    def p_expr3(self, p):
+        '''expr : LP expr RP'''
+        p[0] = p[2]
 
     def p_term(self, p):
         '''term : term MUL factor
@@ -308,6 +308,20 @@ class PRISMParser(object):
     def p_term1(self, p):
         '''term : factor'''
         p[0] = copy(p[1])
+
+    def p_term2(self, p):
+        '''term : boolean_expression QM expr COLON expr'''
+        # 支持条件表达式
+        condition = copy(p[1])
+        expr1 = copy(p[3])
+        expr2 = copy(p[5])
+
+        def f():
+            if condition:
+                return expr1()
+            else:
+                return expr2()
+        p[0] = f
 
     def p_factor(self, p):
         '''factor : NUM'''
@@ -517,8 +531,8 @@ class ModelConstructor(object):
     _m = None
 
     def __init__(self, base_dir=None):
-        self.parser = PRISMParser()
-        self.parser.build()
+        self._parser = PRISMParser()
+        self._parser.build()
         self.logger = logging.getLogger(__name__)
         self.logger.addHandler(logging.StreamHandler(sys.stdout))
         self.logger.setLevel(logging.DEBUG)
@@ -526,6 +540,16 @@ class ModelConstructor(object):
             if not exists(base_dir) or not isdir(base_dir):
                 return
             self._base_dir = base_dir
+
+    def get_formula(self, name):
+        '''
+        get the function that represents the formula
+        :param name: the formula name
+        :return: function
+        '''
+        if name not in self._parser._vcf_map.keys():
+            raise Exception("Invalid parameter: {}".format(name))
+        return self._parser._vcf_map[name]
 
     @staticmethod
     def set_model(model):
@@ -544,7 +568,7 @@ class ModelConstructor(object):
         return True
 
     def _parse(self, filepath):
-        self.parser.parse_model(filepath)
+        self._parser.parse_model(filepath)
         return ModelConstructor.get_model()
 
     def parse(self, filename):

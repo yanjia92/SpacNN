@@ -51,7 +51,7 @@ class DTMCSyncUnittest(unittest.TestCase):
         constant_objs = [Constant("SCREEN_THICKNESS", v)
                          for v in thickness_vals]
         for obj in constant_objs:
-            self.model_constructor.parser.vcf_map[obj.get_name()].set_value(
+            self.model_constructor._parser.vcf_map[obj.get_name()].set_value(
                 obj.get_value())
             self.model.commPrepared = False
             logger.info(
