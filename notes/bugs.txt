@@ -5,3 +5,11 @@ BUGS
 解析需要同时考虑U<=和num之间是否存在空格两种情况.
 目前的做法是对'U[0, 10]'取','的位置然后取slice的算法.
 
+2. Command.execute()方法
+command保存更新的方法是保存每个变量对应的更新函数即
+{variable_instance: update_funciton}
+然后遍历每个update_function进行更新，即
+for var, update_func in map.items():
+    var.set_value(update_func())
+但是这种方法有一个问题，就是当每个变量的更新值都依赖于其他变量时，这种算法就会出错。
+解决的方法是将所有的更新值先计算并保存下来，然后在一起更新。

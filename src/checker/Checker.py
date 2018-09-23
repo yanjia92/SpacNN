@@ -22,6 +22,7 @@ class Checker(UnsureModelChecker):
         '''
         产生path_cnt条随机路径进行验证，并将验证结果返回
         :param path_cnt: int
+        :param antithetic: bool
         :return: [path], [bool]
         '''
         if not antithetic:
