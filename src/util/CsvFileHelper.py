@@ -26,8 +26,12 @@ def write_csv_rows(file_path, datas, headers=None, sep=",", transformer=None):
         for data in datas:
             if transformer:
                 transformer(data)
-            data = map(str, data)
-            f.write(sep.join(data))
+            if not isinstance(data, list):
+                data = str(data)
+                f.write(data)
+            else:
+                data = map(str, data)
+                f.write(sep.join(data))
             if on_windows_platform():
                 f.write("\r\n")
             else:
@@ -64,7 +68,7 @@ def parse_csv_rows(path, types=float, has_headers=True, sep=','):
     '''
     results = []
     if not exists(path) or not isfile(path):
-        return results
+        raise Exception("path not exist when parsing file: {}".format(path))
     with open(path, "r") as f:
         is_first_line = True
         for _line in f:
@@ -78,6 +82,11 @@ def parse_csv_rows(path, types=float, has_headers=True, sep=','):
 def _parse_line_row(line, types, sep=','):
     row = []
     values = map(lambda v: v.strip(), line.split(sep))
+    if values and len(values) == 1:
+        t = types
+        if isinstance(types, list):
+            t = types[0]
+        return t(values[0])
     if not isinstance(types, list):
         types = [types] * len(values)
     for (val, type) in zip(values, types):

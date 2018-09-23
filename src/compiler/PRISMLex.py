@@ -35,6 +35,7 @@ class MyLexer(object):
                  'LP', 'RP', 'LB', 'RB',
                  "SEMICOLON",
                  "COLON",
+                 "QM",
                  "QUOTE",
                  "COMMA",
                  "THEN",  # -> in command statement
@@ -89,6 +90,7 @@ class MyLexer(object):
     t_RB = r"\]"
     t_SEMICOLON = r";"
     t_COLON = r":"
+    t_QM = r"\?"
     t_QUOTE = r"'"
     t_COMMA = r","
     t_THEN = r"\->"

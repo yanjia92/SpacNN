@@ -1,0 +1,50 @@
+
+dtmc
+
+module process1
+
+x1 : [0, 1] init 1;
+[step] x1==x7 -> 0.5 : (x1'=0) + 0.5 : (x1'=1);
+[step] x1!=x7 -> x1'=x7;
+endmodule
+
+
+formula num_tokens = (x1==x2?1:0)+(x2==x3?1:0)+(x3==x4?1:0)+(x4==x5?1:0)+(x5==x6?1:0)+(x6==x7?1:0)+(x7==x1?1:0);
+
+label stable = num_tokens == 1;
+module process2
+
+x2 : [0, 1] init 1;
+[step] x2==x1 -> 0.5 : (x2'=0) + 0.5 : (x2'=1);
+[step] x2!=x1 -> x2'=x1;
+endmodule
+module process3
+
+x3 : [0, 1] init 1;
+[step] x3==x2 -> 0.5 : (x3'=0) + 0.5 : (x3'=1);
+[step] x3!=x2 -> x3'=x2;
+endmodule
+module process4
+
+x4 : [0, 1] init 1;
+[step] x4==x3 -> 0.5 : (x4'=0) + 0.5 : (x4'=1);
+[step] x4!=x3 -> x4'=x3;
+endmodule
+module process5
+
+x5 : [0, 1] init 1;
+[step] x5==x4 -> 0.5 : (x5'=0) + 0.5 : (x5'=1);
+[step] x5!=x4 -> x5'=x4;
+endmodule
+module process6
+
+x6 : [0, 1] init 1;
+[step] x6==x5 -> 0.5 : (x6'=0) + 0.5 : (x6'=1);
+[step] x6!=x5 -> x6'=x5;
+endmodule
+module process7
+
+x7 : [0, 1] init 1;
+[step] x7==x6 -> 0.5 : (x7'=0) + 0.5 : (x7'=1);
+[step] x7!=x6 -> x7'=x6;
+endmodule

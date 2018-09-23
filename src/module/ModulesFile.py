@@ -49,9 +49,6 @@ class ModulesFile(object):
         self._status_commands_map = defaultdict(lambda: list())
         self._status_apset_map = OrderedDict()
         self._prepared = False
-        self.sset_set_map = dict()  # s: prefix for string type
-        self.tstate_apset_map = dict()  # t: prefix for tuple type
-        self.apset_list = []
         self._duration = None # random path length in time units
 
         # queue containing random numbers [0, 1)
@@ -98,6 +95,8 @@ class ModulesFile(object):
 
         # join same-name commands
         for added_cmds in m.get_commands().values():
+            if not len(added_cmds):
+                continue
             name = added_cmds[0].get_name()
             if len(name) != 0 and len(self._commands[name]) > 0:
                 joined_commands = self._join_commands(added_cmds, self._commands[name])
@@ -135,7 +134,9 @@ class ModulesFile(object):
         name = c1.get_name()
         guard1 = c1.get_guard()
         guard2 = c2.get_guard()
-        guard = lambda vs, cs: guard1(vs, cs) and guard2(vs, cs)
+
+        def guard(vs, cs):
+            return guard1(vs, cs) and guard2(vs, cs)
 
         def prob():
             p1 = c1.get_prob()
@@ -143,7 +144,8 @@ class ModulesFile(object):
             if callable(p1) and callable(p2):
                 return p1() * p2()
             raise Exception("Command's prob property must be a function.")
-        update = c1.get_update()
+        update = dict()
+        update.update(c1.get_update())
         update.update(c2.get_update())
         return CommandFactory.generate(name, guard, prob, update)
 
@@ -236,7 +238,7 @@ class ModulesFile(object):
                 seed = seeds.pop(0)
             step = self._gen_next(t, seed=seed)
             path.append(step)
-            if step.get_holding_time() + t >= d:
+            if step.get_holding_time() + t > d:
                 self._restore()
                 return path
             step.execute()
@@ -323,6 +325,7 @@ class ModulesFile(object):
         :return: None
         '''
         # check for unsure parameters
+        print "Preparation began."
         for constant in self._constants.values():
             if constant.get_value() is None:
                 raise Exception("Set unsure parameter before run ModulesFile's prepare method")
@@ -343,15 +346,13 @@ class ModulesFile(object):
             for n, f in self._labels.items():
                 if f(self._vars, self._constants):
                     apset.add(n)
-            try:
+            if apset in self._status_apset_map.values():
                 index = self._status_apset_map.values().index(apset)
                 apset = self._status_apset_map.values()[index]
-            except ValueError,e:
-                pass
-            finally:
-                self._status_apset_map[key] = apset
-                self._restore()
-                self._prepared = True
+            self._status_apset_map[key] = apset
+        self._restore()
+        self._prepared = True
+        print "Preparation finished."
 
     def _restore(self):
         self._restore_vars()

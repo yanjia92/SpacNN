@@ -1,0 +1,6 @@
+dtmc
+
+module aaaa
+    [tick] active1==1 & send1==0 & send0+send2+send4==1 -> 1 : (a'=1);
+
+endmodule

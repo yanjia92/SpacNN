@@ -8,8 +8,8 @@ from util.FormatUtil import str2num
 class CheckerTestBase(ModelTestBase):
     def setUp(self):
         ModelTestBase.setUp(self)
-        self._parsed_ltl = self.ltl_parser.parse_line(self._get_ltl())
-        self._duration = str2num(self.ltl_parser.parse_duration(self._get_ltl()))
+        self._parsed_ltl = self._ltl_parser.parse_line(self._get_ltl())
+        self._duration = str2num(self._ltl_parser.parse_duration(self._get_ltl()))
         if self._duration is None:
             self._duration = self._get_duration()
         self._checker = Checker(self._model, self._parsed_ltl, self._duration, self._get_sample_size())

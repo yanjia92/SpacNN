@@ -27,6 +27,8 @@ class PRISMParserTest(ModelTestBase):
         var4: [0, 2] init 2;
         [comm1] var4 == 2 -> 1.5 -> (var4'=1);
     endmodule
+
+    formula some_formula = (var2==5?6:4) + (var4==2?3:1);
     '''
 
     def _get_model_name(self):
@@ -95,4 +97,15 @@ class PRISMParserTest(ModelTestBase):
         self.assertEqual(var1.get_value(), 10)
         self.assertEqual(var4.get_value(), 1)
 
+    def testConditionExpression(self):
+        formula = self._constructor.get_formula("some_formula")
+        if callable(formula):
+            self.assertEqual(formula(), 9)
 
+    def testBooleanExpression(self):
+        '''
+        验证boolean expression 验证正确
+        :return:
+        '''
+        expression1 = "[] a1+a2+a3==4 -> 0.5 : (a1'=1) + 0.5 : (a2'=1);"
+        self._constructor._parser.parse_line(expression1)
