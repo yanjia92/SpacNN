@@ -325,6 +325,7 @@ class ModulesFile(object):
         :return: None
         '''
         # check for unsure parameters
+        print "Preparation began."
         for constant in self._constants.values():
             if constant.get_value() is None:
                 raise Exception("Set unsure parameter before run ModulesFile's prepare method")
@@ -351,6 +352,7 @@ class ModulesFile(object):
             self._status_apset_map[key] = apset
         self._restore()
         self._prepared = True
+        print "Preparation finished."
 
     def _restore(self):
         self._restore_vars()

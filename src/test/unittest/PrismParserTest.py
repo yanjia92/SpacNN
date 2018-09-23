@@ -101,3 +101,11 @@ class PRISMParserTest(ModelTestBase):
         formula = self._constructor.get_formula("some_formula")
         if callable(formula):
             self.assertEqual(formula(), 9)
+
+    def testBooleanExpression(self):
+        '''
+        验证boolean expression 验证正确
+        :return:
+        '''
+        expression1 = "[] a1+a2+a3==4 -> 0.5 : (a1'=1) + 0.5 : (a2'=1);"
+        self._constructor._parser.parse_line(expression1)

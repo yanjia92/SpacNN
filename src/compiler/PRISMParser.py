@@ -119,6 +119,7 @@ class PRISMParser(object):
         }
         self._cname = None # command sync name
         self._vcf_map = defaultdict(lambda: None)  # variable, constant and function map
+        self._lexer = MyLexer().lexer
 
     def unsure_parameters(self):
         names = []
@@ -283,10 +284,6 @@ class PRISMParser(object):
         '''expr : term'''
         p[0] = copy(p[1])
 
-    def p_expr3(self, p):
-        '''expr : LP expr RP'''
-        p[0] = p[2]
-
     def p_term(self, p):
         '''term : term MUL factor
                 | term DIV factor'''
@@ -323,6 +320,10 @@ class PRISMParser(object):
             else:
                 return expr2()
         p[0] = f
+
+    def p_term3(self, p):
+        '''term : LP expr RP'''
+        p[0] = copy(p[2])
 
     def p_factor(self, p):
         '''factor : NUM'''
@@ -411,56 +412,28 @@ class PRISMParser(object):
         p[0] = p[2]
 
     def p_boolean_expression_unit(self, p):
-        '''boolean_expression_unit : NAME GT NUM
-                                   | NAME LT NUM
-                                   | NAME GE NUM
-                                   | NAME LE NUM
-                                   | NAME EQ NUM
-                                   | NAME NEQ NUM'''
-        n = copy(p[1])
-        num = copy(p[3])
-        bool_op = copy(p[2])
-
-        def f(vs, cs):
-            op1 = self._vcf_map[n]
-            if callable(op1):
-                op1 = op1()
-            else:
-                op1 = op1.get_value()
-            op2 = num
-            bool_func = self._gen_bool_func(bool_op)
-            return bool_func(op1, op2)
-        p[0] = f
-
-    def p_boolean_expression_unit1(self, p):
-        '''boolean_expression_unit : NAME GT expr
-                                   | NAME LT expr
-                                   | NAME GE expr
-                                   | NAME LE expr
-                                   | NAME EQ expr
-                                   | NAME NEQ expr'''
-        n = copy(p[1])
-        expr = copy(p[3])
+        '''boolean_expression_unit : expr GT expr
+                                   | expr LT expr
+                                   | expr GE expr
+                                   | expr LE expr
+                                   | expr EQ expr
+                                   | expr NEQ expr'''
+        op1 = copy(p[1])
+        op2 = copy(p[3])
         op = copy(p[2])
 
         def f(vs, cs):
-            if not callable(expr):
-                raise Exception("expr in prismparser must be a function")
-            op1 = self._vcf_map[n]
-            if callable(op1):
-                op1 = op1()
-            else:
-                op1 = op1.get_value()
-            op2 = expr()
+            if not callable(op1) or not callable(op2):
+                raise Exception("expression must be callable")
             bool_func = self._gen_bool_func(op)
-            return bool_func(op1, op2)
+            return bool_func(op1(), op2())
         p[0] = f
 
-    def p_boolean_expression_unit2(self, p):
+    def p_boolean_expression_unit1(self, p):
         '''boolean_expression_unit : TRUE'''
         p[0] = lambda vs, cs: True
 
-    def p_boolean_expression_unit3(self, p):
+    def p_boolean_expression_unit2(self, p):
         '''boolean_expression_unit : FALSE'''
         p[0] = lambda vs, cs: False
 
@@ -511,8 +484,6 @@ class PRISMParser(object):
             for l in f:
                 lines.append(l)
         if self.parser:
-            myLexer = MyLexer()
-            lexer = myLexer.lexer
             for line in lines:
                 # tokens = []
                 # if line.find("[]") != -1:
@@ -520,7 +491,12 @@ class PRISMParser(object):
                     # for token in lexer:
                     #     tokens.append(token)
                     # print tokens
-                self.parser.parse(line, lexer=lexer)
+                self.parser.parse(line, lexer=self._lexer)
+
+    def parse_line(self, line):
+        if not line or not len(line):
+            return
+        self.parser.parse(line, lexer=self._lexer)
 
     def build(self):
         cur_dir = dirname(realpath(__file__))

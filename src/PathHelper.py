@@ -25,8 +25,14 @@ def get_log_dir():
     path_sep = get_sep()
     return src_dir + path_sep + "log"
 
+
 def get_prism_model_dir():
     return get_proj_dir() + get_sep() + "prism_model"
+
+
+def get_results_dir():
+    return get_proj_dir() + get_sep() + "result"
+
 
 def test():
     print get_src_dir()
