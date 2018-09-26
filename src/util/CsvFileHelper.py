@@ -26,12 +26,14 @@ def write_csv_rows(file_path, datas, headers=None, sep=",", transformer=None):
         for data in datas:
             if transformer:
                 transformer(data)
-            if not isinstance(data, list):
-                data = str(data)
-                f.write(data)
-            else:
+            try:
+                # try not to write isinstance or type in python
+                # see https://stackoverflow.com/questions/1952464/in-python-how-do-i-determine-if-an-object-is-iterable
                 data = map(str, data)
                 f.write(sep.join(data))
+            except TypeError:
+                # not iterable, e.g. not a tuple or list
+                f.write(str(data))
             if on_windows_platform():
                 f.write("\r\n")
             else:

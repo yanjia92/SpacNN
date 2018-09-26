@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 from CheckerTest import CheckerTestBase
 from util.MathUtils import uniform
-from util.MathUtils import standDiv
+from util.MathUtils import averageDistanceToLine
 import matplotlib.pyplot as plt
 from nn.MyNNRegressor import MyNNRegressor
-from nn.MyNNRegressor import WeightedQuadriticRegressCost
+from nn.MyNNRegressor import WeightedQuadraticRegressCost
 from util.util import interval
 import numpy as np
 from util.CsvFileHelper import *
@@ -47,7 +47,7 @@ class Test(CheckerTestBase):
                 self._checker.set_param("theta", param)
                 ys.append(self._checker.run_checker())
             # compute weights for each (x, y)
-            average_distance = standDiv(xs, ys)
+            average_distance = averageDistanceToLine(xs, ys)
             weight = 1.0 / (average_distance ** 2)
 
             samples.extend([(x, y) for x, y in zip(xs, ys)])
@@ -82,7 +82,7 @@ class Test(CheckerTestBase):
         使用加权回归神经网络模型拟合数据
         :return:
         '''
-        regressor = MyNNRegressor([1, 10, 1], cost=WeightedQuadriticRegressCost)
+        regressor = MyNNRegressor([1, 10, 1], cost=WeightedQuadraticRegressCost)
         training_data = self.testGenTrainData()
         regressor.SGD(training_data, 30, 10, 0.3)
         test_x = interval(0, 1, 0.01)

@@ -11,6 +11,8 @@ from module.CommandFactory import CommandFactory
 from util.MathUtils import expo_rnd
 from module.AnotherStep import AnotherStep
 from bisect import bisect
+from PathHelper import *
+from os.path import *
 
 STEPS_QUEUE_MAX_SIZE = 73000
 DEFAULT_STEP_Q_C_WAITING = 0.002
@@ -50,6 +52,8 @@ class ModulesFile(object):
         self._status_apset_map = OrderedDict()
         self._prepared = False
         self._duration = None # random path length in time units
+        # dump file path used to store self._status_command_map and _status_apset_map
+        self._preparation_dump_path = get_data_dir() + get_sep() + "modulesfile_dump.pkl"
 
         # queue containing random numbers [0, 1)
         self._queue = Queue.Queue(maxsize=100)
@@ -169,6 +173,18 @@ class ModulesFile(object):
             raise Exception("Model contains no constant named {}".format(n))
         return self._constants[n]
 
+    def set_constant(self, k, v):
+        '''
+        set unsure parameter
+        :param k: parameter name
+        :param v: parameter value
+        :return:
+        '''
+        obj = self._constants[k]
+        if not obj:
+            raise Exception("model contain no parameter named {}".format(k))
+        obj.set_value(v)
+
     def get_commands(self, name=None):
         '''
         this method is mainly used for unittest
@@ -191,18 +207,6 @@ class ModulesFile(object):
         :return: None
         '''
         self._constants[c.get_name()] = c
-
-    def set_constant(self, n, v):
-        '''
-        设置（未知）参数
-        :param n: name
-        :param v: value or function
-        :return: None
-        '''
-        if n not in self._constants:
-            raise Exception("Model contains no constant named {}".format(n))
-        constant = self._constants[n]
-        constant.set_value(v)
 
     def add_label(self, n, f):
         '''
@@ -287,7 +291,14 @@ class ModulesFile(object):
         if seed is None:
             seed = self._queue.get()
         command = self._choose_next(enabled, seed)
-        exit_rate = sum(map(lambda c: c.get_prob(),  enabled))
+        ps = [c.get_prob() for c in enabled]
+        probs = []
+        for p in ps:
+            if callable(p):
+                probs.append(p())
+            else:
+                probs.append(p)
+        exit_rate = sum(probs)
         holding_time = 1
         if self._type == ModelType.CTMC:
             if exit_rate == 0:
@@ -304,7 +315,13 @@ class ModulesFile(object):
         '''
         if not enabled or len(enabled) == 0:
             return None
-        probs = map(lambda c: c.get_prob(), enabled)
+        ps = map(lambda c: c.get_prob(), enabled)
+        probs = []
+        for p in ps:
+            if not callable(p):
+                probs.append(p)
+            else:
+                probs.append(p())
         exit_rate = sum(probs)
         for i, p in enumerate(probs):
             probs[i] = p/exit_rate
@@ -336,9 +353,9 @@ class ModulesFile(object):
             key = self._status_as_key()
             for commands in self._commands.values():
                 for c in commands:
-                    p = c.get_prob()
-                    if callable(p):
-                        c.set_prob(p())
+                    # p = c.get_prob()
+                    # if callable(p):
+                    #     c.set_prob(p())
                     if c.evaluate():
                         enabled.append(copy(c))
             self._status_commands_map[key] = enabled

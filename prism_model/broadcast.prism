@@ -1,6 +1,6 @@
 dtmc
 
-const double psend = 0.8;
+const double psend;
 const double pdelay =0.5;
 
 

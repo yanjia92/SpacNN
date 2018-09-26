@@ -22,7 +22,7 @@ def interval(a, b, step):
     '''
     result = []
     if a > b or step < 0:
-        return
+        return []
     if a == b and step == 0:
         result.append(a)
         return result

@@ -4,6 +4,7 @@ from util.util import interval
 import matplotlib.pyplot as plt
 from random import random
 
+
 class BPNeuralNetwork:
     def __init__(self):
         self.input_n = 0
