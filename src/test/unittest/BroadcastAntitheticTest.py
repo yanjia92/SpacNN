@@ -10,7 +10,7 @@ class BroadcastAntitheticTest(AntitheticTestCase):
         return "true U<=10 node3receive"
 
     def _get_sample_size(self):
-        return 20
+        return 300
 
     def _get_rearrange_path_cnt(self):
         return 3000
@@ -21,6 +21,19 @@ class BroadcastAntitheticTest(AntitheticTestCase):
         :return:
         '''
         self.assertAlmostEqual(self._get_check_result(), 0.585542, delta=0.02)
+
+    def testExperiment(self):
+        '''
+        使用标准SMC和对偶路径SMC，返回10次运算结果
+        :return:
+        '''
+        checker = self._get_checker()
+        results = [checker.run_checker() for _ in range(10)]
+        self._rearrange()
+        checker.set_antithetic(True)
+        anti_results = [checker.run_checker() for _ in range(10)]
+        print results
+        print anti_results
 
     def testCheckCorrectAntithetic(self):
         '''

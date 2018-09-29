@@ -6,6 +6,7 @@ from PathHelper import *
 from util.CsvFileHelper import write_csv_rows
 from itertools import product
 from math import ceil
+from util.AnnotationHelper import profileit
 
 
 class AntitheticTestCase(CheckerTestBase):
@@ -22,6 +23,7 @@ class AntitheticTestCase(CheckerTestBase):
         _, results = self._get_checker().check_and_export(size, antithetic=antithetic)
         return map(lambda result: [0, 1][result], results)
 
+    @profileit("rearrange")
     def _rearrange(self, params=None):
         '''
         called before getting antithetic result
@@ -41,6 +43,9 @@ class AntitheticTestCase(CheckerTestBase):
         names = [param[0] for param in params]
         values = [param[1] for param in params]
         path_per_params = int(ceil(float(path_cnt) / reduce(lambda s1, s2: s1*s2, map(lambda l: len(l), values))))
+        original = {}
+        for name, constant in self.get_model().get_constants().items():
+            original[name] = constant.get_value()
         for param_values in product(*values):
             for (k, v) in zip(names, param_values):
                 self._set_parameter(k, v)
@@ -48,6 +53,9 @@ class AntitheticTestCase(CheckerTestBase):
             paths.extend(ps)
             results.extend(rs)
         checker.rearrange(paths, results)
+        # restore model parameters
+        for name, value in original.items():
+            self._set_parameter(name, value)
 
     def _get_rearrange_path_cnt(self):
         pass

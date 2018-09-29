@@ -31,7 +31,7 @@ class RegressionTestBase(AntitheticTestCase):
         xs = self._reshape_array(xs)
         ys = self._reshape_array(ys)
         training_data = [(x, y, w) for x, y, w in zip(xs, ys, ws)]
-        self._network.SGD(training_data, self._get_epochs(), self._get_min_batch_size(), self._get_eta(), monitor_training_accuracy=True)
+        self._network.SGD(training_data, self._get_epochs(), self._get_min_batch_size(), self._get_eta())
 
     def _predict(self, xs):
         xs = self._reshape_array(xs)

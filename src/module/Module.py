@@ -9,36 +9,23 @@ class Module(object):
     '''
     def __init__(self, name):
         self._name = name
-        self._commands = defaultdict(list) # 默认使用list存储同名commands
+        # the reason why use defaultdict to store the commands is
+        # in ModulesFile commands with same name need to be joined
+        self._commands = defaultdict(list)
         self._variables = OrderedDict()
         self._constants = dict()
         self._model = None
 
     def set_model(self, model):
-        '''
-        assoicate self with the model
-        :param model: ModulesFile instance
-        :return: None
-        '''
         self._model = model
 
     def get_name(self):
         return self._name
 
     def add_variable(self, variable):
-        '''
-        add variable to this module
-        :param variable: BoundedIntegerVariable instance
-        :return: None
-        '''
         self._variables[variable.get_name()] = variable
 
     def get_variable(self, key):
-        '''
-        get the variable instance for the key
-        :param key: variable name
-        :return: BoundedIntegerVariable instance
-        '''
         if key in self._variables:
             return self._variables.get(key)
         raise Exception('variable {} not exist in module {}'.format(key, self._name))
@@ -46,21 +33,12 @@ class Module(object):
     def get_variables(self):
         return self._variables
 
-    def add_command(self, command):
-        self._commands[command.get_name()].append(command)
-        command.module = self
-
-    def get_commands_with_name(self, name):
-        ''':return a list contains commands with same name'''
-        if name not in self._commands.keys():
-            return
-        return self._commands[name]
+    def add_command(self, c):
+        self._commands[c.get_name()].append(c)
 
     def get_commands(self):
         return self._commands
 
-    # a value is not needed when executing an do_expe over this constant
-    # constant is no longer a primitive value, but a Constant typed instance
     def add_constant(self, constant):
         self._constants[constant.get_name()] = constant
 
@@ -122,7 +100,6 @@ class Command(object):
             new_value_map[var] = update_func()
         for var, value in new_value_map.items():
             var.set_value(value)
-
 
     def __str__(self):
         return "Comm {} of module {}".format(self._name, self._mod_name)
@@ -271,6 +248,15 @@ class BoundedIntegerVariable(TypeVariable):
         if min_value > max_value:
             raise Exception("Invalid Variable range parameter: ({}, {})".format(min_value, max_value))
         return [tuple([self._name, value]) for value in range(min_value, max_value+1)]
+
+    def possible_values_cnt(self):
+        '''
+        返回该变量可能取值的个数
+        :return: int
+        '''
+        _min = self.get_min()
+        _max = self.get_max()
+        return _max - _min + 1
 
 
 class Constant(TypeVariable):

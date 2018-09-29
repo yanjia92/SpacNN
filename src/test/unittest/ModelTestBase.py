@@ -66,3 +66,6 @@ class ModelTestBase(unittest.TestCase):
         :return:
         '''
         self._model.set_constant(k, v)
+
+    def get_model(self):
+        return self._model

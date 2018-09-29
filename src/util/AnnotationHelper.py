@@ -51,22 +51,6 @@ def async(fn):
     return wrapper
 
 
-# def test_built():
-#     built = ModelFactory.get_built()
-#     built.prepare_commands()
-#     pr = cProfile.Profile()
-#     pr.enable()
-#     # result, path = built.gen_random_path(duration=duration)
-#     path = built.get_random_path_V2(duration=duration)
-#     pr.disable()
-#     id1 = id(path[0].ap_set)
-#     id2 = id(path[1].ap_set)
-#     print "len of path:{}".format(len(path))
-#     s = StringIO.StringIO()
-#     sortby = "cumulative"
-#     ps = pstats.Stats(pr, stream=io.FileIO("./built", mode='w')).sort_stats(sortby)
-#     ps.print_stats()
-#     print s.getvalue()
 def profileit(filepath):
     def decorator(func):
         def decorated_func(*args, **kwargs):
@@ -82,18 +66,7 @@ def profileit(filepath):
             return result
         return decorated_func
     return decorator
-    # def wrapper(*args, **kwargs):
-    #     pr = cProfile.Profile()
-    #     pr.enable()
-    #     func(*args, **kwargs)
-    #     pr.disable()
-    #     s = StringIO.StringIO()
-    #     sortby = "cumulative"
-    #     ps = pstats.Stats(pr, stream=io.FileIO(name, mode='w')).sort_stats(sortby)
-    #     ps.print_stats()
-    #     print s.getvalue()
-    #
-    # return wrapper
+
 
 def deprecated(message=None):
     def decorator(func):

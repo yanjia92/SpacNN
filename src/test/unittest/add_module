@@ -1,0 +1,58 @@
+         341564 function calls (341520 primitive calls) in 1.257 seconds
+
+   Ordered by: cumulative time
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000    1.257    1.257 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:70(add_module)
+        1    0.133    0.133    1.135    1.135 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:111(_join_commands)
+    26244    0.696    0.000    1.002    0.000 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:122(_join_command)
+    26244    0.081    0.000    0.187    0.000 /Users/bitbook/Documents/SpacNN/src/module/CommandFactory.py:7(generate)
+        1    0.101    0.101    0.120    0.120 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:155(_fill_commands)
+    26244    0.106    0.000    0.106    0.000 /Users/bitbook/Documents/SpacNN/src/module/Module.py:58(__init__)
+    52491    0.070    0.000    0.070    0.000 {method 'update' of 'dict' objects}
+    52488    0.020    0.000    0.020    0.000 /Users/bitbook/Documents/SpacNN/src/module/Module.py:130(get_guard)
+    52488    0.018    0.000    0.018    0.000 /Users/bitbook/Documents/SpacNN/src/module/Module.py:127(get_update)
+    26244    0.009    0.000    0.009    0.000 /Users/bitbook/Documents/SpacNN/src/module/Module.py:159(set_constants)
+    26244    0.009    0.000    0.009    0.000 /Users/bitbook/Documents/SpacNN/src/module/Module.py:151(set_variables)
+    26245    0.008    0.000    0.008    0.000 /Users/bitbook/Documents/SpacNN/src/module/Module.py:142(get_name)
+    26261    0.003    0.000    0.003    0.000 {len}
+     39/1    0.000    0.000    0.001    0.001 /System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/copy.py:145(deepcopy)
+      3/1    0.000    0.000    0.001    0.001 /System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/copy.py:306(_reconstruct)
+      3/1    0.000    0.000    0.001    0.001 /System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/copy.py:234(_deepcopy_tuple)
+      3/1    0.000    0.000    0.001    0.001 /System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/copy.py:226(_deepcopy_list)
+        2    0.000    0.000    0.000    0.000 /System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/copy.py:253(_deepcopy_dict)
+        4    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/py_env/nn_env/lib/python2.7/_abcoll.py:545(update)
+        3    0.000    0.000    0.000    0.000 {method '__reduce_ex__' of 'object' objects}
+       27    0.000    0.000    0.000    0.000 /System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/copy.py:267(_keep_alive)
+        2    0.000    0.000    0.000    0.000 /System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/collections.py:38(__init__)
+        1    0.000    0.000    0.000    0.000 /System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/collections.py:182(__reduce__)
+       11    0.000    0.000    0.000    0.000 {isinstance}
+       78    0.000    0.000    0.000    0.000 {id}
+        7    0.000    0.000    0.000    0.000 /System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/collections.py:59(__setitem__)
+        2    0.000    0.000    0.000    0.000 {method 'iteritems' of 'dict' objects}
+        2    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/py_env/nn_env/lib/python2.7/copy_reg.py:92(__newobj__)
+        4    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/py_env/nn_env/lib/python2.7/abc.py:148(__subclasscheck__)
+        3    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/py_env/nn_env/lib/python2.7/abc.py:128(__instancecheck__)
+       69    0.000    0.000    0.000    0.000 {method 'get' of 'dict' objects}
+       35    0.000    0.000    0.000    0.000 {method 'append' of 'list' objects}
+        8    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/py_env/nn_env/lib/python2.7/_weakrefset.py:70(__contains__)
+        9    0.000    0.000    0.000    0.000 /System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/collections.py:78(__iter__)
+        9    0.000    0.000    0.000    0.000 {getattr}
+        3    0.000    0.000    0.000    0.000 {hasattr}
+       16    0.000    0.000    0.000    0.000 /System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/copy.py:198(_deepcopy_atomic)
+        3    0.000    0.000    0.000    0.000 {range}
+        2    0.000    0.000    0.000    0.000 {built-in method __new__ of type object at 0x10297b408}
+        4    0.000    0.000    0.000    0.000 {method 'items' of 'dict' objects}
+        3    0.000    0.000    0.000    0.000 {issubclass}
+        2    0.000    0.000    0.000    0.000 {vars}
+        1    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/module/Module.py:50(get_constants)
+        2    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/module/Module.py:33(get_variables)
+        1    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/module/Module.py:22(get_name)
+        1    0.000    0.000    0.000    0.000 {method 'values' of 'dict' objects}
+        1    0.000    0.000    0.000    0.000 {method 'copy' of 'dict' objects}
+        1    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/module/Module.py:19(set_model)
+        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+        2    0.000    0.000    0.000    0.000 {method 'pop' of 'dict' objects}
+        1    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/module/Module.py:39(get_commands)
+
+

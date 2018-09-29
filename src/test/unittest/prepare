@@ -1,0 +1,84 @@
+         54865182 function calls (53782654 primitive calls) in 35.714 seconds
+
+   Ordered by: cumulative time
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    1.557    1.557   35.714   35.714 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:344(prepare)
+  2519424    2.159    0.000   33.084    0.000 /Users/bitbook/Documents/SpacNN/src/module/Module.py:109(evaluate)
+3137184/2519424    1.940    0.000   30.925    0.000 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:145(guard)
+  3980808    9.919    0.000   27.628    0.000 /Users/bitbook/Documents/SpacNN/src/compiler/PRISMParser.py:425(f)
+2223728/1758960    1.364    0.000   19.556    0.000 /Users/bitbook/Documents/SpacNN/src/compiler/PRISMParser.py:392(bool_and)
+  4213128    4.246    0.000    9.282    0.000 /Users/bitbook/Documents/SpacNN/src/compiler/PRISMParser.py:337(f)
+  3980808    5.927    0.000    5.927    0.000 /Users/bitbook/Documents/SpacNN/src/compiler/PRISMParser.py:455(_gen_bool_func)
+  4220050    3.869    0.000    4.645    0.000 /Users/bitbook/Documents/SpacNN/src/module/Module.py:215(get_value)
+ 21079500    1.976    0.000    1.976    0.000 {callable}
+   232320    0.310    0.000    1.323    0.000 /Users/bitbook/Documents/SpacNN/src/compiler/PRISMParser.py:273(f)
+     3453    0.519    0.000    0.816    0.000 /System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/collections.py:109(values)
+  3980808    0.731    0.000    0.731    0.000 /Users/bitbook/Documents/SpacNN/src/compiler/PRISMParser.py:461(<lambda>)
+  3980832    0.632    0.000    0.632    0.000 /Users/bitbook/Documents/SpacNN/src/compiler/PRISMParser.py:331(<lambda>)
+  1128826    0.297    0.000    0.297    0.000 /System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/collections.py:78(__iter__)
+     6680    0.032    0.000    0.219    0.000 /System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/copy.py:66(copy)
+     6680    0.050    0.000    0.093    0.000 /System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/copy.py:306(_reconstruct)
+     6680    0.069    0.000    0.070    0.000 {method '__reduce_ex__' of 'object' objects}
+    58080    0.026    0.000    0.037    0.000 /Users/bitbook/Documents/SpacNN/src/compiler/PRISMParser.py:465(<lambda>)
+      864    0.007    0.000    0.024    0.000 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:279(_status_as_key)
+    13360    0.021    0.000    0.021    0.000 {getattr}
+     6680    0.011    0.000    0.011    0.000 {method 'update' of 'dict' objects}
+     6680    0.006    0.000    0.010    0.000 /Users/bitbook/Documents/py_env/nn_env/lib/python2.7/copy_reg.py:92(__newobj__)
+    20058    0.009    0.000    0.009    0.000 {isinstance}
+     6681    0.009    0.000    0.009    0.000 {hasattr}
+      864    0.005    0.000    0.005    0.000 /System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/collections.py:59(__setitem__)
+     6680    0.004    0.000    0.004    0.000 {built-in method __new__ of type object at 0x10bd7c408}
+    13831    0.004    0.000    0.004    0.000 {method 'get' of 'dict' objects}
+     6684    0.003    0.000    0.003    0.000 {method 'append' of 'list' objects}
+     6920    0.003    0.000    0.003    0.000 /Users/bitbook/Documents/SpacNN/src/module/Module.py:207(set_value)
+      862    0.002    0.000    0.002    0.000 {method 'index' of 'list' objects}
+     6690    0.002    0.000    0.002    0.000 {len}
+     6680    0.002    0.000    0.002    0.000 {id}
+        4    0.000    0.000    0.001    0.000 /Applications/PyCharm CE.app/Contents/helpers/pycharm/teamcity/common.py:46(write)
+        2    0.000    0.000    0.001    0.000 /Applications/PyCharm CE.app/Contents/helpers/pycharm/teamcity/common.py:41(_flush_to_flush_function)
+        2    0.000    0.000    0.001    0.000 /Applications/PyCharm CE.app/Contents/helpers/pycharm/teamcity/unittestpy.py:240(_dump_test_stdout)
+        2    0.000    0.000    0.001    0.000 /Applications/PyCharm CE.app/Contents/helpers/pycharm/teamcity/common.py:71(dump_test_stdout)
+        2    0.000    0.000    0.001    0.000 /Applications/PyCharm CE.app/Contents/helpers/pycharm/teamcity/messages.py:166(testStdOut)
+      864    0.001    0.000    0.001    0.000 {method 'items' of 'dict' objects}
+        2    0.000    0.000    0.001    0.000 /Applications/PyCharm CE.app/Contents/helpers/pycharm/_jb_runner_tools.py:168(message)
+        2    0.000    0.000    0.001    0.000 /Applications/PyCharm CE.app/Contents/helpers/pycharm/teamcity/messages.py:63(message)
+      865    0.001    0.000    0.001    0.000 {method 'values' of 'dict' objects}
+       12    0.000    0.000    0.001    0.000 /Applications/PyCharm CE.app/Contents/helpers/pycharm/teamcity/messages.py:57(escapeValue)
+       12    0.000    0.000    0.000    0.000 /Applications/PyCharm CE.app/Contents/helpers/pycharm/teamcity/messages.py:22(escape_value)
+       18    0.000    0.000    0.000    0.000 {method 'join' of 'str' objects}
+      483    0.000    0.000    0.000    0.000 /Applications/PyCharm CE.app/Contents/helpers/pycharm/teamcity/messages.py:23(<genexpr>)
+      288    0.000    0.000    0.000    0.000 {method 'add' of 'set' objects}
+        1    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:381(_restore)
+        1    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:275(_restore_vars)
+        8    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/module/Module.py:260(possible_values)
+        4    0.000    0.000    0.000    0.000 /System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/StringIO.py:208(write)
+        2    0.000    0.000    0.000    0.000 /Applications/PyCharm CE.app/Contents/helpers/pycharm/_jb_runner_tools.py:142(node_ids)
+        2    0.000    0.000    0.000    0.000 {time.strftime}
+        2    0.000    0.000    0.000    0.000 {method 'write' of 'file' objects}
+        2    0.000    0.000    0.000    0.000 {time.localtime}
+       14    0.000    0.000    0.000    0.000 /Applications/PyCharm CE.app/Contents/helpers/pycharm/teamcity/messages.py:46(encode)
+        4    0.000    0.000    0.000    0.000 /System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/StringIO.py:258(getvalue)
+        1    0.000    0.000    0.000    0.000 /System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/collections.py:113(items)
+        2    0.000    0.000    0.000    0.000 /System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/StringIO.py:187(truncate)
+        2    0.000    0.000    0.000    0.000 /System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/StringIO.py:95(seek)
+        1    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/py_env/nn_env/lib/python2.7/copy_reg.py:95(_slotnames)
+        2    0.000    0.000    0.000    0.000 {sorted}
+        4    0.000    0.000    0.000    0.000 /Applications/PyCharm CE.app/Contents/helpers/pycharm/_jb_runner_tools.py:139(_get_node_id)
+        4    0.000    0.000    0.000    0.000 /Applications/PyCharm CE.app/Contents/helpers/pycharm/teamcity/common.py:61(split_output)
+        2    0.000    0.000    0.000    0.000 {method 'format' of 'str' objects}
+        8    0.000    0.000    0.000    0.000 {range}
+        2    0.000    0.000    0.000    0.000 {divmod}
+        2    0.000    0.000    0.000    0.000 {method 'split' of 'str' objects}
+       12    0.000    0.000    0.000    0.000 /System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/StringIO.py:38(_complain_ifclosed)
+        2    0.000    0.000    0.000    0.000 {method 'find' of 'str' objects}
+        4    0.000    0.000    0.000    0.000 /Applications/PyCharm CE.app/Contents/helpers/pycharm/_jb_runner_tools.py:135(parent_branch)
+        2    0.000    0.000    0.000    0.000 {time.time}
+        2    0.000    0.000    0.000    0.000 {max}
+        2    0.000    0.000    0.000    0.000 {method 'keys' of 'dict' objects}
+        2    0.000    0.000    0.000    0.000 /Applications/PyCharm CE.app/Contents/helpers/pycharm/teamcity/common.py:57(limit_output)
+        1    0.000    0.000    0.000    0.000 {method 'get' of 'dictproxy' objects}
+        2    0.000    0.000    0.000    0.000 {method 'flush' of 'file' objects}
+        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+
+
