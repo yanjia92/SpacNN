@@ -1,5 +1,4 @@
 data/*
-result/*
 *.pyc
 .idea/*
 dist/*

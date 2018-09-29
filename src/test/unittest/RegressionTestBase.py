@@ -13,6 +13,9 @@ class RegressionTestBase(AntitheticTestCase):
         self._param_map = {}
         self._network = Regressor(self._get_network_size(), cost=DefaultCost)
 
+    def _reinitialize_network(self):
+        self._network = Regressor(self._get_network_size(), cost=DefaultCost)
+
     def _reshape_train_data(self, train_data):
         '''
         将x矩阵化

@@ -3,7 +3,7 @@ from SystemUtil import on_windows_platform
 from os.path import exists, isfile
 
 
-def write_csv_rows(file_path, datas, headers=None, sep=",", transformer=None):
+def write_csv_rows(file_path, datas, headers=None, sep=",", transformer=None, mode=None):
     '''
     :param file_path:
     :param datas: list of list
@@ -15,7 +15,9 @@ def write_csv_rows(file_path, datas, headers=None, sep=",", transformer=None):
     # validate file_path and datas
     # validation includes: all data rows should be same length
     # header's length should be same with data's row
-    with open(file_path, "w") as f:
+    if not mode:
+        mode = 'w'
+    with open(file_path, mode) as f:
         if headers:
             header_line = sep.join(headers)
             f.write(header_line)
