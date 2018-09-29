@@ -1,0 +1,60 @@
+         6369931 function calls (6352555 primitive calls) in 5.148 seconds
+
+   Ordered by: cumulative time
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.203    0.203    5.148    5.148 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:354(_parse_model)
+    13473    0.066    0.000    1.472    0.000 {filter}
+   113772    0.073    0.000    1.407    0.000 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:389(<lambda>)
+   113772    0.139    0.000    1.334    0.000 /Users/bitbook/Documents/SpacNN/src/module/Module.py:87(evaluate)
+   140859    0.417    0.000    1.148    0.000 /Users/bitbook/Documents/SpacNN/src/compiler/PRISMParser.py:425(f)
+    18791    0.202    0.000    0.878    0.000 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:257(_status_as_key)
+79251/64371    0.064    0.000    0.807    0.000 /Users/bitbook/Documents/SpacNN/src/compiler/PRISMParser.py:392(bool_and)
+     1497    0.145    0.000    0.759    0.001 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:70(_join_commands)
+    18790    0.499    0.000    0.695    0.000 /Users/bitbook/Documents/SpacNN/src/module/Module.py:92(execute)
+    18790    0.359    0.000    0.615    0.000 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:81(_join_command)
+    20287    0.192    0.000    0.598    0.000 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:264(_key2status)
+    40575    0.394    0.000    0.590    0.000 /System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/collections.py:109(values)
+   488595    0.479    0.000    0.576    0.000 /Users/bitbook/Documents/SpacNN/src/module/Module.py:192(get_value)
+    18790    0.067    0.000    0.459    0.000 /System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/copy.py:66(copy)
+   150339    0.174    0.000    0.377    0.000 /Users/bitbook/Documents/SpacNN/src/compiler/PRISMParser.py:337(f)
+   140859    0.251    0.000    0.251    0.000 /Users/bitbook/Documents/SpacNN/src/compiler/PRISMParser.py:455(_gen_bool_func)
+    18790    0.108    0.000    0.203    0.000 /System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/copy.py:306(_reconstruct)
+   757471    0.196    0.000    0.196    0.000 /System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/collections.py:78(__iter__)
+  1880199    0.192    0.000    0.192    0.000 {callable}
+   703404    0.164    0.000    0.164    0.000 /Users/bitbook/Documents/SpacNN/src/module/Module.py:184(set_value)
+    18790    0.137    0.000    0.137    0.000 {method '__reduce_ex__' of 'object' objects}
+   187900    0.131    0.000    0.131    0.000 {method 'update' of 'dict' objects}
+   479115    0.078    0.000    0.078    0.000 /Users/bitbook/Documents/SpacNN/src/compiler/PRISMParser.py:331(<lambda>)
+    18790    0.024    0.000    0.076    0.000 /Users/bitbook/Documents/SpacNN/src/module/CommandFactory.py:7(generate)
+9480/6984    0.016    0.000    0.057    0.000 /Users/bitbook/Documents/SpacNN/src/compiler/PRISMParser.py:273(f)
+    18790    0.052    0.000    0.052    0.000 /Users/bitbook/Documents/SpacNN/src/module/Module.py:58(__init__)
+    37580    0.041    0.000    0.041    0.000 {getattr}
+    52550    0.035    0.000    0.035    0.000 {method 'items' of 'dict' objects}
+    20287    0.035    0.000    0.035    0.000 {zip}
+   169110    0.032    0.000    0.032    0.000 /Users/bitbook/Documents/SpacNN/src/module/Module.py:127(get_update)
+   169110    0.032    0.000    0.032    0.000 /Users/bitbook/Documents/SpacNN/src/module/Module.py:130(get_guard)
+   140859    0.029    0.000    0.029    0.000 /Users/bitbook/Documents/SpacNN/src/compiler/PRISMParser.py:461(<lambda>)
+    18791    0.024    0.000    0.024    0.000 {hasattr}
+    56370    0.022    0.000    0.022    0.000 {isinstance}
+    18790    0.013    0.000    0.019    0.000 /Users/bitbook/Documents/py_env/nn_env/lib/python2.7/copy_reg.py:92(__newobj__)
+    33760    0.010    0.000    0.010    0.000 {method 'append' of 'list' objects}
+    52551    0.010    0.000    0.010    0.000 {len}
+    37580    0.010    0.000    0.010    0.000 {method 'get' of 'dict' objects}
+     1497    0.007    0.000    0.007    0.000 /System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/collections.py:59(__setitem__)
+    18790    0.006    0.000    0.006    0.000 {built-in method __new__ of type object at 0x10ea47408}
+    18790    0.005    0.000    0.005    0.000 /Users/bitbook/Documents/SpacNN/src/module/Module.py:142(get_name)
+    15337    0.004    0.000    0.004    0.000 {method 'add' of 'set' objects}
+    13473    0.004    0.000    0.004    0.000 /Users/bitbook/Documents/SpacNN/src/module/Module.py:39(get_commands)
+    18790    0.004    0.000    0.004    0.000 {id}
+     1497    0.002    0.000    0.002    0.000 {method 'pop' of 'list' objects}
+     1746    0.001    0.000    0.001    0.000 /Users/bitbook/Documents/SpacNN/src/compiler/PRISMParser.py:465(<lambda>)
+     1497    0.001    0.000    0.001    0.000 {method 'values' of 'dict' objects}
+        1    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:331(_restore)
+        1    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:253(_restore_vars)
+        1    0.000    0.000    0.000    0.000 /System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/collections.py:113(items)
+        1    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/py_env/nn_env/lib/python2.7/copy_reg.py:95(_slotnames)
+        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+        1    0.000    0.000    0.000    0.000 {method 'get' of 'dictproxy' objects}
+
+

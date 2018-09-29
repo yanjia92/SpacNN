@@ -1,0 +1,30 @@
+         28 function calls in 6.858 seconds
+
+   Ordered by: cumulative time
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000    6.858    6.858 /Users/bitbook/Documents/SpacNN/src/test/unittest/AntitheticTestBase.py:26(_rearrange)
+        1    0.000    0.000    6.858    6.858 /Users/bitbook/Documents/SpacNN/src/checker/Checker.py:21(check_and_export)
+        1    0.000    0.000    6.858    6.858 /Users/bitbook/Documents/SpacNN/src/checker/Checker.py:51(gen_random_path)
+        1    0.000    0.000    6.858    6.858 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:207(gen_path)
+        1    0.000    0.000    6.858    6.858 /Users/bitbook/Documents/SpacNN/src/util/AnnotationHelper.py:56(decorated_func)
+        1    6.858    6.858    6.858    6.858 {method 'enable' of '_lsprof.Profiler' objects}
+        1    0.000    0.000    0.000    0.000 {reduce}
+        2    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/module/Module.py:192(get_value)
+        1    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/test/unittest/ModelTestBase.py:61(_set_parameter)
+        1    0.000    0.000    0.000    0.000 {map}
+        1    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:157(set_constant)
+        1    0.000    0.000    0.000    0.000 {range}
+        1    0.000    0.000    0.000    0.000 {math.ceil}
+        1    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/test/unittest/CheckerTest.py:34(_get_checker)
+        1    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/test/unittest/AntitheticTestBase.py:45(<lambda>)
+        1    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:154(get_constants)
+        1    0.000    0.000    0.000    0.000 {zip}
+        1    0.000    0.000    0.000    0.000 {method 'items' of 'dict' objects}
+        1    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/module/Module.py:184(set_value)
+        1    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/test/unittest/ModelTestBase.py:70(get_model)
+        4    0.000    0.000    0.000    0.000 {callable}
+        2    0.000    0.000    0.000    0.000 {len}
+        1    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/test/unittest/BroadcastRegressionTest.py:31(_get_rearrange_path_cnt)
+
+

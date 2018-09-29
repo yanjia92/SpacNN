@@ -4,6 +4,9 @@ from util.MathUtils import *
 import matplotlib.pyplot as plt
 from PathHelper import *
 from util.CsvFileHelper import write_csv_rows
+from itertools import product
+from math import ceil
+from util.AnnotationHelper import profileit
 
 
 class AntitheticTestCase(CheckerTestBase):
@@ -20,6 +23,40 @@ class AntitheticTestCase(CheckerTestBase):
         _, results = self._get_checker().check_and_export(size, antithetic=antithetic)
         return map(lambda result: [0, 1][result], results)
 
+    @profileit("rearrange")
+    def _rearrange(self, params=None):
+        '''
+        called before getting antithetic result
+        因为模型参数影响到取到target路径的概率，所以，在单个参数点进行取路径验证rearrange不合理
+        这里的做法是在每个参数点均匀取样，在每种可能性下取等样的路径进行验证
+        :param params: values for unsure parameter [(name, [values])]
+        :return:
+        '''
+        checker = self._get_checker()
+        path_cnt = self._get_rearrange_path_cnt()
+        if not params or not len(params):
+            paths, results = checker.check_and_export(path_cnt)
+            checker.rearrange(paths, results)
+            return
+        paths = []
+        results = []
+        names = [param[0] for param in params]
+        values = [param[1] for param in params]
+        path_per_params = int(ceil(float(path_cnt) / reduce(lambda s1, s2: s1*s2, map(lambda l: len(l), values))))
+        original = {}
+        for name, constant in self.get_model().get_constants().items():
+            original[name] = constant.get_value()
+        for param_values in product(*values):
+            for (k, v) in zip(names, param_values):
+                self._set_parameter(k, v)
+            ps, rs = checker.check_and_export(path_per_params)
+            paths.extend(ps)
+            results.extend(rs)
+        checker.rearrange(paths, results)
+        # restore model parameters
+        for name, value in original.items():
+            self._set_parameter(name, value)
+
     def _get_rearrange_path_cnt(self):
         pass
 
@@ -28,11 +65,7 @@ class AntitheticTestCase(CheckerTestBase):
 
     def _get_antithetic_check_result(self):
         checker = self._get_checker()
-        path_cnt = self._get_rearrange_path_cnt()
-        if not path_cnt or path_cnt <= 0:
-            print "_get_rearrange_path_cnt() not implemented."
-        paths, results = checker.check_and_export(path_cnt)
-        checker.rearrange(paths, results)
+        self._rearrange()
         checker.set_antithetic(True)
         return checker.run_checker()
 

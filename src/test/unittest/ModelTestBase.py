@@ -1,3 +1,5 @@
+# -*- coding:utf-8 -*-
+
 import unittest
 from compiler.PRISMParser import ModelConstructor
 from PathHelper import *
@@ -30,6 +32,7 @@ class ModelTestBase(unittest.TestCase):
         filename = basename(rewritten_path)
         filename = splitext(filename)[0]
         self._model = self._constructor.parse(filename)
+        self._param_map = {}
 
     def _get_model_name(self):
         '''
@@ -45,3 +48,24 @@ class ModelTestBase(unittest.TestCase):
         :return:
         '''
         return get_prism_model_dir()
+
+    def _set_parameters(self, name, values):
+        '''
+        store parameters in this object
+        :param name: parameter name
+        :param values: list of value
+        :return:
+        '''
+        self._param_map[name] = values
+
+    def _set_parameter(self, k, v):
+        '''
+        设置参数到_checker._constants
+        :param k: parameter name
+        :param v: parameter value
+        :return:
+        '''
+        self._model.set_constant(k, v)
+
+    def get_model(self):
+        return self._model

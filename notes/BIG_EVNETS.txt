@@ -49,3 +49,10 @@
     使用模型：die.prism
     调用方法：DieAntitheticTest.py.testShowVariance
     结果：result/die_model_anthetic_results1.png
+
+
+2018/09/28
+再次重申同名commands的join策略
+1. 统一模块中的同名commands不进行join
+2. 不同模块之间的同名commands需要进行join，而且guard的join是做与操作，即条件必须同时满足，一旦条件满足，两个command的update必须全做。
+3. 统一模块中可以存在enabled的多个同名command。

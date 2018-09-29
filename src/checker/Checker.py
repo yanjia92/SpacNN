@@ -103,10 +103,9 @@ class Checker(UnsureModelChecker):
         # print "index: {}".format(rel_index(results[0::2], results[1::2]))
         return hit_cnt/generated_cnt
 
-    def set_param(self, name, value):
-        result = self._model.set_constant_name_value(name, value)
-        self._model.set_prepared(False)
-        return result
+    def set_param(self, k, v):
+        self._model.set_constant(k, v)
+        # self._model.set_prepared(False)
 
     def set_antithetic(self, antithetic):
         '''
@@ -116,3 +115,7 @@ class Checker(UnsureModelChecker):
         '''
         if isinstance(antithetic, bool):
             self._antithetic = antithetic
+
+    def set_prepared(self, prepared):
+        if isinstance(prepared, bool):
+            self._model.set_prepared(prepared)

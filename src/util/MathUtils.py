@@ -111,7 +111,7 @@ def uniform(a, b, samples=1):
         return []
 
 
-def standDiv(xs, ys):
+def averageDistanceToLine(xs, ys):
     '''
     计算二维坐标点距离通过最小二乘法拟合出的曲线的平均距离
     :param xs: list of pointer's x
@@ -121,12 +121,12 @@ def standDiv(xs, ys):
     if not (len(xs) == len(ys) and len(xs) > 0):
         return
 
-    def error(param, x, y):
-        return func(param, x) - y
-
     def func(param, x):
         k, b = param
         return k * x + b
+
+    def error(param, x, y):
+        return func(param, x) - y
 
     xs = np.array(xs)
     ys = np.array(ys)
@@ -169,6 +169,22 @@ def rel_index(nums1, nums2):
     std_var1 = sqrt(cov(nums1, nums1))
     std_var2 = sqrt(cov(nums2, nums2))
     return c / (std_var1 * std_var2)
+
+
+def almost_equal(f1, f2, sig_fig=6):
+    '''
+    判断两个float近似相等
+    近似相等意味着int(f1) == int(f2) and f1和f2小数点后的sig_fig位有效数字相等
+    :param f1: float
+    :param f2: float
+    :param sig_fig: 小数点后的有效数字位数
+    :return:
+    '''
+    if int(f1) != int(f2):
+        return False
+    f1 -= int(f1)
+    f2 -= int(f2)
+    return int(f1*(10**sig_fig)) == int(f2*(10**sig_fig))
 
 
 def variance(nums):

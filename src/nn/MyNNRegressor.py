@@ -25,6 +25,7 @@ import mnist_loader
 
 #### Define the quadratic（二次误差） and cross-entropy cost functions
 
+
 class QuadraticCost(object):
 
     @staticmethod
@@ -62,13 +63,39 @@ class CrossEntropyCost(object):
         consistent with the delta method for other cost classes.
 
         """
-        return (a-y)
+        return a-y
+
+
+class WeightedQuadraticRegressCost(object):
+
+    @staticmethod
+    def fn(a, y, w):
+        '''
+        返回该样本的加权误差
+        :param a: 神经网络的输出值
+        :param y: 样本的y值
+        :param w: 样本的可靠性权重
+        :return: 误差
+        '''
+        return 0.5 * w * np.linalg.norm(a - y) ** 2
+
+    @staticmethod
+    def delta(z, a, y, w):
+        '''
+        计算代价函数关于输出层带权输入z的偏导数
+        :param z: 标量或者向量
+        :param a: 同上
+        :param y: 同上
+        :param w: 同上
+        :return:
+        '''
+        return (a - y) * w
 
 
 #### Main Network class
 class Network(object):
 
-    def __init__(self, sizes, cost=CrossEntropyCost):
+    def __init__(self, sizes, cost=WeightedQuadraticRegressCost):
         """The list ``sizes`` contains the number of neurons in the respective
         layers of the network.  For example, if the list was [2, 3, 1]
         then it would be a three-layer network, with the first layer
@@ -131,9 +158,19 @@ class Network(object):
             lmbda = 0.0,
             evaluation_data=None,
             monitor_evaluation_cost=False,
-            monitor_evaluation_accuracy=False,
-            monitor_training_cost=False,
-            monitor_training_accuracy=False):
+            monitor_training_cost=False):
+        '''
+
+        :param training_data:
+        :param epochs:
+        :param mini_batch_size:
+        :param eta: learning rate
+        :param lmbda: regularization parameter
+        :param evaluation_data:
+        :param monitor_evaluation_cost:
+        :param monitor_training_cost:
+        :return:
+        '''
         """Train the neural network using mini-batch stochastic gradient
         descent.  The ``training_data`` is a list of tuples ``(x, y)``
         representing the training inputs and the desired outputs.  The
@@ -155,8 +192,7 @@ class Network(object):
         """
         if evaluation_data: n_data = len(evaluation_data)
         n = len(training_data)
-        evaluation_cost, evaluation_accuracy = [], []
-        training_cost, training_accuracy = [], []
+        evaluation_cost, training_cost = [], []
         for j in xrange(epochs):
             random.shuffle(training_data)
             mini_batches = [
@@ -170,23 +206,12 @@ class Network(object):
                 cost = self.total_cost(training_data, lmbda)
                 training_cost.append(cost)
                 print "Cost on training data: {}".format(cost)
-            if monitor_training_accuracy:
-                accuracy = self.accuracy(training_data, convert=True)
-                training_accuracy.append(accuracy)
-                print "Accuracy on training data: {} / {}".format(
-                    accuracy, n)
             if monitor_evaluation_cost:
                 cost = self.total_cost(evaluation_data, lmbda, convert=True)
                 evaluation_cost.append(cost)
                 print "Cost on evaluation data: {}".format(cost)
-            if monitor_evaluation_accuracy:
-                accuracy = self.accuracy(evaluation_data)
-                evaluation_accuracy.append(accuracy)
-                print "Accuracy on evaluation data: {} / {}".format(
-                    self.accuracy(evaluation_data), n_data)
             print
-        return evaluation_cost, evaluation_accuracy, \
-            training_cost, training_accuracy
+        return evaluation_cost, training_cost
 
     def update_mini_batch(self, mini_batch, eta, lmbda, n):
         """Update the network's weights and biases by applying gradient
@@ -204,10 +229,11 @@ class Network(object):
             nabla_w = [nw+dnw for nw, dnw in zip(nabla_w, delta_nabla_w)]
         self.weights = [(1-eta*(lmbda/n))*w-(eta/len(mini_batch))*nw
                         for w, nw in zip(self.weights, nabla_w)]
+        # 偏执不包含在规范化的要求里
         self.biases = [b-(eta/len(mini_batch))*nb
                        for b, nb in zip(self.biases, nabla_b)]
 
-    def backprop(self, x, y):
+    def backprop(self, x, y, weight=1.0):
         """Return a tuple ``(nabla_b, nabla_w)`` representing the
         gradient for the cost function C_x.  ``nabla_b`` and
         ``nabla_w`` are layer-by-layer lists of numpy arrays, similar
@@ -216,7 +242,7 @@ class Network(object):
         nabla_w = [np.zeros(w.shape) for w in self.weights]
         # feedforward
         activation = x
-        activations = [x] # list to store all the activations, layer by layer
+        activations = [x]  # list to store all the activations, layer by layer
         zs = [] # list to store all the z vectors, layer by layer
         for b, w in zip(self.biases, self.weights):
             z = np.dot(w, activation)+b
@@ -241,37 +267,6 @@ class Network(object):
             nabla_w[-l] = np.dot(delta, activations[-l-1].transpose())
         return (nabla_b, nabla_w)
 
-    def accuracy(self, data, convert=False):
-        """Return the number of inputs in ``data`` for which the neural
-        network outputs the correct result. The neural network's
-        output is assumed to be the index of whichever neuron in the
-        final layer has the highest activation.
-
-        The flag ``convert`` should be set to False if the data set is
-        validation or test data (the usual case), and to True if the
-        data set is the training data. The need for this flag arises
-        due to differences in the way the results ``y`` are
-        represented in the different data sets.  In particular, it
-        flags whether we need to convert between the different
-        representations.  It may seem strange to use different
-        representations for the different data sets.  Why not use the
-        same representation for all three data sets?  It's done for
-        efficiency reasons -- the program usually evaluates the cost
-        on the training data and the accuracy on other data sets.
-        These are different types of computations, and using different
-        representations speeds things up.  More details on the
-        representations can be found in
-        mnist_loader.load_data_wrapper.
-
-        """
-        if convert:
-            results = [(np.argmax(self.feedforward(x)), np.argmax(y))
-                       for (x, y) in data]
-        else:
-            results = [(np.argmax(self.feedforward(x)), y)
-                        for (x, y) in data]
-        return sum(int(x == y) for (x, y) in results)
-
     def total_cost(self, data, lmbda, convert=False):
         """Return the total cost for the data set ``data``.  The flag
         ``convert`` should be set to False if the data set is the
@@ -280,10 +275,11 @@ class Network(object):
         reversed) convention for the ``accuracy`` method, above.
         """
         cost = 0.0
-        for x, y in data:
+        for x, y, w in data:
             a = self.feedforward(x)
             if convert: y = vectorized_result(y)
-            cost += self.cost.fn(a, y)/len(data)
+            cost += self.cost.fn(a, y, w)/len(data)
+        # 规范化误差
         cost += 0.5*(lmbda/len(data))*sum(
             np.linalg.norm(w)**2 for w in self.weights)
         return cost
@@ -299,31 +295,6 @@ class Network(object):
         f.close()
 
 
-class WeightedQuadriticRegressCost(object):
-
-    @staticmethod
-    def fn(a, y, w):
-        '''
-        返回该样本的加权误差
-        :param a: 神经网络的输出值
-        :param y: 样本的y值
-        :param w: 样本的可靠性权重
-        :return: 误差
-        '''
-        return 0.5 * w * np.linalg.norm(a - y) ** 2
-
-    @staticmethod
-    def delta(z, a, y, w):
-        '''
-        计算误差关于输出层的误差
-        :param z: 标量或者向量
-        :param a: 同上
-        :param y: 同上
-        :return:
-        '''
-        return (a - y) * w
-
-
 class MyNNRegressor(Network):
     '''
     基于Network类的加权回归神经网络
@@ -334,7 +305,7 @@ class MyNNRegressor(Network):
 
     def __init__(self, sizes, cost=CrossEntropyCost):
         Network.__init__(self, sizes, cost=cost)
-        self.cost = WeightedQuadriticRegressCost
+        self.cost = WeightedQuadraticRegressCost
 
     def feedforward(self, a):
         for w, b in zip(self.weights[:-1], self.biases[:-1]):
@@ -351,7 +322,7 @@ class MyNNRegressor(Network):
         nabla_b = [np.zeros(b.shape) for b in self.biases]
         nabla_w = [np.zeros(w.shape) for w in self.weights]
         for x, y, weight in mini_batch:
-            delta_nabla_b, delta_nabla_w = self.backprop(x, y, w=weight)
+            delta_nabla_b, delta_nabla_w = self.backprop(x, y, weight=weight)
             nabla_b = [nb + dnb for nb, dnb in zip(nabla_b, delta_nabla_b)]
             nabla_w = [nw + dnw for nw, dnw in zip(nabla_w, delta_nabla_w)]
         self.weights = [(1 - eta * (lmbda / n)) * w - (eta / len(mini_batch)) * nw
@@ -359,17 +330,16 @@ class MyNNRegressor(Network):
         self.biases = [b - (eta / len(mini_batch)) * nb
                        for b, nb in zip(self.biases, nabla_b)]
 
-    def backprop(self, x, y, w=1.0):
+    def backprop(self, x, y, weight=1.0):
         '''
         计算该样本关于每个权重和偏置的导数
         注意两点：输出层
         :param x:
         :param y:
-        :param w:
+        :param weight:
         :return:
         '''
-        # forward feeding
-        weight = w
+        # forward feeding to compute activation layer by layer
         activations = []
         zs = []
         activation = x
@@ -382,13 +352,14 @@ class MyNNRegressor(Network):
         # compute z and a for the output layer
         z = np.dot(self.weights[-1], activations[-1]) + self.biases[-1]
         zs.append(z)
+        # for output layer, a = z
         activations.append(z)
 
         # back propagation
         nabla_w = [np.zeros(w.shape) for w in self.weights]
         nabla_b = [np.zeros(b.shape) for b in self.biases]
-        # 计算输出层误差
-        delta = (self.cost).delta(zs[-1], activations[-1], y, weight)
+        # 计算输出层误差，即代价函数关于输出层带权输出z的偏导数
+        delta = self.cost.delta(zs[-1], activations[-1], y, weight)
         nabla_b[-1] = delta
         nabla_w[-1] = np.dot(delta, activations[-2].transpose())
         # same with Network
@@ -398,7 +369,8 @@ class MyNNRegressor(Network):
             delta = np.dot(self.weights[-l+1].transpose(), delta) * sp
             nabla_b[-l] = delta
             nabla_w[-l] = np.dot(delta, activations[-l-1].transpose())
-        return (nabla_b, nabla_w)
+        return nabla_b, nabla_w
+
 
 #### Loading a Network
 def load(filename):

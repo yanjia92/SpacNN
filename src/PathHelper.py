@@ -34,6 +34,10 @@ def get_results_dir():
     return get_proj_dir() + get_sep() + "result"
 
 
+def get_data_dir():
+    return get_proj_dir() + get_sep() + "data"
+
+
 def test():
     print get_src_dir()
     print get_proj_dir()
