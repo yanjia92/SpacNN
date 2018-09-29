@@ -7,7 +7,7 @@ def write_csv_rows(file_path, datas, headers=None, sep=",", transformer=None):
     '''
     :param file_path:
     :param datas: list of list
-    :param headers: list of strings
+    :param headers: list of string
     :param sep: separator
     :param transformer: transform(row_data)
     :return: None

@@ -13,28 +13,41 @@ class RegressionTestBase(AntitheticTestCase):
         self._param_map = {}
         self._network = Regressor(self._get_network_size(), cost=DefaultCost)
 
-    def _train(self, xs, ys):
+    def _reshape_train_data(self, train_data):
         '''
-        :param xs: training_xs
-        :param ys: training_ys
+        将x矩阵化
+        例如包含三个自变量的x: [1, 2, 3]
+        矩阵化的之后的大小为(3, 1)
+        而只包含一个变量的x，即x=1，则矩阵化之后的矩阵大小为[1, 1]
+        :param train_data: [(x,y)] list of tuple
         :return:
         '''
-        batch_size = self._get_weight_element_cnt()
-        batches = [
-            (xs[i:i+batch_size], ys[i:i+batch_size])
-            for i in range(0, len(xs), batch_size)
-        ]
-        ws = []
-        for batch in batches:
-            ws.extend([self._compute_weights1(batch[0], batch[1])] * len(batch[0]))
-        ws = self._normalized(ws)
-        xs = self._reshape_array(xs)
-        ys = self._reshape_array(ys)
-        training_data = [(x, y, w) for x, y, w in zip(xs, ys, ws)]
-        self._network.SGD(training_data, self._get_epochs(), self._get_min_batch_size(), self._get_eta())
+        xs = [row[:-1] for row in train_data]
+        ys = [row[-1:] for row in train_data]
+        x_shape = (len(xs[0]), 1)
+        xs = [np.reshape(x, x_shape) for x in xs]
+        return [(x, y) for x, y in zip(xs, ys)]
+
+    def _train(self, train_data, weights=None):
+        '''
+        对神经网络进行训练
+        :param train_data: [(x,y)]
+        :param weights: [int]
+        :return:
+        '''
+        if not train_data or not len(train_data):
+            return
+        n = len(train_data)
+        if not weights or not len(weights):
+            weights = [1.0 for _ in range(n)]
+        for i, row in enumerate(train_data):
+            row = list(row)
+            row.append(weights[i])
+            train_data[i] = tuple(row)
+        self._network.SGD(train_data, self._get_epochs(), self._get_min_batch_size(), self._get_eta(), monitor_training_cost=True)
 
     def _predict(self, xs):
-        xs = self._reshape_array(xs)
+        xs = np.array(xs)
         ys = [self._network.feedforward(x) for x in xs]
         return [y[0][0] for y in ys]
 
@@ -84,21 +97,6 @@ class RegressionTestBase(AntitheticTestCase):
         :return: xs, ys
         '''
         return [], []
-
-    def _reshape_array(self, array):
-        '''
-        reshape using np.reshape
-        :param array: list
-        :return: ndarray
-        '''
-        if not array or not len(array):
-            return np.ndarray([])
-        elem0 = array[0]
-        if not isinstance(elem0, list):
-            shape = [1, 1]
-        else:
-            shape = [len(array[0]), 1]
-        return [np.reshape(elem, shape) for elem in array]
 
     def _get_min_batch_size(self):
         '''
