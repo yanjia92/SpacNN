@@ -8,6 +8,7 @@ from util.MathUtils import almost_equal
 from math import sqrt
 from util.CsvFileHelper import write_csv_rows
 from copy import deepcopy
+from math import fabs
 
 
 class BroadcastRegressionTest(RegressionTestBase):
@@ -41,7 +42,7 @@ class BroadcastRegressionTest(RegressionTestBase):
         return 10
 
     def _get_epochs(self):
-        return 30
+        return 20
 
     def _gen_training_data(self):
         '''
@@ -64,21 +65,34 @@ class BroadcastRegressionTest(RegressionTestBase):
         train_xs, train_ys = self._gen_training_data()
         write_csv_rows(self._export_train_path, [(x, y) for x, y in zip(train_xs, train_ys)])
 
-    def testShowRegressionWithoutWeight(self):
+    def _errors(self, nums1, nums2):
         '''
-        首先不加权重的对训练数据进行拟合，然后利用拟合出的曲线进行估计，与PRISM数据进行对比。
+        计算两个数组之间的偏差
+        :param nums1: list of number
+        :param nums2: list of number
+        :return: 偏差的平均数
+        '''
+        errors = 0.0
+        n1 = len(nums1)
+        n2 = len(nums2)
+        if n1 == n2 and n1:
+            for x1, x2 in zip(nums1, nums2):
+                errors += fabs(x1 - x2)
+            errors /= n1
+        return errors
+
+    def testTrainAndPredictWithoutWeights(self):
+        '''
+        首先不加权重的对训练数据进行拟合，训练10次，得到每次的估计数据
         :return:
         '''
-        train_data = parse_csv_rows(self._export_train_path, has_headers=False)
-        train_ys = [row[-1] for row in train_data]
-        for row in train_data:
-            row[-1] *= 100
-        train_data = self._reshape_train_data(train_data)
-        self._train(train_data)
-        test_ys = self._predict(self._test_xs)
-        test_ys = map(lambda y: y / 100, test_ys)
-        prism_xs, prism_ys = parse_csv_cols(self._prism_data_path, has_headers=True)
-        plt.plot(self._test_xs, test_ys, color='r')
-        plt.plot(prism_xs, prism_ys, color='g')
-        plt.scatter(self._train_xs, train_ys, color='b')
-        plt.show()
+        for _ in range(10):
+            train_data = parse_csv_rows(self._export_train_path, has_headers=False)
+            train_ys = [row[-1] for row in train_data]
+            for row in train_data:
+                row[-1] *= 100
+            train_data = self._reshape_train_data(train_data)
+            self._train(train_data)
+            test_ys = self._predict(self._test_xs)
+            test_ys = map(lambda y: y / 100, test_ys)
+
