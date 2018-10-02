@@ -1,0 +1,19 @@
+摘要
+模型检测方法是一种形式化方法，可以检验系统是否满足某种性质。它借助于对系统建立起的数学模型和依赖时序逻辑公式描述的性质对系统运行检测算法，并给出系统是否满足该性质的结论。作为一种能够对系统进行精确检测的方法，已经被广泛运用于汽车电子，轨道交通以及航天航空等领域。虽然模型检测方法已经在实际的应用中取得了显著的效果，但是挑战依旧存在。在实际的建模过程中，由于系统中某些信息的不确定性，导致所建立的模型包含非确定参数。由于传统的模型检测方法不允许模型中包含不确定参数，所以无法用传统模型检测方法对该种模型进行验证。
+为了对这类具有不确定信息的模型进行建模与验证，本文提出了一种基于BP神经网络（back propagation neural network）的函数拟合的方法对模型在不确定性参数下的模型检测概率值的函数进行拟合。首先，该方法需要获取模型在若干参数下的模型检测值作为训练数据对神经网络进行训练，在训练的过程中为不同的训练样本赋予不同的可靠性权重，从而使得神经网络的训练更加依赖于那些可靠性高的样本，从而使得神经网络拟合和预测的精度得以提高。
+为了提高模型在确定参数下的模型检测的效率，本文提出一种基于方差减小技术的统计模型检测（statistical model checking, SMC）算法。该算法借鉴蒙特卡罗方法中的对偶变量（antithetic variable）技巧，提出了对偶状态和对偶路径的概念，并通过一种基于偏序关系的状态重排序算法对模型中的状态进行重排序，使得满足给定时态逻辑公式的路径在所在状态空间的同一测。基于上述两点抽样产生的对偶路径样本能够使得SMC算法的估计值的误差得到显著的减小，从而提高SMC算法的准确度。
+本文用满足函数来表示从模型的不确定参数空间到模型在此参数下的模型检测值的之间的映射。本文证明了上述定义的满足在一定条件是连续函数。由于无法给出满足函数的具体的解析形式，本文提出使用BP神经网络对满足函数进行拟合。为了提高BP神经网络的拟合精度，本文提出为不同的样本赋予不同的可靠性权重以表示样本的可靠性，通过为高可靠的样本赋予更高的权重，使得神经网络的训练更多地依赖可靠性高的样本，使得训练和预测的精度得到提高。
+SpacNN（Statistical Probabilistic Approximate Model Checker with Neural Network）是基于上述算法实现的统计模型检测工具。通过对网络协议和分布式算法等案例进行分析，发现改进的SMC算法可以显著提升模型在确定参数下的估计值的精度，从而间接减小了SMC所需的样本大小。实验也发现，对于非确定模型的验证，加权的神经网络拟合方法能够减小神经网络预测未知参数下的模型检测值的平均偏差。
+关键词：统计模型检测；带参数马尔科夫链；对偶变量；BP神经网络；
+
+
+abstract
+As a formal method, model checking could check whether a system satisfy some kind of property. It use a mathematical method to build a model that representing the system and some temporal logic formula to represent the property and give an answer to whether the system satisfy the property. As a accurate checking method, it is widely used in automobile industry, transportation and space industry. In spite of its wide usage, challenges exist.  In many practical practices, many unsure information can not be obtained, thus the model contain unsure parameters. Because the classical model checking method does not allow such a uncertainty, thus new methods need to be proposed.
+To deal with such uncertainty situation, we propose a original curve fitting method based on back propagation neural network to predict model's satisfactory probability under unsure parameters. Firstly, we obtain the satisfactory probability under some certain parameters and use those data as training data to feed the network. Through weighing different training data according on their reliability, we make the training process depends more on the data that is more reliable, thus improving the accuracy of the prediction.
+To improve the efficiency of model checking under certain parameters, we introduce a antithetic sampling based statistical model checking method. We borrows the idea of antithetic variable in Monte Carlo method and introduce the definition of antithetic state and antithetic path. For antithetic path to work, we introduce a state reordering process to make all satisfying path stay in one side of the path space. After the reordering process, sample of antithetic path can be obtained with smaller variances and thus more accurate prediction.
+Also we introduce the definition of satisfactory function to represent the relation from parameters space to probability. We prove the satisfactory function is a continuous function and thus a curve fitting method can be used. We use the BP neural network to do the fitting and introduce the notation of reliablity weight as a measure of sampling's reliablity. By doing this, the accuracy of training and prediction of the neural network can be improved.
+SpacNN(Statistical Probabilistic Approximate Model Checker with Neural Network) is a tool implemented using method above. Through using the tool to check two cases from communication protocols and distributive algorithms, we show that the antithetic path based SMC algorithm could improve the accuracy of the prediction of SMC algorithm and network. 
+keywords: statistical model checking, parameterized discrete time Markov chain, antithetic variable, back propagation neural network
+
+
+

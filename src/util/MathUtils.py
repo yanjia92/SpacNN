@@ -118,9 +118,6 @@ def averageDistanceToLine(xs, ys):
     :param ys: list of pointer's y
     :return: 点到拟合出的直线的距离的平均值
     '''
-    if not (len(xs) == len(ys) and len(xs) > 0):
-        return
-
     def func(param, x):
         k, b = param
         return k * x + b
@@ -141,7 +138,7 @@ def averageDistanceToLine(xs, ys):
         return wrapper
 
     linefunc = linegenerator(param)
-    return sum([fabs(linefunc(x) - y) for x, y in zip(xs, ys)]) / float(len(xs))
+    return sqrt(sum([(y - linefunc(x))**2 for x,y in zip(xs, ys)]) / (len(xs) - 1))
 
 
 def cov(nums1, nums2):
@@ -186,6 +183,17 @@ def almost_equal(f1, f2, sig_fig=6):
     f2 -= int(f2)
     return int(f1*(10**sig_fig)) == int(f2*(10**sig_fig))
 
+
+def z(nums, p):
+    '''
+    返回z分位数
+    :param nums: [num]
+    :param p: [0, 1]
+    :return:
+    '''
+    arr = sorted(nums)
+    index = int(len(nums)*p)
+    return arr[index - 1]
 
 def variance(nums):
     return cov(nums, nums)

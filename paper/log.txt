@@ -1,0 +1,6 @@
+2018/10/02
+broadcast9模型的回归测试实验完成。
+初步的实验表明，加权神经网络拟合的精确度较不加权的有所提升，但是提升效果不是很明显。
+实验结果可见：./result/broadcast9_regression_good.png and ./data/broadcast9_good_aver_error.csv and ./data/broadcast9_good_weight_aver_error.csv 
+详细的error数据的分析可以参加单元测试BroadcastRegressionTest.py下的testAnalysisError函数。
+
