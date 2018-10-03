@@ -82,7 +82,7 @@ class MLPRegressorTest(ParserTest):
         for x in xs:
             self.model.set_constant_name_value(self.PARAM_NAME, x)
             self.model.commPrepared = False
-            ys.append(self.checker.run_checker())
+            ys.append(self.checker.run_smc())
         rows = [[x, y] for (x, y) in zip(xs, ys)]
         write_csv_rows(filepath, rows, headers=["SCREEN_THICKNESS", "result"])
 

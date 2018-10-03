@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 from math import *
 import random
-from scipy.optimize import leastsq
-import numpy as np
 from math import pow
 from math import e
 
@@ -111,36 +109,6 @@ def uniform(a, b, samples=1):
         return []
 
 
-def averageDistanceToLine(xs, ys):
-    '''
-    计算二维坐标点距离通过最小二乘法拟合出的曲线的平均距离
-    :param xs: list of pointer's x
-    :param ys: list of pointer's y
-    :return: 点到拟合出的直线的距离的平均值
-    '''
-    def func(param, x):
-        k, b = param
-        return k * x + b
-
-    def error(param, x, y):
-        return func(param, x) - y
-
-    xs = np.array(xs)
-    ys = np.array(ys)
-    initparam = np.array([1, 1])
-    param = leastsq(error, initparam, args=(xs, ys))
-    param = param[0]
-
-    def linegenerator(param):
-        def wrapper(x):
-            k, b = param
-            return k * x + b
-        return wrapper
-
-    linefunc = linegenerator(param)
-    return sqrt(sum([(y - linefunc(x))**2 for x,y in zip(xs, ys)]) / (len(xs) - 1))
-
-
 def cov(nums1, nums2):
     '''
     协方差
@@ -194,6 +162,7 @@ def z(nums, p):
     arr = sorted(nums)
     index = int(len(nums)*p)
     return arr[index - 1]
+
 
 def variance(nums):
     return cov(nums, nums)

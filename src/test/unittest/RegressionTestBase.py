@@ -3,8 +3,6 @@ from test.unittest.AntitheticTestBase import AntitheticTestCase
 from nn.MyNNRegressor import WeightedQuadraticRegressCost as DefaultCost
 from nn.MyNNRegressor import MyNNRegressor as Regressor
 import numpy as np
-from util.MathUtils import averageDistanceToLine
-from util.MathUtils import uniform
 
 
 class RegressionTestBase(AntitheticTestCase):
@@ -41,6 +39,7 @@ class RegressionTestBase(AntitheticTestCase):
         if not train_data or not len(train_data):
             return
         t_data = []
+        train_data = self._reshape_train_data(train_data)
         for i, row in enumerate(train_data):
             l = list(row)
             l.append(weights[i])

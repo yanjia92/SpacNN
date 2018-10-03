@@ -27,7 +27,7 @@ class QueueNetworkTest(CheckerTestBase):
         '''
         prism_answer = 0.086023 # result for duration = 50
         delta = 0.02
-        check_answer = self._checker.run_checker()
+        check_answer = self._checker.run_smc()
         self.assertAlmostEqual(prism_answer, check_answer, delta=delta)
 
     def _compute_var(self, sample_cnt):
@@ -36,7 +36,7 @@ class QueueNetworkTest(CheckerTestBase):
         :param sample_cnt: 样本的个数（而非路径的条数）
         :return: variance
         '''
-        check_results = [self._checker.run_checker() for _ in range(sample_cnt)]
+        check_results = [self._checker.run_smc() for _ in range(sample_cnt)]
         average = sum(check_results) / len(check_results)
         return sum([(result - average) ** 2 for result in check_results]) / len(check_results)
 

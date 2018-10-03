@@ -141,7 +141,7 @@ class Manager(object):
             try:
                 self._set_param(*constant_list)
                 self.model.prepare()
-                train_y = self.checker.run_checker()
+                train_y = self.checker.run_smc()
                 train_x = [c_obj.get_value() for c_obj in constant_list]
                 train_data_x.append(train_x)
                 train_data_y.append(train_y)

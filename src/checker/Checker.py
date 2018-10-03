@@ -3,7 +3,8 @@
 from util.AnnotationHelper import *
 from UnsureModelChecker import UnsureModelChecker
 from LTLChecker import LTLChecker
-from util.MathUtils import rel_index
+from itertools import product
+from math import ceil
 
 
 class Checker(UnsureModelChecker):
@@ -17,6 +18,7 @@ class Checker(UnsureModelChecker):
         self._antithetic = False
         self._ltl_checker = LTLChecker()
         self._log_path_interval = 16
+        self._rearranged = False
 
     def check_and_export(self, path_cnt, antithetic=False):
         '''
@@ -38,9 +40,6 @@ class Checker(UnsureModelChecker):
             paths.append(anti_path)
         results = map(lambda path: self._check(path), paths)
         return paths, results
-
-    def rearrange(self, paths, results):
-        self._model.rearrange(paths, results)
 
     def get_sample_size(self):
         return self._sample_cnt
@@ -67,45 +66,56 @@ class Checker(UnsureModelChecker):
         seeds = [1 - step.get_seed() for step in path]
         return self.gen_random_path(seeds=seeds)
 
-    def run_checker(self):
+    def rearrange(self, path_count):
+        '''
+        重排序算法
+        在进行重排序之前模型之中不能存在不确定参数
+        :param path_count: integer
+        :param rearrage_params: [(name, (values))]
+        :return:
+        '''
+        if path_count < 0:
+            return
+        paths, results = self.check_and_export(path_count)
+        self._model.rearrange(paths, results)
+        self._rearranged = True
+
+    def run_anti_smc(self):
+        '''
+        运行基于对偶路径的SMC算法
+        '''
+        self._antithetic = True
+        return self.run_smc()
+
+    def run_smc(self):
         samples = self.get_sample_size()
-        generated_cnt = 0.0
-        hit_cnt = 0  # satisfied path cnt
+        generated_cnt = 0.0  # path count
+        hit_cnt = 0  # satisfied path count
         begin = time.time()
         diff_cnt = 0 # 统计对偶路径验证结果不同的次数
-        results = []
         while generated_cnt < samples:
             path = self.gen_random_path()
             generated_cnt += 1
-            apsets = map(lambda step: step.get_ap_set(), path)
-            apset = reduce(lambda s1, s2: s1.union(s2), apsets)
             if generated_cnt % self._log_path_interval == 0:
                 clock = time.time()
                 print "Generating {} path causing {}s.".format(generated_cnt, clock - begin)
             result = self._check(path)
-            if (len(apset) > 0) != result:
-                print "check error"
-            results.append(result)
             if result:
                 hit_cnt += 1
             if self._antithetic:
                 seeds = map(lambda step: 1 - step.get_seed(), path)
                 antithetic_path = self.gen_random_path(seeds=seeds)
                 anti_result = self._check(antithetic_path)
-                results.append(anti_result)
                 if result != anti_result:
                     diff_cnt += 1
                 generated_cnt += 1
                 if result:
                     hit_cnt += 1
         print "diff_cnt percentage = {}%".format(float(diff_cnt) / samples * 2 * 100)
-        # results = map(lambda elem: [0, 1][elem], results)
-        # print "index: {}".format(rel_index(results[0::2], results[1::2]))
         return hit_cnt/generated_cnt
 
     def set_param(self, k, v):
         self._model.set_constant(k, v)
-        # self._model.set_prepared(False)
 
     def set_antithetic(self, antithetic):
         '''
@@ -115,7 +125,3 @@ class Checker(UnsureModelChecker):
         '''
         if isinstance(antithetic, bool):
             self._antithetic = antithetic
-
-    def set_prepared(self, prepared):
-        if isinstance(prepared, bool):
-            self._model.set_prepared(prepared)

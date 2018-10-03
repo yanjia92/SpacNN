@@ -19,23 +19,23 @@ class DieTest(CheckerTestBase):
 
     def testChecking(self):
         checker = self._get_checker()
-        print checker.run_checker()
+        print checker.run_smc()
 
     def testCheckAntithetic(self):
         checker = self._get_checker()
         paths, results = checker.check_and_export(1000)
         checker.rearrange(paths, results)
         checker.set_antithetic(True)
-        print checker.run_checker()
+        print checker.run_smc()
 
     def testVarReduction(self):
         samples = 50
-        check_results = [self._checker.run_checker() for _ in range(samples)]
+        check_results = [self._checker.run_smc() for _ in range(samples)]
         average = sum(check_results) / len(check_results)
         variance = sum([(check_result - average) ** 2 for check_result in check_results])
 
         self._checker.antithetic = True
-        check_results = [self._checker.run_checker() for _ in range(samples)]
+        check_results = [self._checker.run_smc() for _ in range(samples)]
         average = sum(check_results) / len(check_results)
         variance1 = sum([(check_result - average) ** 2 for check_result in check_results])
 

@@ -57,4 +57,4 @@ class DTMCSyncUnittest(unittest.TestCase):
             logger.info(
                 "param={}, checker's result={}".format(
                     obj.get_value(),
-                    self.checker.run_checker()))
+                    self.checker.run_smc()))

@@ -26,7 +26,7 @@ class ReactionModelTest(CheckerTestBase):
         :return:
         '''
         prism_result = 0.32252
-        check_result = self._checker.run_checker()
+        check_result = self._checker.run_smc()
         print "Check result:{}".format(check_result)
         self.assertAlmostEqual(check_result, prism_result, delta=0.01)
 
@@ -39,12 +39,12 @@ class ReactionModelTest(CheckerTestBase):
         check_results = []
         samples = 200
         for _ in range(samples):
-            check_results.append(self._checker.run_checker())
+            check_results.append(self._checker.run_smc())
         average = sum(check_results) / samples
         quad_error = sum([(result - average) ** 2 for result in check_results]) / samples
 
         self._checker.antithetic = True
-        check_results = [self._checker.run_checker() for _ in range(samples)]
+        check_results = [self._checker.run_smc() for _ in range(samples)]
         average = sum(check_results) / samples
         quad_error1 = sum([(result - average) ** 2 for result in check_results]) / samples
 

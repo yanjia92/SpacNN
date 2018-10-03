@@ -29,14 +29,14 @@ class HermanAntitheticTest(AntitheticTestCase):
         测试checker验证 true U<=5 stable的概率约等于0.6418
         :return:
         '''
-        self.assertAlmostEqual(self._get_checker().run_checker(), 0.6418, delta=0.02)
+        self.assertAlmostEqual(self._get_checker().run_smc(), 0.6418, delta=0.02)
 
     def testCheckCorrectAntithetic(self):
         checker = self._get_checker()
         paths, results = checker.check_and_export(self._get_rearrange_path_cnt())
         checker.rearrange(paths, results)
         checker.set_antithetic(True)
-        self.assertAlmostEqual(checker.run_checker(), 0.6418, delta=0.1)
+        self.assertAlmostEqual(checker.run_smc(), 0.6418, delta=0.1)
 
     def testCheckAntithetic(self):
         '''
@@ -47,7 +47,7 @@ class HermanAntitheticTest(AntitheticTestCase):
         paths, results = checker.check_and_export(1000)
         checker.rearrange(paths, results)
         checker.set_antithetic(True)
-        self.assertAlmostEqual(checker.run_checker(), 0.6418, delta=0.02)
+        self.assertAlmostEqual(checker.run_smc(), 0.6418, delta=0.02)
 
     def testShowRelativeIndex(self):
         '''

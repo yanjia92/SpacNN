@@ -55,7 +55,7 @@ class VarBenchmark(CheckerTestBase):
         # 0.000422302631579
         results = []
         for _ in range(20):
-            results.append(self._checker.run_checker())
+            results.append(self._checker.run_smc())
         # 期望
         expect = sum(results) / len(results)
         print "expect: {}".format(expect)

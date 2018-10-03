@@ -68,7 +68,7 @@ class TestSyncCommands(unittest.TestCase):
 
     def test_checking(self):
         # 测试模型检测的成功,从而检测模型解析和SMC算法的正确性
-        logger.info("checker'result is {}".format(self.checker.run_checker()))
+        logger.info("checker'result is {}".format(self.checker.run_smc()))
 
     def test_regression(self):
         constants = [("q_trigger", [v for v in range(1, 20, 2)])]

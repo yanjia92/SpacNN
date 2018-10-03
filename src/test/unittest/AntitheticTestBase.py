@@ -61,13 +61,13 @@ class AntitheticTestCase(CheckerTestBase):
         pass
 
     def _get_check_result(self):
-        return self._get_checker().run_checker()
+        return self._get_checker().run_smc()
 
     def _get_antithetic_check_result(self):
         checker = self._get_checker()
         self._rearrange()
         checker.set_antithetic(True)
-        return checker.run_checker()
+        return checker.run_smc()
 
     def _get_sample_cnt(self):
         '''

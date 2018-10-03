@@ -30,7 +30,7 @@ class DataGeneration(CheckerTestBase):
         paths, results = checker.check_and_export(100)
         checker.rearrange(paths, results)
         checker.set_antithetic(True)
-        print checker.run_checker()
+        print checker.run_smc()
 
     def _get_sample(self, sample_size, antithetic=False):
         '''

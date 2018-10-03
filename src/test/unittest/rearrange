@@ -1,30 +1,81 @@
-         28 function calls in 6.858 seconds
+         34071280 function calls (34065280 primitive calls) in 26.636 seconds
 
    Ordered by: cumulative time
 
    ncalls  tottime  percall  cumtime  percall filename:lineno(function)
-        1    0.000    0.000    6.858    6.858 /Users/bitbook/Documents/SpacNN/src/test/unittest/AntitheticTestBase.py:26(_rearrange)
-        1    0.000    0.000    6.858    6.858 /Users/bitbook/Documents/SpacNN/src/checker/Checker.py:21(check_and_export)
-        1    0.000    0.000    6.858    6.858 /Users/bitbook/Documents/SpacNN/src/checker/Checker.py:51(gen_random_path)
-        1    0.000    0.000    6.858    6.858 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:207(gen_path)
-        1    0.000    0.000    6.858    6.858 /Users/bitbook/Documents/SpacNN/src/util/AnnotationHelper.py:56(decorated_func)
-        1    6.858    6.858    6.858    6.858 {method 'enable' of '_lsprof.Profiler' objects}
-        1    0.000    0.000    0.000    0.000 {reduce}
-        2    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/module/Module.py:192(get_value)
-        1    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/test/unittest/ModelTestBase.py:61(_set_parameter)
-        1    0.000    0.000    0.000    0.000 {map}
-        1    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:157(set_constant)
+        1    0.000    0.000   26.636   26.636 /Users/bitbook/Documents/SpacNN/src/test/unittest/AntitheticTestBase.py:26(_rearrange)
+        1    0.008    0.008   26.546   26.546 /Users/bitbook/Documents/SpacNN/src/checker/Checker.py:21(check_and_export)
+     3000    0.007    0.000   26.399    0.009 /Users/bitbook/Documents/SpacNN/src/checker/Checker.py:51(gen_random_path)
+     3000    0.209    0.000   26.391    0.009 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:207(gen_path)
+    33000    0.868    0.000   24.227    0.001 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:273(_gen_next)
+   443756    6.686    0.000   18.457    0.000 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:102(prob)
+    33000    0.819    0.000   11.259    0.000 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:302(_choose_next)
+   709492    1.464    0.000    8.704    0.000 /Users/bitbook/Documents/SpacNN/src/compiler/PRISMParser.py:294(f)
+  1070238    2.107    0.000    6.043    0.000 /Users/bitbook/Documents/SpacNN/src/compiler/PRISMParser.py:273(f)
+  1785730    2.746    0.000    5.747    0.000 /Users/bitbook/Documents/SpacNN/src/compiler/PRISMParser.py:337(f)
+  2433730    3.389    0.000    3.881    0.000 /Users/bitbook/Documents/SpacNN/src/module/Module.py:192(get_value)
+    33000    0.517    0.000    2.180    0.000 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:257(_status_as_key)
+    30000    0.065    0.000    1.570    0.000 /Users/bitbook/Documents/SpacNN/src/module/AnotherStep.py:39(execute)
+ 15190210    1.518    0.000    1.518    0.000 {callable}
+    30000    1.086    0.000    1.505    0.000 /Users/bitbook/Documents/SpacNN/src/module/Module.py:92(execute)
+  4437560    1.086    0.000    1.086    0.000 /Users/bitbook/Documents/SpacNN/src/module/Module.py:133(get_prob)
+    33000    0.234    0.000    0.906    0.000 /System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/Queue.py:150(get)
+    33000    0.459    0.000    0.734    0.000 /System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/collections.py:109(values)
+    33001    0.293    0.000    0.693    0.000 {map}
+  2917566    0.518    0.000    0.518    0.000 /Users/bitbook/Documents/SpacNN/src/compiler/PRISMParser.py:239(<lambda>)
+  1664238    0.359    0.000    0.359    0.000 /Users/bitbook/Documents/SpacNN/src/compiler/PRISMParser.py:331(<lambda>)
+    66000    0.348    0.000    0.348    0.000 {method 'acquire' of 'thread.lock' objects}
+     3000    0.004    0.000    0.344    0.000 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:331(_restore)
+     3000    0.105    0.000    0.340    0.000 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:253(_restore_vars)
+    33000    0.112    0.000    0.313    0.000 /System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/threading.py:373(notify)
+   684000    0.307    0.000    0.307    0.000 /System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/collections.py:78(__iter__)
+   221878    0.184    0.000    0.262    0.000 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:311(<lambda>)
+   594000    0.196    0.000    0.196    0.000 /Users/bitbook/Documents/SpacNN/src/module/Module.py:184(set_value)
+   698634    0.173    0.000    0.173    0.000 {method 'append' of 'list' objects}
+    33000    0.051    0.000    0.141    0.000 /System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/threading.py:300(_is_owned)
+     3000    0.002    0.000    0.138    0.000 /Users/bitbook/Documents/SpacNN/src/checker/Checker.py:30(<lambda>)
+     3000    0.003    0.000    0.136    0.000 /Users/bitbook/Documents/SpacNN/src/checker/Checker.py:58(_check)
+     3000    0.004    0.000    0.133    0.000 /Users/bitbook/Documents/SpacNN/src/checker/LTLChecker.py:72(check)
+9000/3000    0.050    0.000    0.129    0.000 /Users/bitbook/Documents/SpacNN/src/checker/LTLChecker.py:81(_check)
+        1    0.000    0.000    0.090    0.090 /Users/bitbook/Documents/SpacNN/src/checker/Checker.py:42(rearrange)
+        1    0.034    0.034    0.090    0.090 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:237(rearrange)
+    33000    0.083    0.000    0.083    0.000 /Users/bitbook/Documents/SpacNN/src/module/AnotherStep.py:9(__init__)
+     3000    0.048    0.000    0.080    0.000 /System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/collections.py:113(items)
+    60001    0.067    0.000    0.067    0.000 {method 'items' of 'dict' objects}
+    38124    0.058    0.000    0.058    0.000 {method 'release' of 'thread.lock' objects}
+    66000    0.054    0.000    0.054    0.000 {sum}
+     3000    0.015    0.000    0.049    0.000 /Users/bitbook/Documents/SpacNN/src/checker/LTLChecker.py:41(parse_literal)
+    33000    0.035    0.000    0.042    0.000 /System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/Queue.py:208(_get)
+    33000    0.027    0.000    0.039    0.000 /System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/Queue.py:200(_qsize)
+     1497    0.009    0.000    0.037    0.000 {method 'sort' of 'list' objects}
+    63000    0.033    0.000    0.033    0.000 /Users/bitbook/Documents/SpacNN/src/module/AnotherStep.py:24(get_holding_time)
+    33000    0.030    0.000    0.030    0.000 {_bisect.bisect}
+   117000    0.028    0.000    0.028    0.000 {len}
+    18790    0.019    0.000    0.028    0.000 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:251(<lambda>)
+    12000    0.018    0.000    0.023    0.000 /Users/bitbook/Documents/SpacNN/src/util/FormatUtil.py:4(str2num)
+     3000    0.013    0.000    0.017    0.000 /Users/bitbook/Documents/SpacNN/src/checker/LTLChecker.py:117(_check_until)
+    33000    0.015    0.000    0.015    0.000 /System/Library/Frameworks/Python.framework/Versions/2.7/lib/python2.7/threading.py:64(_note)
+    33000    0.007    0.000    0.007    0.000 {method 'popleft' of 'collections.deque' objects}
+     5124    0.007    0.000    0.007    0.000 {method 'remove' of 'list' objects}
+    33000    0.007    0.000    0.007    0.000 /Users/bitbook/Documents/SpacNN/src/module/AnotherStep.py:33(get_command)
+    33000    0.007    0.000    0.007    0.000 /Users/bitbook/Documents/SpacNN/src/module/AnotherStep.py:30(get_ap_set)
+    24000    0.006    0.000    0.006    0.000 {isinstance}
+    17666    0.006    0.000    0.006    0.000 /Users/bitbook/Documents/SpacNN/src/module/Module.py:84(incr_miss_cnt)
+    15334    0.006    0.000    0.006    0.000 /Users/bitbook/Documents/SpacNN/src/module/Module.py:81(incr_hit_cnt)
+     3000    0.004    0.000    0.005    0.000 /Users/bitbook/Documents/SpacNN/src/checker/LTLChecker.py:10(__init__)
+    18790    0.005    0.000    0.005    0.000 /Users/bitbook/Documents/SpacNN/src/module/Module.py:145(get_hit_cnt)
+     9000    0.004    0.000    0.004    0.000 {method 'startswith' of 'str' objects}
+    18790    0.003    0.000    0.003    0.000 /Users/bitbook/Documents/SpacNN/src/module/Module.py:148(get_miss_cnt)
+     9000    0.003    0.000    0.003    0.000 {method 'find' of 'str' objects}
+    15334    0.003    0.000    0.003    0.000 {method 'add' of 'set' objects}
+     6000    0.002    0.000    0.002    0.000 {method 'strip' of 'str' objects}
+     1394    0.001    0.000    0.001    0.000 /Users/bitbook/Documents/SpacNN/src/checker/LTLChecker.py:33(contains)
+     6000    0.001    0.000    0.001    0.000 {method 'isdigit' of 'str' objects}
+        1    0.001    0.001    0.001    0.001 {zip}
+     1394    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/module/AnotherStep.py:27(get_passed_time)
         1    0.000    0.000    0.000    0.000 {range}
-        1    0.000    0.000    0.000    0.000 {math.ceil}
         1    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/test/unittest/CheckerTest.py:34(_get_checker)
-        1    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/test/unittest/AntitheticTestBase.py:45(<lambda>)
-        1    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/module/ModulesFile.py:154(get_constants)
-        1    0.000    0.000    0.000    0.000 {zip}
-        1    0.000    0.000    0.000    0.000 {method 'items' of 'dict' objects}
-        1    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/module/Module.py:184(set_value)
-        1    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/test/unittest/ModelTestBase.py:70(get_model)
-        4    0.000    0.000    0.000    0.000 {callable}
-        2    0.000    0.000    0.000    0.000 {len}
-        1    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/test/unittest/BroadcastRegressionTest.py:31(_get_rearrange_path_cnt)
+        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+        1    0.000    0.000    0.000    0.000 /Users/bitbook/Documents/SpacNN/src/test/unittest/BroadcastAntitheticTest.py:15(_get_rearrange_path_cnt)
 
 

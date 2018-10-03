@@ -45,7 +45,7 @@ class Test(CheckerTestBase):
             ys = []
             for param in xs:
                 self._checker.set_param("theta", param)
-                ys.append(self._checker.run_checker())
+                ys.append(self._checker.run_smc())
             # compute weights for each (x, y)
             average_distance = averageDistanceToLine(xs, ys)
             weight = 1.0 / (average_distance ** 2)

@@ -66,7 +66,7 @@ class ParserTest(unittest.TestCase):
             constant_obj = Constant(name, )
             set_result = self.model.set_constant(constant_obj)
             assert set_result
-            result = self.checker.run_checker()
+            result = self.checker.run_smc()
             checked_result_map[thickness] = result
         error_map = {}
         self.logger.info("check result: %s", str(checked_result_map))

@@ -146,10 +146,15 @@ class ModulesFile(object):
             raise Exception("Model contains no module named {}".format(n))
         return self._modules[n]
 
-    def get_constant(self, n):
+    def get_parameter(self, n):
+        '''
+        获取参数，同获取constant
+        :param n: name
+        :return: value (could be function)
+        '''
         if n not in self._constants:
             raise Exception("Model contains no constant named {}".format(n))
-        return self._constants[n]
+        return self._constants[n].get_value()
 
     def get_constants(self):
         return self._constants
