@@ -4,31 +4,18 @@ import numpy as np
 from scipy.optimize import leastsq
 
 
-def weight(xs, ys):
+def aver_distance(xs, ys):
     '''
-    计算样本点的权重
+    返回这些点到最小二乘法拟合出的直线的平均距离
     :param xs:
     :param ys:
     :return:
     '''
-    s_distance = signed_distance(xs, ys)
-    s_distance = fabs(s_distance) / len(xs)
-    return 1.0 / s_distance
-
-
-def point_2_line(x, y, line_func):
-    '''
-    计算点到直线的垂直距离
-    公式：dist = fabs((ax+by+c) / sqrt(a^2+b^2))
-    :param x:
-    :param y:
-    :param line_func: function that is of form: y = ax + b
-    :return:
-    '''
-    b = -1
-    a = line_func(1) - line_func(0)
-    c = line_func(0)
-    return fabs((a*x+b*y+c) / sqrt(a**2+b**2))
+    line_func = generate_line_func(xs, ys)
+    distances = []
+    for x, y in zip(xs, ys):
+        distances.append(point_2_line(x, y, line_func))
+    return sum(distances) / len(distances)
 
 
 def signed_distance(xs, ys):
@@ -80,3 +67,18 @@ def generate_line_func(xs, ys):
         return wrapper
 
     return linegenerator(param)
+
+
+def point_2_line(x, y, line_func):
+    '''
+    计算点到直线的垂直距离
+    公式：dist = fabs((ax+by+c) / sqrt(a^2+b^2))
+    :param x:
+    :param y:
+    :param line_func: function that is of form: y = ax + b
+    :return:
+    '''
+    b = -1
+    a = line_func(1) - line_func(0)
+    c = line_func(0)
+    return fabs((a*x+b*y+c) / sqrt(a**2+b**2))

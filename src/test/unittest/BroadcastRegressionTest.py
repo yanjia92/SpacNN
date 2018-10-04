@@ -9,6 +9,8 @@ from math import fabs
 import os
 from util.MathUtils import z
 from util.Geometry import signed_distance
+from nn.WeightHelper import WeightHelper
+from util.MathUtils import almost_equal
 
 
 class BroadcastRegressionTest(RegressionTestBase):
@@ -26,6 +28,8 @@ class BroadcastRegressionTest(RegressionTestBase):
             "broadcast9_weight_aver_error.csv"
         self._train_xs = interval(0, 1, 0.02)
         self._test_xs = interval(0, 1, 0.01)
+        # 求权重时的阈值，当平均距离小于该值时，为了防止该段权重过大，将其设为1.0权重，即标准权重
+        self._distance_threshold = 1.0e-5
 
     def testExportTrainData(self):
         train_data = self._gen_training_data()
@@ -93,13 +97,14 @@ class BroadcastRegressionTest(RegressionTestBase):
         choices = [True, False]
         subplot = "12{}"
         p = 1
+        ylimit = (0, 50)
         for choice in choices:
             default_weight = choice
             path = [self._export_weight_test_path,
                     self._export_test_path][default_weight]
             error_path = [self._export_weight_aver_error_path, self._export_aver_error_path][default_weight]
             self._trainTestExportError(path)
-            self._showErrorHist(path, error_path, subplot=subplot.format(p))
+            self._showErrorHist(path, error_path, subplot=subplot.format(p), ylimit=ylimit)
             p += 1
         plt.show()
 
@@ -136,7 +141,7 @@ class BroadcastRegressionTest(RegressionTestBase):
         return [1, 20, 1]
 
     def _get_eta(self):
-        return 0.1
+        return 0.05
 
     def _get_min_batch_size(self):
         return 10
@@ -164,7 +169,7 @@ class BroadcastRegressionTest(RegressionTestBase):
             result.append((x, check_result))
         return result
 
-    def _showErrorHist(self, path, error_path, subplot=None):
+    def _showErrorHist(self, path, error_path, subplot=None, ylimit=None):
         '''
         展示误差直方图
         :param path: 测试数据文件路径
@@ -183,6 +188,8 @@ class BroadcastRegressionTest(RegressionTestBase):
         write_csv_rows(error_path, aver_errors)
         if subplot:
             plt.subplot(subplot)
+        if ylimit:
+            plt.ylim(ylimit)
         plt.hist(aver_errors)
 
     def _errors(self, nums1, nums2):
@@ -232,7 +239,7 @@ class BroadcastRegressionTest(RegressionTestBase):
         使用平均到拟合直线的距离来衡量可靠性权重
         :param train_data: [(x,y)]
         :param default: no using weight?
-        :return: [int] -> weights
+        :return: [int]
         '''
         if default:
             return [1.0 for _ in train_data]
@@ -244,11 +251,15 @@ class BroadcastRegressionTest(RegressionTestBase):
             xs = [row[0] for row in interval_data]
             ys = [row[1] for row in interval_data]
             weights.extend(self._compute_weight(xs, ys))
-        # make all weight in [0, 1]
-        weights = map(lambda w: fabs(w), weights)
-        s = sum(weights)
-        # 归一化使得sum(weights) = len(weights)
-        return map(lambda w: w * n / s, weights)
+        weight_sum = sum(weights)
+        weights = map(lambda w: w/weight_sum*len(weights), weights)
+        # filter those weights that are equal to zero out
+        filtered_weights = filter(lambda w: w>0, weights)
+        aver_filtered_weight = sum(filtered_weights) / len(filtered_weights)
+        for i, w in enumerate(weights):
+            if almost_equal(0.0, w, sig_fig=5):
+                weights[i] = aver_filtered_weight
+        return weights
 
     def _compute_weight(self, xs, ys):
         '''
@@ -258,12 +269,4 @@ class BroadcastRegressionTest(RegressionTestBase):
         :param ys: [float]
         :return: [float]
         '''
-        # 定义平均偏差的最小值，使得权重不至于过大
-        min_distance = 0.01
-        if len(xs) == len(ys) and len(xs):
-            distance = signed_distance(xs, ys)
-            distance = fabs(distance)
-            if distance < min_distance:
-                distance = min_distance
-            weight = 1.0 / distance
-            return [weight for _ in xs]
+        return WeightHelper.weight(xs, ys)
